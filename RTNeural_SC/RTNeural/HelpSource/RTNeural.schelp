@@ -1,0 +1,231 @@
+TITLE:: RTNeural
+summary:: A Real-Time Neural Inferencing UGen
+categories:: UGens>NeuralProcessing
+
+
+DESCRIPTION::
+RTNeural is a SuperCollider UGen which uses the RTNeural inference engine to load and run tensorflow neural network models. See the RTNeural github page (https://github.com/jatinchowdhury18/RTNeural) for neural network layers supported.  
+
+CLASSMETHODS::
+
+METHOD:: ar
+RTNeural models can operate at audio rate or control rate. At audio rate the entire input array should be audio rate. At control rate, the entire input array should be control rate.
+
+ARGUMENT:: input_array
+an array of audio/control inputs - size of the array needs to match the size of the input layer of the provided neural network model
+
+ARGUMENT:: num_outputs
+the number of outputs for the UGen. this number must match the number of outputs of the provided neural network model
+
+ARGUMENT:: id
+each RTNeural UGen in a Synth needs a unique id so that sclang can send messages to the correct instance of the UGen
+
+ARGUMENT:: bypass
+bypass the effect - audio goes straight out with no CPU use by the neural network
+
+ARGUMENT:: sample_rate
+the default setting is -1, which the signal is processed at the current sample rate. however, some audio effects are trained on audio at a specific sample rate. if the provided model is trained a specific sample rate, indicate that sample rate here. when the provided sample rate is different from that of the audio driver, the input array will be resampled to the sample rate of the neural network before inference and sampled back to the driver's sample rate after.
+
+METHOD:: kr
+RTNeural models can operate at audio rate or control rate. At audio rate the input array should be audio rate. At control rate, the input array should be control rate.
+
+METHOD:: loadModel
+loads pretrained RTNeural models and weights into the RTNeural C++ library from an RTNeural format json file. keras models can be saved in the correct format using the 'save_model' function from the provided 'model_utils.py' file. pytorch models need to be converted to keras models before using the save_models function. see the python examples and examples showing model conversion from pytorch to keras/tensorflow.
+
+ARGUMENT:: synth
+the synth where the UGen exists
+
+ARGUMENT:: id
+the id for the UGen where you are loading the model
+
+ARGUMENT:: path
+path to the json file training
+
+ARGUMENT:: verbose
+default is true. writes information about the network to the screen while loading.
+
+EXAMPLES::
+
+Proteus and other Automated-GuitarAmpModelling GRU and LSTM trainings
+
+code::
+//RTNeural can load LSTM and GRU trainings that were made using Alec Wright's Automated-GuitarAmpModelling python (https://github.com/Alec-Wright/Automated-GuitarAmpModelling)
+//the python code to transform these models from pytorch to keras/RTNeural format is provided
+(
+    s.waitForBoot({
+        p = Platform.resourceDir +/+ "sounds/a11wlk01.wav";
+        b = Buffer.read(s, p);
+        s.sync;
+        SynthDef('rt_neural_dist', {
+            var in = PlayBuf.ar(1, \buf_num.kr(0), BufRateScale.kr(\buf_dur.kr), loop:1);
+    
+            //models trained with the Automated-GuitarAmpModelling library usually use a skip connection in the training, so we need to add the signal back into itself to get the desired output
+            //the two trainings below al
+            var synth = RTNeural.ar([in], 1, 'this_one', \bypass.kr(0), \sr.kr(44100))+in*0.5;
+            Out.ar(0, synth.dup);
+        }).load(s);
+    })
+)
+
+//make the synth
+~synth = Synth('rt_neural_dist');
+
+//load an LSTM model from the Proteus guitar pedal
+//these trainings use an LSTM with a hidden layer of 20 and were trained at 44100
+(
+    ~path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"python/";
+    RTNeural.loadModel(~synth, \this_one, ~path++"Automated-GuitarAmpModelling/JoyoExtremeMetal_RTNeural.json", 1);
+)
+
+//GRU model of a Muff pedal. This training using a GRU with 64 hidden layers
+(
+    RTNeural.loadModel(~synth, \this_one, ~path++"Automated-GuitarAmpModelling/Muff_GRU_RTNeural.json", 1);
+)
+
+//notice the sonic difference when changing the internal sample rate:
+~synth.set(\sr, -1); //will sound wrong if your sample rate is not 44100
+~synth.set(\sr, 44100); //should sound correct, since these were trained at 44100
+~synth.set(\sr, 96000); //should be very wrong
+
+//some AGAM models have 2 or more inputs for "Gain Knobs" and such
+SynthDef('rt_neural_dist_2d', {
+    var in = PlayBuf.ar(1, \buf_num.kr(0), BufRateScale.kr(\buf_dur.kr), loop:1);
+
+    var gain = K2A.ar(MouseX.kr);
+
+    var synth = RTNeural.ar([in, gain], 1, 'this_one', \bypass.kr(0), \sr.kr(44100))+in*0.5;
+    Out.ar(0, synth.dup);
+}).load(s);
+
+~synth = Synth('rt_neural_dist_2d');
+
+// move the mouse left to right to adjust the effect
+(
+    RTNeural.loadModel(~synth, \this_one, ~path++"Automated-GuitarAmpModelling/DOD_AmericanMetal_GainKnob_RTNeural.json");
+)
+
+::
+
+The Chow Centaur Gain Stage
+
+code::
+//the gru model from the chowdsp centaur pedal is provided in the /python folder
+//this only models the gain stage of the centaur guitar pedel, not the entire pedal
+
+SynthDef('rtneural_centaur', {
+    var rtn, in = SinOsc.ar(MouseY.kr(100, 2000));
+    //centaur takes 3 inputs - audio, gain, and 1/sample_rate
+    in = [in, K2A.ar(MouseX.kr), K2A.ar(1/SampleRate.ir)];
+    rtn = RTNeural.ar(in, 1, 'this_one', \bypass.kr(0));
+    Out.ar(0,
+        rtn.dup*0.2
+    );
+}).load(s);
+
+~synth = Synth('rtneural_centaur');
+(
+//load the small model - has a little error in the low range
+~path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"python/";
+RTNeural.loadModel(~synth, \this_one, ~path++"chowdhury_models/chow_centaur/centaur.json");
+)
+//the large model clears up the issue in the low register
+RTNeural.loadModel(~synth, \this_one, ~path++"chowdhury_models/chow_centaur/centaur_large.json");
+
+Stethoscope(s, 2);
+::
+
+Using the UGen as a Control Rate Multi Layer Perceptron
+
+code::
+//a control-rate Multi Layer Perceptron that uses mouse input to give ten channels of control outputs
+
+SynthDef('rtneural_mlp_control', {
+    var rtn, in = [MouseX.kr, MouseY.kr];
+    //centaur takes 3 inputs - audio, gain, and 1/sample_rate
+    
+    rtn = RTNeural.kr(in, 10, 'mlp', \bypass.kr(0));
+    rtn.poll;
+    nil
+}).load(s);
+
+//control rate is very efficient - uses very little cpu
+(
+    ~synth = Synth('rtneural_mlp_control');
+
+    ~path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"python/";
+    RTNeural.loadModel(~synth, \mlp, ~path++"MLP_torch_control/mlp_RTNeural.json");
+)
+::
+
+Chow Tape Model Hysteresis
+
+code::
+//the neural models that process the neural hysteresis mode on the Chow Tape Model
+
+SynthDef('rtneural_hysteresis', {
+    var rtn, in = SinOsc.ar(MouseY.kr(100, 2000));
+    //centaur takes 3 inputs - audio, gain, and 1/sample_rate
+    in = [in, K2A.ar(MouseX.kr), K2A.ar(1/SampleRate.ir)];
+    rtn = RTNeural.ar(in, 1, 'this_one', \bypass.kr(0));
+    Out.ar(0,
+        rtn.dup*0.2
+    );
+}).add;
+
+~synth = Synth('rtneural_hysteresis');
+
+~path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"python/";
+RTNeural.loadModel(~synth, \this_one, ~path++"chowdhury_models/STN_Models/hyst_width_50.json");
+::
+
+A Neural Wavetable Oscillator
+
+code::
+//a multilayer perceptron neural network that has been trained on variable wavetable oscillator
+//i am not saying this is a good use of a neural network
+
+//the next two use neural networks to create variable oscillators
+//the first was trained in keras - the second in pytorch
+(
+    SynthDef('rtneural_osc_keras', {
+        //the network takes two inputs: 1 - phase of the oscillator and 2 - which oscillator type (0=sine, 0.33=tri, 0.66=square, 1=saw)
+        var in = LFSaw.ar(MouseX.kr(50,500)).range(0,1);
+        var mouse = K2A.ar(MouseY.kr);
+
+        var synth = RTNeural.ar([in,mouse], 1, 'this_one', \bypass.kr(0))*0.5;
+        Out.ar(0, synth.dup);
+    }).load(s);
+)
+
+//make the synth
+~synth = Synth('rtneural_osc_keras');
+
+//see the ramp wave
+Stethoscope(s, 2);
+
+//load the model
+~path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"python/";
+RTNeural.loadModel(~synth, \this_one, ~path++"4Osc_MLP_keras/mlp_4osc_keras.json");
+
+//this is the same idea, but the training was made in Pytorch
+//this is a larger model, so less efficiency is due to more neurons
+(
+SynthDef('rtneural_osc_torch', {
+    var rtn, in = LFSaw.ar(MouseX.kr(50, 500)).range(0,1);
+    //centaur takes 3 inputs - audio, gain, and 1/sample_rate
+    in = [in, K2A.ar(MouseY.kr)];
+    rtn = RTNeural.ar(in, 1, 'this_one', \bypass.kr(0));
+    Out.ar(0,
+        rtn.dup*0.2
+    );
+}).load(s);
+)
+
+//start the synth
+~synth = Synth('rtneural_osc_torch');
+
+//load the model
+~path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"python/";
+RTNeural.loadModel(~synth, \this_one, ~path++"4Osc_MLP_torch/4Osc_torch_RTNeural.json");
+
+::

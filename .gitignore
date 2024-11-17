@@ -1,0 +1,14 @@
+build/
+.vscode/
+.DS_Store
+RTNeural_SC/RTNeural/python/venv/
+RTNeural_SC/RTNeural/RTNeuralUGen.scx
+/venv
+.zip
+RTNeural.zip
+RTNeural_SC/build/
+RTNeural_SC/libsamplerate/
+RTNeural_SC/RTNeuralCPP/
+rtneural~_pd/build/
+rtneural~_pd/libsamplerate/
+rtneural~_pd/RTNeuralCPP/

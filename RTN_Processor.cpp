@@ -154,7 +154,7 @@ int RTN_Processor::process(const std::vector<const float*>& in_vec, float* in_rs
         out_temp[i*m_num_out_chans] = m_model->forward(inVecSmall.data());
         if(m_num_out_chans>1) {
           auto vec = m_model->getOutputs();
-          for (int j = 0; j < m_num_out_chans; ++j) {
+          for (int j = 1; j < m_num_out_chans; j++) {
             out_temp[i*m_num_out_chans+j] = vec[j];
           }
         }
@@ -164,4 +164,14 @@ int RTN_Processor::process(const std::vector<const float*>& in_vec, float* in_rs
       int n_samps_out = resample_out (out_temp, outbuf, resampled_size, nSamples);
       return n_samps_out;
     }
+}
+
+void RTN_Processor::process1(const float* input, float* output) {
+  output[0] = m_model->forward(input);
+  if(m_num_out_chans>1) {
+    auto vec = m_model->getOutputs();
+    for (int j = 1; j < m_num_out_chans; j++) {
+      output[j] = vec[j];
+    }
+  }
 }

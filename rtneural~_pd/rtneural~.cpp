@@ -38,13 +38,7 @@ typedef struct _rtneural_tilde {
 
 void rtneural_tilde_bang(rtneural_tilde_t *x) {
   (void)x; // silence unused variable warning
-  post("(*&^) the world!");
-}  
-
-void rtneural_tilde_symbol(rtneural_tilde_t *x, t_symbol s){
-  (void)x;
-
-  post(s.s_name);
+  post("stop that!");
 }  
 
 void rtneural_tilde_load_model(rtneural_tilde_t *x, t_symbol s){
@@ -147,7 +141,7 @@ void rtneural_tilde_free (rtneural_tilde_t* obj) {
 	outlet_free(obj->signal_out);
 }
 
-t_int* rtneural_perform (t_int* args) {
+t_int* rtneural_tilde_perform (t_int* args) {
   rtneural_tilde_t* obj = (rtneural_tilde_t*)args[1];
   t_sample    *in =      (t_sample *)(args[2]);
   t_sample* out = (t_sample *)args[3];
@@ -179,7 +173,7 @@ t_int* rtneural_perform (t_int* args) {
 
 void rtneural_tilde_dsp (rtneural_tilde_t* obj, t_signal** sp) {
   signal_setmultiout(&sp[1], obj->n_out_chans);
-  dsp_add(rtneural_perform, 4, obj, sp[0]->s_vec, sp[1]->s_vec, (t_int)(sp[0]->s_length * sp[0]->s_nchans));
+  dsp_add(rtneural_tilde_perform, 4, obj, sp[0]->s_vec, sp[1]->s_vec, (t_int)(sp[0]->s_length * sp[0]->s_nchans));
 
 }
 
@@ -197,7 +191,6 @@ void rtneural_tilde_setup(void) {
     CLASS_MULTICHANNEL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
   
   class_addbang(rtneural_tilde_class, rtneural_tilde_bang);
-  class_addsymbol(rtneural_tilde_class, rtneural_tilde_symbol);
   // class_addfloat(rtneural_tilde_class, rtneural_float);
   class_addmethod(rtneural_tilde_class, (t_method)rtneural_tilde_load_model, gensym("load_model"), A_SYMBOL, 0);
 

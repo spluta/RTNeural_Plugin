@@ -34,5 +34,5 @@ public:
 
     int process(const std::vector<const float*>& in, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
 
-    //std::vector<const float*> in_vec;
+    void process1(const float* input, float* output);
 };

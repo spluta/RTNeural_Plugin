@@ -3,7 +3,7 @@ build/
 .DS_Store
 RTNeural_SC/RTNeural/python/venv/
 RTNeural_SC/RTNeural/RTNeuralUGen.scx
-/venv
+venv/
 .zip
 RTNeural.zip
 RTNeural_SC/build/

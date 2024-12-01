@@ -108,8 +108,9 @@ if torch.allclose(pytorch_output, keras_output_tensor, atol=1e-6):
         print("Saving to: ", args.outfile)
         save_model(keras_model, args.outfile)
     else:
-        print("Saving to: ", dir_path+"/mlp_RTNeural.json")
-        save_model(keras_model, dir_path+"/mlp_RTNeural.json")
+        file_name = os.path.splitext(os.path.basename(args.file))[0]
+        print("Saving to: ", dir_path+"/"+file_name+".json")
+        save_model(keras_model, dir_path+"/"+file_name+".json")
 else:
     print("NO Verification: The PyTorch and Keras models produce different outputs.")
 

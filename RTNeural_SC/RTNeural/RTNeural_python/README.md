@@ -4,7 +4,7 @@ The best way to run all of these examples is to make a virtual environment in th
 
 **From the terminal:**
 
-1. make sure you are in the RTNeural/python directory
+1. make sure you are in the RTNeural_python directory. For SuperCollider, this folder should be inside the RTNeural folder which contains the RTNeural.sc file and the HelpSource directory
 2. if you haven't already, create a python virtual environment in that folder: 
 //make the virtual environment (you only need to do this once)
 > python -m venv venv
@@ -14,8 +14,8 @@ The best way to run all of these examples is to make a virtual environment in th
 
 //install the dependencies:
 > pip install keras
-
 > pip install tensorflow
+> pip install torch
 
 etc
 

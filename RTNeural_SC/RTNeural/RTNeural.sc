@@ -47,23 +47,37 @@ RTNeural : MultiOutUGen {
 		^a
 	}
 
-	*trainMLP{arg in_file = "MLP_control/data.json", out_file, python_path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"python";
-		var text = "cd "++python_path.quote++"; source venv/bin/activate; python MLP_control/mlp_training.py -f"+in_file.quote;
+	*trainMLP{
+		arg in_file = "MLP_control/data.json", 
+		out_file, 
+		python_path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"RTNeural_python",
+		action = {};
+
+		var text;
 		if (out_file!=nil){
-			text = "cd "++python_path.quote++"; source venv/bin/activate; python MLP_control/mlp_training.py -f"+in_file.quote+"-o"+out_file.quote;
+			text = "cd "++python_path.quote++"; source venv/bin/activate; python MLP_control/mlp_control_train_convert.py -f"+in_file.quote+"-o"+out_file.quote;
+		}{
+			text = "cd "++python_path.quote++"; source venv/bin/activate; python MLP_control/mlp_control_train_convert.py -f"+in_file.quote;
+			out_file = PathName(in_file)
 		};
+
 		text.unixCmd{ |res, pid| 
 			//after it is trained, the model needs to be converted to RTNeural format
-			"ready to be converted to RTNeural".postln;
+			"\n \n ready for inference!".postln;
 		};
 		"wait for the done message. it'll take a second or longer depending on epochs.".postln;
 	}
 
-	*convertToRTNeural {arg pt_file = "MLP_control/mlp_training.py", rt_neural_file, python_path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"python";
+	*convertToRTNeural {
+		arg pt_file = "MLP_control/mlp_control_training.pt", 
+		rt_neural_file, 
+		python_path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"RTNeural_python";
+
 		var text = "cd "++python_path.quote++"; source venv/bin/activate; python MLP_control/torch_to_RTNeural_MLP.py -f"+pt_file.quote;
 		if (rt_neural_file!=nil){
 			text = "cd "++python_path.quote++"; source venv/bin/activate; python MLP_control/torch_to_RTNeural_MLP.py -f"+pt_file.quote+"-o"+rt_neural_file.quote;
 		};
+		text.postln;
 		text.unixCmd{ |res, pid| 
 			//after it is trained, the model needs to be converted to RTNeural format
 			"ready for inference".postln;

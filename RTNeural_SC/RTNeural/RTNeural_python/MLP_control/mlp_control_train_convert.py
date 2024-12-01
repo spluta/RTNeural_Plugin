@@ -7,6 +7,16 @@ from torch.nn.modules import Module
 from typing import List
 import json
 
+import keras
+from keras.layers import Input
+from keras.models import Model
+
+import os, sys
+dir_path = os.path.dirname(os.path.realpath(__file__))
+parent_path = os.path.abspath(os.path.join(dir_path, os.pardir))
+sys.path.append(parent_path)
+from model_utils import save_model
+
 import argparse
 import os
 
@@ -101,16 +111,11 @@ for nums in [[learn_rate,epochs]]:
         loss.backward()
         optimizer.step()
 
-
-
-# Generate predictions using the trained model
-predicted_sin = model(X_train).detach().to('cpu').numpy()
-
 # Print the training loss
 print("Training loss:", loss.item())
 
 # Save the model
-cpu_model = model.to('cpu')
+model = model.to('cpu')
 
 if args.outfile is None:
     args.outfile = "mlp_training.pt"
@@ -118,7 +123,85 @@ if args.outfile is None:
 else:
     out_path = args.outfile
 
+if out_path[-3:] != ".pt":
+    out_path += ".pt"
+
 torch.save(model, out_path)
 
-print("Model saved to: ", out_path)
+# Save the model in ONNX format if onnxscript is installed
+try:
+    onnx_out_path = out_path.replace(".pt", ".onnx")
+    torch_input = torch.randn(1, input_size)
+    onnx_program = torch.onnx.dynamo_export(model, torch_input)
+    onnx_program.save(onnx_out_path)
+except Exception as e:
+    print("ONNX export failed. If you want to export the model in ONNX format, install onnxscript with pip.")
+
+layers = model.layers
+
+print("Model layers:")
+for layer in layers:
+    print(layer)
+
+# # # Create a Keras model with the same architecture
+keras_input = Input(shape=(layers[0].in_features,))
+match str(layers[1]):
+    case 'ReLU()':
+        activation = 'relu'
+    case 'Sigmoid()':
+        activation = 'sigmoid'
+    case 'Tanh()':
+        activation = 'tanh'
+    case _:
+        activation = 'linear'
+keras_output = keras.layers.Dense(layers[0].out_features, activation)(keras_input)
+
+for i in range(2, len(layers), 2):
+    print(i, layers[i+1])
+    match str(layers[i+1]):
+        case 'ReLU()':
+            activation = 'relu'
+        case 'Sigmoid()':
+            activation = 'sigmoid'
+        case 'Tanh()':
+            activation = 'tanh'
+        case _:
+            activation = 'linear'
+    keras_output = keras.layers.Dense(layers[i].out_features, activation)(keras_output)
+
+keras_model = Model(inputs=keras_input, outputs=keras_output)
+
+# Get the number of layers in the Keras model
+num_layers = len(keras_model.layers)
+# # # Copy the weights from PyTorch model to Keras model
+with torch.no_grad():
+    for i in range(num_layers-1):
+        keras_model.layers[i+1].set_weights([model.layers[i*2].weight.T.numpy(), model.layers[i*2].bias.numpy()])
+
+# Generate a sample input
+sample_input = torch.randn(1, input_size)
+
+# Set PyTorch model to evaluation mode
+model.eval()
+
+# Get PyTorch model prediction
+with torch.no_grad():
+    pytorch_output = model(sample_input)
+    print("pytorch: ", pytorch_output)
+
+# Get Keras model prediction
+keras_output = keras_model.predict(sample_input.numpy(), verbose = 0)
+
+# Convert Keras output to a PyTorch tensor
+keras_output_tensor = torch.tensor(keras_output)
+print("keras: ", keras_output_tensor)
+
+# Compare predictions
+if torch.allclose(pytorch_output, keras_output_tensor, atol=1e-6):
+    print("The predictions are the same.")
+    # Save the Keras model
+    out_path = out_path.replace(".pt", "_RTNeural.json")
+    print("out_path: ", out_path)
+    save_model(keras_model, out_path)
+    print("RT Neural model saved to: ", out_path)
 

@@ -24,8 +24,6 @@ typedef struct _rtneural {
   t_float ratio;
   t_float model_loaded;
 
-//   std::vector<const t_float*> in_vec;
-//   std::vector< std::vector<t_float> > outVecs;
     float* input_to_nn;
     float* output_from_nn;
 
@@ -98,6 +96,27 @@ rtneural_t *x = (rtneural_t *)pd_new(rtneural_class);
   return (void *)x;
 }
 
+void rtneural_write_json(rtneural_t *x, t_symbol s){
+  nlohmann::json data;
+
+    data["Some String"] = "Hello World";
+    data["Some Number"] = 12345;
+    data["Empty Array"] = nlohmann::json::array_t();
+    data["Array With Items"] = { true, "Hello", 3.1415 };
+    data["Empty Array"] = nlohmann::json::array_t();
+    data["Object With Items"] = nlohmann::json::object_t({{"Key", "Value"}, {"Day", true}});
+    data["Empty Object"] = nlohmann::json::object_t();
+
+    std::ofstream output_file(s.s_name);
+    if (!output_file.is_open())  {
+        post("Failed to open output file");
+    } else {
+        output_file << data;
+        output_file.close();
+        post("writing output file");
+    }
+}
+
 void rtneural_load_model(rtneural_t *x, t_symbol s){
   (void)x;
 
@@ -152,6 +171,7 @@ void rtneural_setup(void) {
   class_addbang(rtneural_class, rtneural_bang);
     class_addlist(rtneural_class, rtneural_list);
     class_addmethod(rtneural_class, (t_method)rtneural_load_model, gensym("load_model"), A_SYMBOL, 0);
+    class_addmethod(rtneural_class, (t_method)rtneural_write_json, gensym("write_json"), A_SYMBOL, 0);
     class_addmethod(rtneural_class, (t_method)rtneural_bypass, gensym("bypass"), A_FLOAT, 0);
 }
 

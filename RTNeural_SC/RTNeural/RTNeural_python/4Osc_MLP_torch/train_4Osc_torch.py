@@ -4,12 +4,6 @@ import time
 import torch.nn as nn
 import torch.optim as optim
 
-# import os, sys
-# dir_path = os.path.dirname(os.path.realpath(__file__))
-# parent_path = os.path.abspath(os.path.join(dir_path, os.pardir))
-# sys.path.append(parent_path)
-# from model_utils import save_model
-
 # use a gpu for training if available
 if torch.backends.mps.is_available():
     device = torch.device("mps")

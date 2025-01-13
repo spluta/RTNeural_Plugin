@@ -1,4 +1,5 @@
-#N canvas 91 38 1152 863 12;
+#N struct 1018-point float x0 float y0 float xs float ys float fg float in float gridx float gridy;
+#N canvas 473 56 1152 863 12;
 #X obj 103 11 vsl 19 162 0 1 0 0 empty empty empty 0 -9 0 12 #fcfcfc #000000 #000000 0 1;
 #X obj 129 11 vsl 19 162 0 1 0 0 empty empty empty 0 -9 0 12 #fcfcfc #000000 #000000 0 1;
 #X obj 108 252 pack;
@@ -57,7 +58,7 @@
 #X obj 455 413 foo;
 #X obj 458 368 bng 25 250 50 0 empty empty empty 17 7 0 10 #e4e4e4 #4d4d4d #373737;
 #X floatatom 474 469 5 0 0 0 - - - 12;
-#X msg 181 249 load_model /Users/spluta1/Dev/RTNeural_Plugin/RTNeural_Plugin/RTNeural_SC/RTNeural/RTNeural_python/MLP_control/trainings/dumb_data/mlp_training_RTNeural.json;
+#X msg 181 249 load_model RTNeural_python/MLP_control/trainings/dumb_data/mlp_training_RTNeural.json;
 #X connect 0 0 2 0;
 #X connect 1 0 3 0;
 #X connect 2 0 15 0;

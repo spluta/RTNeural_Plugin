@@ -7,6 +7,8 @@ static t_class *rtneural_tilde_class;
 
 typedef struct _rtneural_tilde {
   t_object obj;
+	t_canvas *canvas; // necessary for relative paths
+
   t_float f;
   t_float freq;
   t_float sample_rate;
@@ -33,7 +35,7 @@ typedef struct _rtneural_tilde {
   float* outbuf;
 
   float *in_rs;
-  float *out_temp;\
+  float *out_temp;
 } rtneural_tilde_t;  
 
 void rtneural_tilde_bang(rtneural_tilde_t *x) {
@@ -41,13 +43,16 @@ void rtneural_tilde_bang(rtneural_tilde_t *x) {
   post("stop that!");
 }  
 
-void rtneural_tilde_load_model(rtneural_tilde_t *x, t_symbol s){
+void rtneural_tilde_load_model(rtneural_tilde_t *x, t_symbol* s){
   (void)x;
 
   post("loading model: ");
-  post(s.s_name);
+  post(s->s_name);
 
-  t_int test = x->processor.load_model(s.s_name, 1);
+  char absolute_path[MAXPDSTRING] = { 0 };
+  canvas_makefilename(x->canvas, s->s_name, absolute_path, MAXPDSTRING);
+
+  t_int test = x->processor.load_model(absolute_path, 1);
   if(test==1){
     x->model_loaded = 1;
   }
@@ -67,7 +72,7 @@ void rtneural_tilde_load_model(rtneural_tilde_t *x, t_symbol s){
   }
 }  
 
-void rtneural_tilde_bypass(rtneural_tilde_t *x, t_float f){
+void rtneural_tilde_bypass(rtneural_tilde_t *x, t_floatarg f){
   x->bypass = t_int(f);
 
   post(f ? "Bypass ON" : "Bypass OFF");
@@ -91,6 +96,7 @@ void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floata
   post("%f %f %f", n_in_chans, n_out_chans, nn_sample_rate);
 
   rtneural_tilde_t *x = (rtneural_tilde_t *)pd_new(rtneural_tilde_class);
+  x->canvas = canvas_getcurrent();
 
   x->n_in_chans = t_int(n_in_chans);
   x->n_out_chans = t_int(n_out_chans);
@@ -185,20 +191,17 @@ extern "C" {
 
 void rtneural_tilde_setup(void) {
   rtneural_tilde_class = class_new(gensym("rtneural~"),
-    (t_newmethod)rtneural_tilde_new, 
+    (t_newmethod)rtneural_tilde_new,
     (t_method)rtneural_tilde_free,
-    sizeof(rtneural_tilde_t), 
+    sizeof(rtneural_tilde_t),
     CLASS_MULTICHANNEL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
   
   class_addbang(rtneural_tilde_class, rtneural_tilde_bang);
   // class_addfloat(rtneural_tilde_class, rtneural_float);
-  class_addmethod(rtneural_tilde_class, (t_method)rtneural_tilde_load_model, gensym("load_model"), A_SYMBOL, 0);
+  class_addmethod(rtneural_tilde_class, (t_method)rtneural_tilde_load_model, gensym("load_model"), A_DEFSYMBOL, 0);
 
-  class_addmethod(rtneural_tilde_class, (t_method)rtneural_tilde_bypass, gensym("bypass"), A_FLOAT, 0);
+  class_addmethod(rtneural_tilde_class, (t_method)rtneural_tilde_bypass, gensym("bypass"), A_DEFFLOAT, 0);
 
   class_addmethod(rtneural_tilde_class, (t_method)rtneural_tilde_dsp, gensym("dsp"), A_CANT, 0);
   CLASS_MAINSIGNALIN(rtneural_tilde_class, rtneural_tilde_t, f);
 }
-
-
-

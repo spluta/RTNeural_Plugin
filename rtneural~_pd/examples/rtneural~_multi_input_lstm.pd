@@ -32,7 +32,7 @@
 #X text 236 6 adjust the gain parameter of the neural net;
 #X text 536 234 loads a 3 input LSTM model from Jatin Chowdury's Chow Centaur, f 62;
 #X msg 0 246 1;
-#X msg 523 261 load_model /Users/spluta1/Dev/RTNeural_Plugin/RTNeural_Plugin/RTNeural_SC/RTNeural/RTNeural_python/chowdhury_models/chow_centaur/centaur_large.json;
+#X msg 523 261 load_model RTNeural_python/chowdhury_models/chow_centaur/centaur_large.json;
 #X connect 0 0 15 0;
 #X connect 2 0 15 0;
 #X connect 3 0 1 0;

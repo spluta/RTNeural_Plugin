@@ -23,7 +23,7 @@
 #X obj 246 278 snake~ in 2;
 #X obj 236 341 rtneural~ 2 1 44100;
 #X msg 27 80 1;
-#X msg 460 286 load_model /Users/spluta1/Dev/RTNeural_Plugin/RTNeural_Plugin/RTNeural_SC/RTNeural/RTNeural_python/Automated-GuitarAmpModelling/DOD_AmericanMetal_GainKnob_RTNeural.json;
+#X msg 460 286 load_model RTNeural_python/Automated-GuitarAmpModelling/AmpDistModels/DOD_AmericanMetal_GainKnob_RTNeural.json;
 #X connect 0 0 22 0;
 #X connect 2 0 22 0;
 #X connect 3 0 1 0;

@@ -83,7 +83,7 @@ cmake --build . --config Release
 
 Just like above, the libsamplerate project needs to be built before the pd plugin can be built
 
-From the rtneural~_pd directory.
+From the rtneural_pd directory.
 
 ```
 cmake . -B build -DPD_PATH=<PATH TO PD SOURCE>

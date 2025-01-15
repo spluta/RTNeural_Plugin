@@ -4,3 +4,6 @@
 [submodule "libsamplerate"]
 	path = libsamplerate
 	url = https://github.com/libsndfile/libsamplerate.git
+[submodule "rtneural_max/max-sdk"]
+	path = rtneural_max/max-sdk
+	url = https://github.com/Cycling74/max-sdk.git

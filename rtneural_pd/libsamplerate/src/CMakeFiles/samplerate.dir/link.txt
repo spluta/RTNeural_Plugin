@@ -1,0 +1,2 @@
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar qc libsamplerate.a CMakeFiles/samplerate.dir/samplerate.c.o CMakeFiles/samplerate.dir/src_linear.c.o CMakeFiles/samplerate.dir/src_sinc.c.o CMakeFiles/samplerate.dir/src_zoh.c.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib libsamplerate.a

@@ -13,6 +13,7 @@ static InterfaceTable *ft;
     m_num_output_chans = numOutputs();
 
     in_vec.resize(m_num_input_chans);
+    //in_vec = 
 
     //this is needed to handle resampling of audio when the sample rate is not the same as that at which the model was trained
     int in_size = bufferSize()*m_num_input_chans;

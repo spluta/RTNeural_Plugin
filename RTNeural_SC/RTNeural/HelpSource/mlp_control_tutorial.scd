@@ -14,12 +14,12 @@
 (
     //save the json file (can go anywhere)
     ~python_path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"RTNeural_python";
-    ~json_path = ~python_path+/+"MLP_control/data.json";
+    ~json_path = ~python_path+/+"MLP_control/trainings/dumb_data/data.json";
     RTNeural.saveJSONFile(~dict, ~json_path); //you must install the JSONlib Quark for this to work
 )
 
 //train the network using the values in the json file
-~out_file = ~python_path+/+"MLP_control/my_mlp_training"; //use a filename without the extension
+~out_file = ~python_path+/+"MLP_control/trainings/dumb_data/my_training"; //use a filename without the extension
 RTNeural.trainMLP(~json_path, ~out_file); //this will save the pytorch format pt file and rtneural json file
 
 s.boot;

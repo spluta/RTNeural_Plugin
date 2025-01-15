@@ -28,11 +28,15 @@ public:
 
     float m_ratio{1.0f};
 
+    void reset_ratio(float ratio);
     void initialize(int num_inputs, int num_outputs, float sr_in);
 
     int load_model(std::string pathStr, int verbose);
 
-    int process(const std::vector<const float*>& in, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
+    //template <typename T> T process(T in_vec, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
+    // int process(const std::vector<const float*>& in, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
+    template <typename T>
+    int process(T in_vec, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
 
     void process1(const float* input, float* output);
 };

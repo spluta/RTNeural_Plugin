@@ -115,12 +115,10 @@ void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floata
   x->n_out_chans = t_int(n_out_chans);
   x->nn_sample_rate = nn_sample_rate;
   
-  post("trig mode: %f", trig_mode);
   if (trig_mode!=1.f) {
     trig_mode = 0.f;
   }
   x->trig_mode = t_int(trig_mode);
-  post("trig mode: %i", x->trig_mode);
 
   x->signal_out = outlet_new(&x->obj, &s_signal);
 

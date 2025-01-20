@@ -35,6 +35,7 @@ with open(json_path, 'r') as json_file:
     data = json.load(json_file)
 
 json_dir = os.path.dirname(json_path)
+raw_filename = os.path.splitext(os.path.basename(json_path))[0]
 
 # use a gpu for training if available
 if torch.backends.mps.is_available():
@@ -118,7 +119,7 @@ print("Training loss:", loss.item())
 model = model.to('cpu')
 
 if args.outfile is None:
-    args.outfile = "mlp_training.pt"
+    args.outfile = raw_filename+".pt"
     out_path = json_dir+"/"+args.outfile
 else:
     out_path = args.outfile

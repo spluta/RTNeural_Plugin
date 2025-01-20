@@ -13,11 +13,10 @@ public:
   int m_num_input_chans;
   int m_num_output_chans;
 
-  //std::vector<const float*> in_vec;
-    std::vector<const float*> in_vec;
-  // std::vector<float> inVecSmall;
-  // std::vector<float> outVecSmall;
-  // std::vector<std::vector<float>> outVecs;
+  std::vector<const float*> in_vec;
+
+  float* input_to_nn;
+  float* output_from_nn;
 
   float* interleaved_array;
   float* outbuf;

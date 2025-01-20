@@ -94,3 +94,27 @@ if you remove the -DPD_PATH variable , CMAKE will search for the pd source in th
 
 the rtneural and rtneural~ objects will be placed in the build directory. move these to a place in your pd path.
 
+## Building the Max Plugin On Mac (or Linux)
+
+Just like above, the libsamplerate project needs to be built before the Max plugin can be built
+
+From the rtneural_pd directory.
+
+```
+cp max-posttarget.cmake max-sdk/source/max-sdk-base/script/max-posttarget.cmake
+cp max-pretarget.cmake max-sdk/source/max-sdk-base/script/max-pretarget.cmake
+
+mkdir build
+cd build
+cmake ..
+cmake --build .
+```
+
+The first two lines above will replace files in the max-sdk with custom scripts. This only needs to happen once. After that, the project should build.
+
+After the mxo files are built, you will need to sign them locally:
+
+```
+codesign --force --deep -s - ../externals/rtneural.mxo
+codesign --force --deep -s - ../externals/rtneural~.mxo
+```

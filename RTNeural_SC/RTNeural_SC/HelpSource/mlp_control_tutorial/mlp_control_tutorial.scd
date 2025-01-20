@@ -11,16 +11,25 @@
 //learn_rate - the initial learning rate of the training
 ~dict.keysDo{|key| [key, ~dict[key]].postln}; nil;
 
+
 (
     //save the json file (can go anywhere)
-    ~python_path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"RTNeural_python";
-    ~json_path = ~python_path+/+"MLP_control/trainings/dumb_data/data.json";
+    ~folder = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(1)++"HelpSource/mlp_control_tutorial/";
+    ~json_path = ~folder++"dummy_values.json";
     RTNeural.saveJSONFile(~dict, ~json_path); //you must install the JSONlib Quark for this to work
 )
 
 //train the network using the values in the json file
-~out_file = ~python_path+/+"MLP_control/trainings/dumb_data/my_training"; //use a filename without the extension
-RTNeural.trainMLP(~json_path, ~out_file); //this will save the pytorch format pt file and rtneural json file
+//we are assuming that the RTNeural_python folder is in the same directory as the RTNeural_SC folder
+~python_path = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(3)++"RTNeural_python";
+RTNeural.trainMLP(~json_path, nil, ~python_path); //this will save the pytorch format pt file and rtneural json file
+
+//you can also run the training in the terminal
+1) cd to the RTNeural_python folder
+2) activate the python environment: "source venv/bin/activate"
+3) run the python script: "python MLP_control/mlp_control_train_convert.py -f <path to json file>"
+
+//running mlp inference
 
 s.boot;
 
@@ -32,8 +41,9 @@ s.boot;
 a = Synth("test_rtneural"); //make the synth
 
 //this should load the training and start predicting 10 output values from the MouseX and MouseY inputs
-RTNeural.loadModel(a, 'mlp', ~out_file++"_RTNeural.json", true)
+RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
 
+//----------------------------NOW THE BIG EXAMPLE -------------------------------
 
 // create a 2 input, 13 output synth using RTNeural inference
 (
@@ -69,6 +79,7 @@ RTNeural.loadModel(a, 'mlp', ~out_file++"_RTNeural.json", true)
     }).load(s);
 )
 
+//run this code to create the control window
 (
     var in_size = 2;
     var out_size = 13;
@@ -94,7 +105,9 @@ RTNeural.loadModel(a, 'mlp', ~out_file++"_RTNeural.json", true)
     var bypass = 1;
     var win = Window("RTNeural MultiLayer Perceptron",Rect(0,0,500,300));
     
-    var python_path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"RTNeural_python";
+    var python_path = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(3)++"RTNeural_python";
+
+    var training_path = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(1)++"HelpSource/mlp_control_tutorial/";
 
     var msv_array = 0!out_size;
     var xy_array = 0!in_size;
@@ -117,14 +130,45 @@ RTNeural.loadModel(a, 'mlp', ~out_file++"_RTNeural.json", true)
         }
     });
 
+    var post_points = {
+        "inputs: ".postln;
+        dict['in_vals'].do{|item| item.postln};
+        "outputs: ".postln;
+        dict['out_vals'].do{|item| item.postln};
+    };
+
+    var post_points_butt = Button()
+    .states_([["Post Points"]])
+    .action_({
+        post_points.value;
+    });
+
+
+
     var clear_points_butt = Button()
     .states_([["Clear Points"]])
     .action_({
         reset_dict.value;
     });
 
-    var points_butt = Button()
-    .states_([["Add Points"]])
+    var remove_point_numbox = NumberBox()
+    .value_(0)
+    .clipLo_(0);
+
+    var remove_point_butt = Button()
+    .states_([["Remove Point"]])
+    .action_({
+        if(remove_point_numbox.value<dict['in_vals'].size){
+            dict['in_vals'].removeAt(remove_point_numbox.value);
+            dict['out_vals'].removeAt(remove_point_numbox.value);
+            post_points.value;
+        }{
+            "index out of bounds".postln;
+        }
+    });
+
+    var add_point_butt = Button()
+    .states_([["Add Point"]])
     .action_({
         dict['in_vals'] = dict['in_vals'].add(xy_array.copy);
         dict['out_vals'] = dict['out_vals'].add(msv_array.copy);
@@ -133,7 +177,7 @@ RTNeural.loadModel(a, 'mlp', ~out_file++"_RTNeural.json", true)
     });
 
     var load_points_butt = Button()
-    .states_([["Load Saved Points"]])
+    .states_([["Load Saved Points", Color.black, Color.green]])
     .action_({
         Dialog.openPanel({ |path|
             var text = File.readAllString(path);
@@ -141,23 +185,27 @@ RTNeural.loadModel(a, 'mlp', ~out_file++"_RTNeural.json", true)
             dict.postln;
         },{
 
-        }, false, python_path+/+"MLP_control/")
+        }, false, training_path)
     });
     
-    var train_butt = Button(win,Rect(800,20,200,20))
-    .states_([["Train", Color.blue, Color.black]])
+    var save_points_butt = Button()
+    .states_([["Save Points", Color.black, Color.blue]])
     .action_({
         Dialog.savePanel({ |path|
-            var json_path;
-            path = PathName(path);
-            path = path.pathOnly++path.fileNameWithoutExtension;
-            json_path = path++"_data.json";
-            RTNeural.saveJSONFile(dict, json_path); //you must install the JSONlib Quark for this to work
-            out_file = path;// without the extension
-            RTNeural.trainMLP(json_path, out_file);
+            RTNeural.saveJSONFile(dict, path); 
         }, {
             "cancelled".postln;
-        }, python_path+/+"MLP_control/");
+        }, training_path);
+    });
+
+    var train_butt = Button()
+    .states_([["Train from File", Color.red, Color.black]])
+    .action_({
+        Dialog.openPanel({ |path|
+            RTNeural.trainMLP(path, nil, python_path);
+        }, {
+            "cancelled".postln;
+        }, false, training_path);
     });
 
     var load_butt = Button()
@@ -169,7 +217,7 @@ RTNeural.loadModel(a, 'mlp', ~out_file++"_RTNeural.json", true)
             bypass_butt.valueAction_(1);
         }, {
             "cancelled".postln;
-        }, false, python_path+/+"MLP_control/");
+        }, false, training_path);
     });
     
     var bypass_butt = Button()
@@ -180,13 +228,22 @@ RTNeural.loadModel(a, 'mlp', ~out_file++"_RTNeural.json", true)
         synth.set(\bypass, bypass, \slider_vals, msv.value);
     });
 
+    var random_button = Button()
+    .states_([["Random Sound"]])
+    .action_({
+        arg butt;
+        msv_array = msv_array.collect({arg item; item = rrand(0,1.0)});
+        msv.valueAction_(msv_array);
+    });
+
     reset_dict.value;
     dict['epochs']=2000;
 
     win.layout_(
         HLayout(
             msv,
-            VLayout(s2d, clear_points_butt, load_points_butt, points_butt, train_butt, load_butt, bypass_butt)
+            VLayout(s2d, post_points_butt, clear_points_butt, add_point_butt, HLayout(remove_point_butt, remove_point_numbox), random_button), 
+            VLayout(save_points_butt, load_points_butt, train_butt, load_butt, bypass_butt)
         )
     );
     
@@ -207,20 +264,3 @@ RTNeural.loadModel(a, 'mlp', ~out_file++"_RTNeural.json", true)
         vals_bus.free;
     };
 )
-
-j = "{\"foo\": [42, 56, 75.23]}";
-
-// as event
-e = JSONlib.convertToSC(j);
-// -> ( 'foo': 42 )
-
-// access values via symbols
-e[\foo][0].isInteger;
-
-// as dictionary
-d = JSONlib.convertToSC(j, useEvent: false);
-// -> Dictionary[ (foo -> 42) ]
-
-// access values via strings
-d["foo"];
-// -> 42

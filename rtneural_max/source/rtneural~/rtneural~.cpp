@@ -43,19 +43,20 @@ typedef struct _rtneural {
 
   float *in_rs;
   float *out_temp;
-} rtneural_t; 
+} t_rtneural; 
 
 
 // prototypes
 void	*rtneural_new(t_symbol *s, long argc, t_atom *argv);
-void	rtneural_free(rtneural_t *x);
-void 	rtneural_write_json(rtneural_t *x, t_symbol s);
-void 	rtneural_load_model(rtneural_t *x, t_symbol s, long argc, t_atom *argv);
-void 	rtneural_bypass(rtneural_t *x, long f);
+void	rtneural_free(t_rtneural *x);
+void 	rtneural_write_json(t_rtneural *x, t_symbol s);
+void 	rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv);
+void 	rtneural_bypass(t_rtneural *x, long f);
 
-void rtneural_perform64(rtneural_t *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam);
-void rtneural_dsp64(rtneural_t *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
-void reset_vars_and_mem(rtneural_t *x, float sample_rate, t_int blocksize);
+void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam);
+void rtneural_dsp64(t_rtneural *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
+void reset_vars_and_mem(t_rtneural *x, float sample_rate, t_int blocksize);
+long rtneural_multichanneloutputs(t_rtneural *x, long outletindex);
 
 // globals
 static t_class *rtneural_class = NULL;
@@ -66,7 +67,7 @@ void ext_main(void *r)
 {
   t_class	*c = class_new("rtneural~",
       (method)rtneural_new,
-      (method)rtneural_free, sizeof(rtneural_t),
+      (method)rtneural_free, sizeof(t_rtneural),
       (method)NULL,
       A_GIMME, 0);
 
@@ -75,7 +76,9 @@ void ext_main(void *r)
   class_addmethod(c, (method)rtneural_bypass, "bypass", A_LONG, 0);
   class_addmethod(c, (method)rtneural_dsp64, "dsp64",	A_CANT, 0);  
 
-  CLASS_ATTR_LONG(c, "trig_mode", 0, rtneural_t, trig_mode);
+  class_addmethod(c, (method)rtneural_multichanneloutputs, "multichanneloutputs", A_CANT, 0);
+
+  CLASS_ATTR_LONG(c, "trig_mode", 0, t_rtneural, trig_mode);
   CLASS_ATTR_FILTER_CLIP(c, "trig_mode", 0, 1);
 
   class_dspinit(c);
@@ -88,7 +91,7 @@ void ext_main(void *r)
 // object Creation Method
 void *rtneural_new(t_symbol *s, long argc, t_atom *argv)
 {
-	rtneural_t *x = (rtneural_t *)object_alloc(rtneural_class);
+	t_rtneural *x = (t_rtneural *)object_alloc(rtneural_class);
 	
   post("new rtneural~ object");
 
@@ -111,11 +114,9 @@ void *rtneural_new(t_symbol *s, long argc, t_atom *argv)
 
   for(int i=0; i<x->n_in_chans; i++){
     x->input_to_nn[i] = 0.f;
-    //x->inVecSmall.push_back(0.f);
   }
   for(int i=0; i<x->n_out_chans; i++){
     x->output_from_nn[i] = 0.f;
-    //x->outVecSmall.push_back(0.f);
   }
   
   if(nn_sample_rate<=0.f){
@@ -141,7 +142,12 @@ void *rtneural_new(t_symbol *s, long argc, t_atom *argv)
 	return x;
 }
 
-void reset_vars_and_mem(rtneural_t *x, float sample_rate, t_int blocksize){
+long rtneural_multichanneloutputs(t_rtneural *x, long outletindex)
+{
+  return x->n_out_chans; 
+}
+
+void reset_vars_and_mem(t_rtneural *x, float sample_rate, t_int blocksize){
   post("resetting nn sample rate and block size");
 
   x->sample_rate = sample_rate;
@@ -177,7 +183,7 @@ void reset_vars_and_mem(rtneural_t *x, float sample_rate, t_int blocksize){
 
 }
 
-void rtneural_free (rtneural_t* x) {
+void rtneural_free (t_rtneural* x) {
   z_dsp_free((t_pxobject *)x);
   x->processor.~RTN_Processor();
 
@@ -187,7 +193,7 @@ void rtneural_free (rtneural_t* x) {
   sysmem_freeptr(x->outbuf);
 }
 
-void rtneural_write_json(rtneural_t *x, t_symbol s){
+void rtneural_write_json(t_rtneural *x, t_symbol s){
   	nlohmann::json data;
 
     data["Some String"] = "Hello World";
@@ -208,48 +214,88 @@ void rtneural_write_json(rtneural_t *x, t_symbol s){
     }
 }
 
-void rtneural_load_model(rtneural_t *x, t_symbol s, long argc, t_atom *argv){
+std::string get_abs_path(t_rtneural *x, std::string filename_in){
+  t_object *jp;
+    t_max_err err = object_obex_lookup(x, gensym("#P"), (t_object **)&jp);
+    if (err != MAX_ERR_NONE){
+      post("Error getting parent patcher");
+      return "ERROR";
+    }
+    t_symbol *path = object_attr_getsym(jp, gensym("filepath"));
+
+    std::string parent_directory = path->s_name;
+    size_t pos = parent_directory.find_last_of("/\\");
+    if (pos != std::string::npos) {
+      parent_directory = parent_directory.substr(0, pos);
+    }
+    parent_directory = parent_directory.substr(13);
+    if (!std::filesystem::is_directory(parent_directory.c_str())) {
+      post("The directory does not exist or is not a directory");
+      return "ERROR";
+    }
+    return (parent_directory +"/"+ filename_in);
+}
+
+
+void rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
 
 	t_symbol* path = atom_getsym(argv);
+  std::string filename_in = path->s_name;
+  size_t pos = filename_in.find_first_of("/\\");
+  std::string filename;
+  if(pos==0)
+  {
+    filename = filename_in;
+  } else {
+    filename = get_abs_path(x, filename_in);
+  }
 
   post("loading model: ");
-  post(path->s_name);
+  post(filename.c_str());
 
-  t_int test = x->processor.load_model(path->s_name, 1);
+  t_int test = x->processor.load_model(filename, 1);
   if(test==1){
     x->model_loaded = 1;
-  }
 
-  post("model input size: %i", x->processor.m_model_input_size);
-  post("model output size: %i", x->processor.m_model_output_size);
-
-  if(x->processor.m_model_input_size!=x->n_in_chans){
-    post("error: model input size does not match the number of input channels");
-    post("disabling model");
+    post("model input size: %i", x->processor.m_model_input_size);
+    post("model output size: %i", x->processor.m_model_output_size);
+  } 
+  else {
     x->model_loaded = 0;
-  }
-  if(x->processor.m_model_output_size!=x->n_out_chans){
-    post("error: model output size does not match the number of output channels");
+    switch(test){
+      case 0:
+        post("error loading the model");
+        break;
+      case 2:
+        post("error: model input size does not match the number of input channels");
+        break;
+      case 3:
+        post("error: model output size does not match the number of output channels");
+        break;
+      default:
+        post("error: the path does not exist or is not a file");
+        break;
+    }
     post("disabling model");
-    x->model_loaded = 0;
   }
 }  
 
-void rtneural_bypass(rtneural_t *x, long f){
+void rtneural_bypass(t_rtneural *x, long f){
   x->bypass = f;
 
   post(f ? "Bypass ON" : "Bypass OFF");
 }  
 
-void rtneural_perform64(rtneural_t *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam)
+void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam)
 {
 	long ch;
 	double *in, *out;
 
-  // if not processing, just copy the input to the output
+  //if not processing, just copy the input to the output
   if ((x->processor.m_model_loaded==0)||((t_int)x->bypass==1)) {
-    for (ch = 0; ch < numins; ch++) {		// for each input channel
-      if (ch<x->n_out_chans)
+    t_int small_num = min(x->n_in_chans, numins);
+    for (ch = 0; ch < small_num; ch++) {		// for each input channel
+      if (ch<(x->n_out_chans))
         sysmem_copyptr(ins[ch], outs[ch], sizeof(double) * sampleframes);
     }
   } else {
@@ -282,7 +328,7 @@ void rtneural_perform64(rtneural_t *x, t_object *dsp64, double **ins, long numin
   }
 }
 
-void rtneural_dsp64(rtneural_t *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
+void rtneural_dsp64(t_rtneural *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
   if(samplerate!=x->sample_rate||maxvectorsize!=x->blocksize){
     reset_vars_and_mem(x, samplerate, maxvectorsize);

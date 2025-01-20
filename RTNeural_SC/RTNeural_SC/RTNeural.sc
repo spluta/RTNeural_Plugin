@@ -1,11 +1,11 @@
 RTNeural : MultiOutUGen {
 	var <>id, <>desc;
-	*ar { |input_array, num_outputs, id, bypass=0, sample_rate=(-1)|
-        ^this.multiNewList(['audio', num_outputs, id, bypass, sample_rate] ++ input_array.asArray)
+	*ar { |input_array, num_outputs, id, bypass=0, sample_rate=(-1), trig_mode=0, trigger=0|
+        ^this.multiNewList(['audio', num_outputs, id, bypass, sample_rate, trig_mode, trigger] ++ input_array.asArray)
 	}
 
-	*kr { |input_array, num_outputs, id, bypass=0, sample_rate=(-1)|
-        ^this.multiNewList(['control', num_outputs, id, bypass, sample_rate] ++ input_array.asArray)
+	*kr { |input_array, num_outputs, id, bypass=0, sample_rate=(-1), trig_mode=0, trigger=0|
+        ^this.multiNewList(['control', num_outputs, id, bypass, sample_rate, trig_mode, trigger] ++ input_array.asArray)
 	}
 
 	init { arg argNumOutChannels, argID ... theInputs;
@@ -50,7 +50,7 @@ RTNeural : MultiOutUGen {
 	*trainMLP{
 		arg in_file = "MLP_control/data.json", 
 		out_file, 
-		python_path = PathName(RTNeural.filenameSymbol.asString).pathOnly++"RTNeural_python",
+		python_path = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(3)++"RTNeural_python",
 		action = {};
 
 		var text;
@@ -58,14 +58,13 @@ RTNeural : MultiOutUGen {
 			text = "cd "++python_path.quote++"; source venv/bin/activate; python MLP_control/mlp_control_train_convert.py -f"+in_file.quote+"-o"+out_file.quote;
 		}{
 			text = "cd "++python_path.quote++"; source venv/bin/activate; python MLP_control/mlp_control_train_convert.py -f"+in_file.quote;
-			out_file = PathName(in_file)
 		};
 
 		text.unixCmd{ |res, pid| 
 			//after it is trained, the model needs to be converted to RTNeural format
-			"\n \n ready for inference!".postln;
+			"\n \n training written to file. ready for inference!".postln;
 		};
-		"wait for the done message. it'll take a second or longer depending on epochs.".postln;
+		"wait for the done message. it'll take a couple seconds or longer depending on epochs.".postln;
 	}
 
 	*convertToRTNeural {

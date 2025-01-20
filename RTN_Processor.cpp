@@ -69,14 +69,10 @@ RTN_Processor::~RTN_Processor()
 }
 
 int RTN_Processor::load_model(std::string pathStr, int verbose) {
-
-    std::cout<<"num input channels: "<<m_num_in_chans<<" num output channels: "<<m_num_out_chans<<std::endl;
-
     try {
 
-      //return -1 if the path does not exist or is not a file
+      //return 4 if the path does not exist or is not a file
       if (!std::filesystem::exists(pathStr) || !std::filesystem::is_regular_file(pathStr)) {
-        // std::cerr << "error: the path does not exist or is not a file: " << pathStr << "\n";
         return 4;
       }
 
@@ -85,25 +81,14 @@ int RTN_Processor::load_model(std::string pathStr, int verbose) {
       m_model = RTNeural::json_parser::parseJson<float>(jsonStream);
 
       m_model_input_size = m_model->layers[0]->in_size;
-      //in_vec.resize(m_model_input_size);
       m_model_output_size = m_model->layers[m_model->layers.size()-1]->out_size;
 
-      // if(verbose){
-      //   std::cout<<"Loading model from path: "<<pathStr<<std::endl;
-      //   std::cout<<"nn input size: "<<m_model_input_size<<" nn output size: "<<m_model_output_size<<std::endl;
-      //   std::cout<<"num input channels: "<<m_num_in_chans<<" num output channels: "<<m_num_out_chans<<std::endl;
-      // }
-
       if (m_model_input_size!=m_num_in_chans) {
-        // std::cout << "error: model input size does not match the number of input channels\n";
-        // std::cout << "disabling model\n";
         m_model_loaded = false;
         return 2;
       }
 
       if (m_model_output_size!=m_num_out_chans) {
-        // std::cout << "error: model output size does not match the number of output channels\n";
-        // std::cout << "disabling model\n";
         m_model_loaded = false;
         return 3;
       }
@@ -131,54 +116,6 @@ int RTN_Processor::load_model(std::string pathStr, int verbose) {
 //5) the number of input samples
 //the process function returns the number of output samples, which should match the number of input samples
 //the output data is interleaved into the 'outbuf' and must be deinterleaved in the parent process
-// int RTN_Processor::process(const std::vector<const float*>& in_vec, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples) {
-// //template <typename T> T process(T in_vec, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples) {
-//     if (m_ratio==1.0f) {
-//       for (int i = 0; i < nSamples; ++i){
-//         for (int j = 0; j < m_num_in_chans; ++j) {
-//           inVecSmall[j] = (float)in_vec[j][i];
-//         }
-//         outbuf[i] = m_model->forward(inVecSmall.data());
-//         if(m_num_out_chans>1) {
-//           auto vec = m_model->getOutputs();
-//           for (int j = 0; j < m_num_out_chans; ++j) {
-//             outbuf[i*m_num_out_chans+j] = vec[j];
-//           }
-//         }
-//       }
-//       return nSamples;
-//     } else {
-//       //if the model relies on a sample rate that is different than the current rate, 
-//       //we need to interleave and resample the input data
-//       for (int i = 0; i < nSamples; ++i) {
-//         for (int j = 0; j < m_num_in_chans; ++j) {
-//           interleaved_array[i*m_num_in_chans+j] = (float)in_vec[j][i];
-//         }
-//       }
-
-//       //resample the input to the model's sample rate
-//       int resampled_size = resample (interleaved_array, in_rs, nSamples);
-
-//       //run the model on the resampled audio
-//       for (int i = 0; i < resampled_size; ++i){
-//         for (int j = 0; j < m_num_in_chans; ++j) {
-//           inVecSmall[j] = in_rs[i*m_num_in_chans+j];
-//         }
-//         out_temp[i*m_num_out_chans] = m_model->forward(inVecSmall.data());
-//         if(m_num_out_chans>1) {
-//           auto vec = m_model->getOutputs();
-//           for (int j = 1; j < m_num_out_chans; j++) {
-//             out_temp[i*m_num_out_chans+j] = vec[j];
-//           }
-//         }
-//       }
-      
-//       //resample the output back to the original sample rate
-//       int n_samps_out = resample_out (out_temp, outbuf, resampled_size, nSamples);
-//       return n_samps_out;
-//     }
-// }
-
 //uses a template so in_vec can ba a vector of pointers to floats or a multi-dimensional array
 template <typename T>
 int RTN_Processor::process(T in_vec, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples) {

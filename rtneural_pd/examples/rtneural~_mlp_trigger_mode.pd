@@ -1,7 +1,7 @@
-#N canvas 308 34 1123 656 12;
+#N canvas 113 52 1183 755 12;
 #X obj 211 252 tgl 19 0 empty empty empty 0 -10 0 12 #fcfcfc #000000 #000000 0 1;
 #X msg 211 276 bypass \$1;
-#X msg 429 277 load_model output/mlp_training_RTNeural.json;
+#X msg 430 277 load_model output/mlp_training_RTNeural.json;
 #X obj 300 275 snake~ 3, f 10;
 #X obj 54 5224 noise~;
 #X obj 64 5234 noise~;
@@ -70,15 +70,16 @@
 #X connect 14 0 15 0;
 #X connect 15 0 17 0;
 #X connect 16 0 0 0;
-#X restore 259 386 pd set_array;
+#X restore 239 377 pd set_array;
 #X obj 360 145 osc~ 0.2;
 #X obj 471 168 -~ 0.9999;
 #X text 548 161 triggers the function when the output of this value is greater than 0, f 38;
-#X text 428 53 trigger_mode set to 1 allows the audio rate function to be triggered with an audio trigger. this allows inference to happen at any sample \, but not every sample, f 73;
+#X text 139 20 trigger_mode set to 1 allows the audio rate function to be triggered with an audio trigger. this allows inference to happen at any sample \, but not every sample, f 73;
 #X obj 240 333 rtneural~ 2 10 -1 0;
 #X obj 48 253 tgl 19 0 empty empty empty 0 -10 0 12 #fcfcfc #000000 #000000 0 1;
 #X msg 48 277 trigger_mode \$1;
 #X text 43 167 trigger_mode can be set as the 4th argument in the object or with a trigger_mode message, f 20;
+#X text 213 102 combine the input channels to the neural network with a final channel that is the trigger to run inference;
 #X connect 0 0 1 0;
 #X connect 1 0 19 0;
 #X connect 2 0 19 0;

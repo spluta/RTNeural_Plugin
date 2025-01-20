@@ -39,11 +39,6 @@ typedef struct _rtneural {
 
   RTN_Processor processor;
 
-  float* interleaved_array;
-  float* outbuf;
-
-  float *in_rs;
-  float *out_temp;
 } t_rtneural;  
 
 void rtneural_bang(t_rtneural *obj)
@@ -169,8 +164,8 @@ void rtneural_post_points(t_rtneural *x, t_symbol *s, int argc, t_atom *argv) {
   }
 }
 
-void rtneural_remove_point(t_rtneural *x, t_floatarg n_epochs) {
-  t_int index = t_int(n_epochs);
+void rtneural_remove_point(t_rtneural *x, t_floatarg index_in) {
+  t_int index = t_int(index_in);
   if (index < 0 || index >= x->in_vals.size()) {
     post("index out of range");
     return;
@@ -306,9 +301,9 @@ void rtneural_load_model(t_rtneural *x, t_symbol *s){
       default:
         post("error: the path does not exist or is not a file");
         break;
-      }
-      post("disabling model");
     }
+    post("disabling model");
+  }
 } 
 
 void rtneural_free (t_rtneural* obj) {

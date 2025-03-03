@@ -7,6 +7,9 @@ project(rt_neural_tilde)
 
 set(PD_SOURCES_PATH ${PD_PATH})
 
+message(STATUS "PD_PATH is set to: ${PD_PATH}")
+message(STATUS "PD_SOURCES_PATH is set to: ${PD_SOURCES_PATH}")
+
 set(PD_EXTENSION "so")
 
 include(pd.cmake)

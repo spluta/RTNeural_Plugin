@@ -10,7 +10,7 @@ if (NOT MSVC)
   endif()
 endif()
 
-
+set(CMAKE_CXX_STANDARD 17)
 
 # set some options for libsamplerate
 

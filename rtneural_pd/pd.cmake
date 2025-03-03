@@ -13,11 +13,11 @@ set(PDCMAKE_DIR
 set(PD_FLOATSIZE
     32
     CACHE STRING "the floatsize of Pd (32 or 64)")
-
+message(STATUS "PD_SOURCES_PATH is set to: ${PD_SOURCES_PATH}")
 set(PD_SOURCES_PATH
     ""
     CACHE PATH "Path to Pd sources")
-
+message(STATUS "PD_SOURCES_PATH is set to: ${PD_SOURCES_PATH}")
 set(PD_ENABLE_TILDE_TARGET_WARNING
     ON
     CACHE BOOL "Warning for Target with tilde")

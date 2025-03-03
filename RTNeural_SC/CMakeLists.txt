@@ -37,25 +37,14 @@ install(DIRECTORY "${PROJECT_NAME}/Classes" "${PROJECT_NAME}/HelpSource" DESTINA
 
 install(DIRECTORY DESTINATION "${CMAKE_INSTALL_PREFIX}/scx_files")
 
+message(STATUS "CMake current binary directory: ${CMAKE_CURRENT_BINARY_DIR}")
+
 if(APPLE)
   install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
+
+elseif (MSVC)
+  install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/Release/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
+
+
 endif()
 
-# add_custom_command(
-#         TARGET ${PROJECT_NAME}  POST_BUILD
-#         COMMAND ${CMAKE_COMMAND} -E copy
-#                 ${CMAKE_CURRENT_BINARY_DIR}/RTNeuralUGen.scx
-#                 ${CMAKE_CURRENT_BINARY_DIR}/../../RTNeural_SC/RTNeural_SC/RTNeuralUGen.scx)
-
-# add_custom_command(
-#     TARGET ${PROJECT_NAME} POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E remove
-#         ${CMAKE_CURRENT_BINARY_DIR}/RTNeuralUGen.scx)
-
-# add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
-#         COMMAND ${CMAKE_COMMAND} -E copy_directory
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/../RTNeural_python
-#                 ${CMAKE_CURRENT_BINARY_DIR}/../RTNeural/RTNeural_python)
-
-# cmake -DCMAKE_BUILD_TYPE=Release -DSC_PATH='/Users/spluta1/Documents/SC/SuperColliderBuild/SuperCollider' ..
-# cmake --build . --config Release

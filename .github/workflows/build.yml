@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [macos-14, macos-13, windows-latest]
+        os: [macos-14, macos-13, windows-latest, zip-python]
 
     steps:
     - uses: actions/checkout@v2
@@ -62,19 +62,25 @@ jobs:
     - name: Zip up build (macOS-14)
       if: matrix.os == 'macos-14'
       shell: bash
-      working-directory: ${{github.workspace}}/build
+      working-directory: ${{github.workspace}}/build/RTNeural_SC
       run: zip -r RTNeural_SC-mac_arm.zip RTNeural_SC
 
     - name: Zip up build (macOS-13)
       if: matrix.os == 'macos-13'
       shell: bash
-      working-directory: ${{github.workspace}}/build
+      working-directory: ${{github.workspace}}/build/RTNeural_SC
       run: zip -r RTNeural_SC-mac_intel.zip RTNeural_SC 
+
+    - name: Zip up build (zip-python)
+      if: matrix.os == 'zip-python'
+      shell: bash
+      working-directory: ${{github.workspace}}/RTNeural_python
+      run: zip -r RTNeural_python.zip RTNeural_python 
 
     - name: Zip up build (Windows)
       if: matrix.os == 'windows-latest'
       shell: pwsh
-      working-directory: ${{github.workspace}}\build
+      working-directory: ${{github.workspace}}\build\RTNeural_SC
       run: Compress-7Zip "RTNeural_SC" -ArchiveFileName "RTNeural_SC-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
 
     - name: Check if release has been created

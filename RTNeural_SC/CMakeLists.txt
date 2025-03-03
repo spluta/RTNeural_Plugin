@@ -44,7 +44,5 @@ if(APPLE)
 
 elseif (MSVC)
   install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/Release/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
-
-
 endif()
 

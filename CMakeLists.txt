@@ -2,13 +2,6 @@ cmake_minimum_required(VERSION 3.19)
 set(lib_name "RTNeural_Plugin")
 project("${lib_name}")
 
-# if (APPLE)
-#     if (NOT CMAKE_OSX_ARCHITECTURES)
-#         set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "macOS architecture" FORCE)
-#     endif()
-# endif()
-
-
 if (NOT MSVC)
   # specify the C++ standard
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17" CACHE STRING "c++ version" FORCE)
@@ -29,6 +22,6 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libsamplerate ${CMAKE_CURRENT_SOURC
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/RTNeuralCPP ${CMAKE_CURRENT_SOURCE_DIR}/RTNeuralCPP/build)
 
 # add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rtneural_max)
-# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rtneural_pd)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rtneural_pd)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/RTNeural_SC)
 

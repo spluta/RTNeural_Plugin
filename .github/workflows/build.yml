@@ -53,13 +53,13 @@ jobs:
       shell: bash
       if: matrix.os != 'windows-latest'
       working-directory: ${{github.workspace}}/build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}/supercollider -DPD_PATH=${{github.workspace}}/pure-data/src
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}/supercollider -DPD_PATH=${{github.workspace}}/puredata/src
 
     - name: Configure CMake (Windows)
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}\supercollider -DPD_PATH=${{github.workspace}}/pure-data/src
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}\supercollider -DPD_PATH=${{github.workspace}}/puredata/src
 
     - name: Build (Unix)
       if: matrix.os != 'windows-latest'

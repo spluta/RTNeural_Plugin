@@ -23,7 +23,15 @@ jobs:
 
     - name: Get SC source code
       run: git clone https://github.com/supercollider/supercollider.git ${{github.workspace}}/supercollider
-    
+
+    # for windows we have to explicitly add the libsamplerate build job here, for some reason...
+    - name: build_libsamplerate_win
+      if: matrix.os == 'windows-latest'
+      run: |
+        cd projects/MiBraids/libsamplerate
+        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF ..
+        cmake --build . --config 'Release'
+        
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/build
 

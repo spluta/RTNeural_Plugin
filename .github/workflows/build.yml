@@ -1,0 +1,129 @@
+name: dispatch-build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [macos-14, macos-13, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
+    - name: Install 7Zip (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: powershell
+      run: Install-Module 7Zip4PowerShell -Force -Verbose
+
+    - name: Get SC source code
+      run: git clone https://github.com/supercollider/supercollider.git ${{github.workspace}}/supercollider
+    
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{github.workspace}}/build
+
+    - name: Configure CMake (Unix)
+      shell: bash
+      if: matrix.os != 'windows-latest'
+      working-directory: ${{github.workspace}}/build
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}/supercollider
+
+    - name: Configure CMake (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      working-directory: ${{github.workspace}}\build
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}\supercollider
+
+    - name: Build (Unix)
+      if: matrix.os != 'windows-latest'
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      run: cmake --build . --config "Release" --target install
+
+    - name: Build (Windows)
+      working-directory: ${{github.workspace}}\build
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: cmake --build . --config "Release" --target install
+
+    - name: Zip up build (macOS-14)
+      if: matrix.os == 'macos-14'
+      shell: bash
+      working-directory: ${{github.workspace}}/build
+      run: zip -r RTNeural_Plugin-mac_arm.zip RTNeural_Plugin 
+
+    - name: Zip up build (macOS-13)
+      if: matrix.os == 'macos-13'
+      shell: bash
+      working-directory: ${{github.workspace}}/build
+      run: zip -r RTNeural_Plugin-mac_intel.zip RTNeural_Plugin 
+
+    - name: Zip up build (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      working-directory: ${{github.workspace}}\build
+      run: Compress-7Zip "RTNeural_Plugin" -ArchiveFileName "RTNeural_Plugin-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
+
+    - name: Check if release has been created
+      uses: mukunku/tag-exists-action@v1.6.0
+      id: checkTag
+      with:
+        tag: 'v1'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Release (macOS-14)
+      if: steps.checkTag.outputs.exists == false && matrix.os == 'macos-14'
+      id: create_release_arm
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: RTNeural_Plugin-arm-${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Create Release (macOS-13)
+      if: steps.checkTag.outputs.exists == false && matrix.os == 'macos-13'
+      id: create_release_x86
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: RTNeural_Plugin-x86-${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload binaries to release (macOS-14)
+      if: matrix.os == 'macos-14'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{github.workspace}}/build/RTNeural_Plugin-mac_arm.zip
+        asset_name: RTNeural_Plugin-mac_arm.zip
+        tag: ${{ github.ref }}
+
+    - name: Upload binaries to release (macOS-13)
+      if: matrix.os == 'macos-13'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{github.workspace}}/build/RTNeural_Plugin-mac_intel.zip
+        asset_name: RTNeural_Plugin-mac_intel.zip
+        tag: ${{ github.ref }}
+
+    - name: Upload binaries to release (Windows)
+      if: matrix.os == 'windows-latest'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{github.workspace}}/build/RTNeural_Plugin-${{runner.os}}.zip
+        asset_name: RTNeural_Plugin-${{runner.os}}.zip
+        tag: ${{ github.ref }}

@@ -28,7 +28,7 @@ jobs:
     - name: build_libsamplerate_win
       if: matrix.os == 'windows-latest'
       run: |
-        cd projects/MiBraids/libsamplerate
+        cd libsamplerate
         mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF ..
         cmake --build . --config 'Release'
         

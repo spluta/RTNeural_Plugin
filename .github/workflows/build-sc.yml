@@ -27,6 +27,15 @@ jobs:
     - name: Get puredata source code
       run: git clone https://github.com/pure-data/pure-data.git ${{github.workspace}}/puredata
 
+    - name: show_me
+      if: matrix.os == 'macos-14'
+      run: |
+        cd puredata
+        ls
+        cd src
+        ls
+        cd .. ..
+
 # for windows we have to explicitly add the libsamplerate build job here, for some reason...
     - name: build_libsamplerate_win
       if: matrix.os == 'windows-latest'

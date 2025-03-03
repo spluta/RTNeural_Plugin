@@ -35,19 +35,19 @@ jobs:
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/build
 
-# Build the SuperCollider plugins
+# Build the pd plugins
 
     - name: Configure CMake (Unix)
       shell: bash
       if: matrix.os != 'windows-latest'
       working-directory: ${{github.workspace}}/build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}/supercollider
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DPD_PATH=${{github.workspace}}/pure-data/src
 
     - name: Configure CMake (Windows)
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}\supercollider
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}\pure-data/src
 
     - name: Build (Unix)
       if: matrix.os != 'windows-latest'

@@ -1,12 +1,11 @@
-
 set(CMAKE_CXX_STANDARD 17)
 
 cmake_minimum_required (VERSION 3.5)
-project (RTNeuralUGen)
+project (RTNeural_SC)
 
 include_directories(${SC_PATH}/include/plugin_interface)
 include_directories(${SC_PATH}/include/common)
-include_directories(${SC_PATH}/external_libraries/libsndfile/)
+# include_directories(${SC_PATH}/external_libraries/libsndfile/)
 
 set(CMAKE_SHARED_MODULE_PREFIX "")
 if(APPLE OR WIN32)
@@ -14,32 +13,44 @@ set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
 endif()
 
 # add the plugin we are making
-add_library(RTNeuralUGen MODULE RTNeuralUGen.cpp)
+add_library(${PROJECT_NAME} MODULE RTNeuralUGen.cpp)
 
-# add the submodule
-add_subdirectory(../RTNeuralCPP ../build/RTNeuralCPP)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 
-if (UNIX)
-    message ("LINUX or MAC OS X")
-    set(BUILD_TESTING OFF CACHE BOOL "Don't build libsamplerate tests!")
-    add_subdirectory(../libsamplerate ../build/libsamplerate)
-    message(STATUS "VERSION for libsamplerate: ${libsamplerate_version}")
-    target_link_libraries(RTNeuralUGen ${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/build/src/libsamplerate.a)
-endif (UNIX)
-if (WIN32)
-    message ("Windows")
-    target_link_libraries(RTNeuralUGen ${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/lib/samplerate.lib)
-endif (WIN32)
+set(LIBSR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/build/src")
+set(LIBSRI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/include")
+include_directories(${LIBSR_PATH})
+include_directories(${LIBSRI_PATH})
 
-target_link_libraries(RTNeuralUGen RTNeural)
+if(MSVC)
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBSR_PATH}/Release/samplerate.lib)
+else()
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBSR_PATH}/libsamplerate.a)
+endif()
 
-set_property(TARGET RTNeuralUGen PROPERTY CXX_STANDARD 17)
+# set installation directory
+set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}")
 
-add_custom_command(
-        TARGET ${PROJECT_NAME}  POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_CURRENT_BINARY_DIR}/RTNeuralUGen.scx
-                ${CMAKE_CURRENT_BINARY_DIR}/../RTNeural_SC/RTNeuralUGen.scx)
+message(STATUS "Install directory set to: ${CMAKE_INSTALL_PREFIX}")
+
+install(DIRECTORY "${PROJECT_NAME}/Classes" "${PROJECT_NAME}/HelpSource" DESTINATION "${CMAKE_INSTALL_PREFIX}")
+
+install(DIRECTORY DESTINATION "${CMAKE_INSTALL_PREFIX}/scx_files")
+
+if(APPLE)
+  install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
+endif()
+
+# add_custom_command(
+#         TARGET ${PROJECT_NAME}  POST_BUILD
+#         COMMAND ${CMAKE_COMMAND} -E copy
+#                 ${CMAKE_CURRENT_BINARY_DIR}/RTNeuralUGen.scx
+#                 ${CMAKE_CURRENT_BINARY_DIR}/../../RTNeural_SC/RTNeural_SC/RTNeuralUGen.scx)
+
+# add_custom_command(
+#     TARGET ${PROJECT_NAME} POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E remove
+#         ${CMAKE_CURRENT_BINARY_DIR}/RTNeuralUGen.scx)
 
 # add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
 #         COMMAND ${CMAKE_COMMAND} -E copy_directory

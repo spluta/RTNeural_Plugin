@@ -15,8 +15,8 @@ set(PD_EXTENSION "so")
 include(pd.cmake)
 set(CMAKE_BUILD_TYPE Release)
 
-pd_add_external(rtneural~ rtneural~.cpp TARGET rtneural_tilde)
 pd_add_external(rtneural rtneural.cpp TARGET rtneural)
+pd_add_external(rtneural~ rtneural~.cpp TARGET rtneural_tilde)
 
 set(LIBSR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/build/src")
 set(LIBSRI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/include")

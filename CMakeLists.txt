@@ -10,7 +10,6 @@ if (NOT MSVC)
   endif()
 endif()
 
-set(CMAKE_CXX_STANDARD 17)
 
 # set some options for libsamplerate
 
@@ -22,6 +21,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libsamplerate ${CMAKE_CURRENT_SOURC
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/RTNeuralCPP ${CMAKE_CURRENT_SOURCE_DIR}/RTNeuralCPP/build)
 
 # add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rtneural_max)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rtneural_pd)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/RTNeural_SC)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rtneural_pd)
+
 

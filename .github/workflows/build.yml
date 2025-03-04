@@ -27,15 +27,6 @@ jobs:
     - name: Get puredata source code
       run: git clone https://github.com/pure-data/pure-data.git ${{github.workspace}}/puredata
 
-    - name: show_me
-      if: matrix.os == 'macos-14'
-      run: |
-        cd puredata
-        ls
-        cd src
-        ls
-        cd .. ..
-
 # for windows we have to explicitly add the libsamplerate build job here, for some reason...
     - name: build_libsamplerate_win
       if: matrix.os == 'windows-latest'
@@ -47,7 +38,7 @@ jobs:
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/build
 
-# Build the SuperCollider plugins
+# Build the plugins
 
     - name: Configure CMake (Unix)
       shell: bash
@@ -59,7 +50,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}\supercollider -DPD_PATH=${{github.workspace}}/puredata/src
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}\supercollider -DPD_PATH=${{github.workspace}}\puredata\src
 
     - name: Build (Unix)
       if: matrix.os != 'windows-latest'
@@ -87,31 +78,11 @@ jobs:
       working-directory: ${{github.workspace}}/build/RTNeural_SC
       run: zip -r RTNeural_SC-mac_intel.zip RTNeural_SC 
 
-    - name: Zip up python
-      if: matrix.os == 'macOS-14'
-      shell: bash
-      working-directory: ${{github.workspace}}/RTNeural_python
-      run: zip -r RTNeural_python.zip RTNeural_python 
-
     - name: Zip up build (Windows)
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\build\RTNeural_SC
       run: Compress-7Zip "RTNeural_SC" -ArchiveFileName "RTNeural_SC-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
-
-# Zip the SC plugins
-
-    - name: Zip up build (macOS-14)
-      if: matrix.os == 'macos-14'
-      shell: bash
-      working-directory: ${{github.workspace}}/build/RTNeural_SC
-      run: zip -r RTNeural_SC-mac_arm.zip RTNeural_SC
-
-    - name: Zip up build (macOS-13)
-      if: matrix.os == 'macos-13'
-      shell: bash
-      working-directory: ${{github.workspace}}/build/RTNeural_SC
-      run: zip -r RTNeural_SC-mac_intel.zip RTNeural_SC 
 
     - name: Zip up python
       if: matrix.os == 'macOS-14'
@@ -119,30 +90,24 @@ jobs:
       working-directory: ${{github.workspace}}/RTNeural_python
       run: zip -r RTNeural_python.zip RTNeural_python 
 
-    - name: Zip up build (Windows)
-      if: matrix.os == 'windows-latest'
-      shell: pwsh
-      working-directory: ${{github.workspace}}\build\RTNeural_SC
-      run: Compress-7Zip "RTNeural_SC" -ArchiveFileName "RTNeural_SC-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
-
-    # Zip the pd plugins
+# Zip the pd plugins
 
     - name: Zip up build (macOS-14)
       if: matrix.os == 'macos-14'
       shell: bash
-      working-directory: ${{github.workspace}}/build/RTNeural_SC
+      working-directory: ${{github.workspace}}/build/rtneural_pd
       run: zip -r rtneural_pd-mac_arm.zip rtneural_pd
 
     - name: Zip up build (macOS-13)
       if: matrix.os == 'macos-13'
       shell: bash
-      working-directory: ${{github.workspace}}/build/RTNeural_SC
+      working-directory: ${{github.workspace}}/build/rtneural_pd
       run: zip -r rtneural_pd-mac_intel.zip rtneural_pd 
 
     - name: Zip up build (Windows)
       if: matrix.os == 'windows-latest'
       shell: pwsh
-      working-directory: ${{github.workspace}}\build\RTNeural_SC
+      working-directory: ${{github.workspace}}\build\rtneural_pd
       run: Compress-7Zip "rtneural_pd" -ArchiveFileName "rtneural_pd-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
 
   # upload SC binaries to release

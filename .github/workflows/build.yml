@@ -87,7 +87,7 @@ jobs:
     - name: Zip up python
       if: matrix.os == 'macOS-14'
       shell: bash
-      working-directory: ${{github.workspace}}/RTNeural_python
+      working-directory: ${{github.workspace}}
       run: zip -r RTNeural_python.zip RTNeural_python 
 
 # Zip the pd plugins

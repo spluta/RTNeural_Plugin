@@ -67,7 +67,7 @@ jobs:
       shell: pwsh
       run: cmake --build . --config "Release" --target install
 
-# Zip the SC plugins and upload them to the release
+# Zip the SC plugins
 
     - name: Zip up build (macOS-14)
       if: matrix.os == 'macos-14'
@@ -112,6 +112,26 @@ jobs:
       shell: pwsh
       working-directory: ${{github.workspace}}\build\rtneural_pd
       run: Compress-7Zip "rtneural_pd" -ArchiveFileName "rtneural_pd-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
+
+# Zip the max plugins
+
+    - name: Zip up build (macOS-14)
+      if: matrix.os == 'macos-14'
+      shell: bash
+      working-directory: ${{github.workspace}}/build/rtneural_max
+      run: zip -r rtneural_max-mac_arm.zip rtneural_max
+
+    - name: Zip up build (macOS-13)
+      if: matrix.os == 'macos-13'
+      shell: bash
+      working-directory: ${{github.workspace}}/build/rtneural_max
+      run: zip -r rtneural_max-mac_intel.zip rtneural_max
+
+    - name: Zip up build (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      working-directory: ${{github.workspace}}\build\rtneural_max
+      run: Compress-7Zip "rtneural_max" -ArchiveFileName "rtneural_max-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
 
   # upload SC binaries to release
 
@@ -185,14 +205,6 @@ jobs:
 
   # upload pd binaries to release
 
-    # - name: Check if release has been created
-    #   uses: mukunku/tag-exists-action@v1.6.0
-    #   id: checkTag
-    #   with:
-    #     tag: 'v1'
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Create Release (macOS-14)
       if: steps.checkTag.outputs.exists == false && matrix.os == 'macos-14'
       id: create_pd_release_arm
@@ -244,5 +256,57 @@ jobs:
         asset_name: rtneural_pd-${{runner.os}}.zip
         tag: ${{ github.ref }}
 
+ # upload max binaries to release
+
+    - name: Create Release (macOS-14)
+      if: steps.checkTag.outputs.exists == false && matrix.os == 'macos-14'
+      id: create_max_release_arm
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: rtneural_max-arm-${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Create Release (macOS-13)
+      if: steps.checkTag.outputs.exists == false && matrix.os == 'macos-13'
+      id: create_max_release_x86
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: rtneural_max-x86-${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload binaries to release (macOS-14)
+      if: matrix.os == 'macos-14'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{github.workspace}}/build/rtneural_max/rtneural_max-mac_arm.zip
+        asset_name: rtneural_max-mac_arm.zip
+        tag: ${{ github.ref }}
+
+    - name: Upload binaries to release (macOS-13)
+      if: matrix.os == 'macos-13'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{github.workspace}}/build/rtneural_max/rtneural_max-mac_intel.zip
+        asset_name: rtneural_max-mac_intel.zip
+        tag: ${{ github.ref }}
+
+    - name: Upload binaries to release (Windows)
+      if: matrix.os == 'windows-latest'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{github.workspace}}/build/rtneural_max/rtneural_max-${{runner.os}}.zip
+        asset_name: rtneural_max-${{runner.os}}.zip
+        tag: ${{ github.ref }}
 
     

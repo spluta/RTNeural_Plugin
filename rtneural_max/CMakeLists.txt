@@ -8,7 +8,7 @@ string(REGEX REPLACE "(.*)/" "" THIS_FOLDER_NAME "${CMAKE_CURRENT_SOURCE_DIR}")
 project(${THIS_FOLDER_NAME})
 
 
-set(C74_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/externals")
+set(C74_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/rtneural_max/externals")
 
 message("CMAKE_OSX_ARCHITECTURES: ${CMAKE_OSX_ARCHITECTURES}")
 
@@ -41,8 +41,11 @@ else()
         target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/libsamplerate.a)
 endif()
 
+target_link_libraries(rtneural_tilde PUBLIC RTNeural)
+target_link_libraries(rtneural PUBLIC RTNeural)
+
 # set installation directory
-set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/rtneural_pd")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/rtneural_max")
 
 message(STATUS "Install directory set to: ${CMAKE_INSTALL_PREFIX}")
 

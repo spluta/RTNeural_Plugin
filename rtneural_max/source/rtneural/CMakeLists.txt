@@ -23,16 +23,16 @@ add_library(
 
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 
-if (UNIX)
-	target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../../build/libsamplerate/src/libsamplerate.a)
-	# target_link_libraries(${PROJECT_NAME} /Users/spluta1/Dev/RTNeural_Plugin/RTNeural_Plugin/rtneural~_max/build/libsamplerate/src/libsamplerate.a)
-	endif (UNIX)
-if (WIN32)
-    message ("Windows")
-    target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../../libsamplerate/lib/samplerate.lib)
-endif (WIN32)
+# if (UNIX)
+# 	target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../../build/libsamplerate/src/libsamplerate.a)
+# 	# target_link_libraries(${PROJECT_NAME} /Users/spluta1/Dev/RTNeural_Plugin/RTNeural_Plugin/rtneural~_max/build/libsamplerate/src/libsamplerate.a)
+# 	endif (UNIX)
+# if (WIN32)
+#     message ("Windows")
+#     target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../../libsamplerate/lib/samplerate.lib)
+# endif (WIN32)
 
-target_link_libraries(${PROJECT_NAME} RTNeural)
+# target_link_libraries(${PROJECT_NAME} RTNeural)
 
 # add the plugin we are making
 # add_library(${PROJECT_NAME} MODULE RTNeuralUGen.cpp)

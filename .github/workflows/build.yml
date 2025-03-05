@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [windows-latest] #macos-14, macos-13, 
+        os: [macos-14] #macos-14, macos-13, windows-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -27,7 +27,10 @@ jobs:
     - name: Get puredata source code
       run: git clone https://github.com/pure-data/pure-data.git ${{github.workspace}}/puredata
 
-# for windows we have to explicitly add the libsamplerate build job here, for some reason...
+    - name: Get max sdk
+      run: https://github.com/Cycling74/max-sdk/tree/v8.2.0 ${{github.workspace}}/max-sdk
+
+# for windows we have to explicitly add the libsamplerate build job here
     - name: build_libsamplerate_win
       if: matrix.os == 'windows-latest'
       run: |

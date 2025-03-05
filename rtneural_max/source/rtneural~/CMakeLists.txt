@@ -21,16 +21,16 @@ add_library(
 	${PROJECT_SRC}
 )
 
-if (UNIX)
-	target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../../build/libsamplerate/src/libsamplerate.a)
-	# target_link_libraries(${PROJECT_NAME} /Users/spluta1/Dev/RTNeural_Plugin/RTNeural_Plugin/rtneural~_max/build/libsamplerate/src/libsamplerate.a)
-	endif (UNIX)
-if (WIN32)
-    message ("Windows")
-    target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../../libsamplerate/lib/samplerate.lib)
-endif (WIN32)
+# if (UNIX)
+# 	target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../../build/libsamplerate/src/libsamplerate.a)
+# 	# target_link_libraries(${PROJECT_NAME} /Users/spluta1/Dev/RTNeural_Plugin/RTNeural_Plugin/rtneural~_max/build/libsamplerate/src/libsamplerate.a)
+# 	endif (UNIX)
+# if (WIN32)
+#     message ("Windows")
+#     target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/../../libsamplerate/lib/samplerate.lib)
+# endif (WIN32)
 
-target_link_libraries(${PROJECT_NAME} RTNeural)
+# target_link_libraries(${PROJECT_NAME} RTNeural)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../max-sdk/source/max-sdk-base/script/max-posttarget.cmake)
 

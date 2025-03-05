@@ -16,7 +16,7 @@ include(pd.cmake)
 set(CMAKE_BUILD_TYPE Release)
 
 pd_add_external(rtneural rtneural.cpp TARGET rtneural)
-# pd_add_external(rtneural~ rtneural~.cpp TARGET rtneural_tilde)
+pd_add_external(rtneural~ rtneural~.cpp TARGET rtneural_tilde)
 
 set(LIBSR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/build/src")
 set(LIBSRI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/include")
@@ -24,10 +24,10 @@ include_directories(${LIBSR_PATH})
 include_directories(${LIBSRI_PATH})
 
 if(MSVC)
-        # target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/samplerate.lib)
+        target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/samplerate.lib)
         target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/samplerate.lib)
 else()
-        # target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/libsamplerate.a)
+        target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/libsamplerate.a)
         target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/libsamplerate.a)
 endif()
 
@@ -39,6 +39,6 @@ message(STATUS "Install directory set to: ${CMAKE_INSTALL_PREFIX}")
 install(DIRECTORY "examples" DESTINATION "${CMAKE_INSTALL_PREFIX}")
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/rtneural.so" DESTINATION ${CMAKE_INSTALL_PREFIX})
-# install(FILES "${CMAKE_CURRENT_BINARY_DIR}/rtneural~.so" DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/rtneural~.so" DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 

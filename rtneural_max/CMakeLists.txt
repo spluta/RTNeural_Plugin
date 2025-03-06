@@ -37,8 +37,10 @@ include_directories(${LIBSRI_PATH})
 
 if(MSVC)
         target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/samplerate.lib)
+        target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/samplerate.lib)
 else()
         target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/libsamplerate.a)
+        target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/libsamplerate.a)
 endif()
 
 target_link_libraries(rtneural_tilde PUBLIC RTNeural)

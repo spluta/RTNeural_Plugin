@@ -18,6 +18,9 @@ option(BUILD_TESTING "libsamplerate: run testing" OFF)
 
 # add_subdirectories manually
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libsamplerate ${CMAKE_CURRENT_SOURCE_DIR}/libsamplerate/build)
+
+set(RTNEURAL_XSIMD ON CACHE BOOL "Use RTNeural with this backend" FORCE)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/RTNeuralCPP ${CMAKE_CURRENT_SOURCE_DIR}/RTNeuralCPP/build)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/rtneural_max)

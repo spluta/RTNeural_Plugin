@@ -77,8 +77,8 @@ int RTN_Processor::load_model(std::string pathStr, int verbose) {
       }
 
       std::ifstream jsonStream(pathStr, std::ifstream::binary);
-
-      m_model = RTNeural::json_parser::parseJson<float>(jsonStream);
+//std::unique_ptr<RTNeural::Model<float>,std::default_delete<RTNeural::Model<float>>> RTNeural::json_parser::parseJson<float>(std::ifstream &,const bool)
+      m_model = RTNeural::json_parser::parseJson<float>(jsonStream, false);
 
       m_model_input_size = m_model->layers[0]->in_size;
       m_model_output_size = m_model->layers[m_model->layers.size()-1]->out_size;

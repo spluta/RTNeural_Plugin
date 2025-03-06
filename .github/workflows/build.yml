@@ -132,13 +132,13 @@ jobs:
 
   # upload SC binaries to release
 
-    # - name: Check if release has been created
-    #   uses: mukunku/tag-exists-action@v1.6.0
-    #   id: checkTag
-    #   with:
-    #     tag: 'v1'
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Check if release has been created
+      uses: mukunku/tag-exists-action@v1.6.0
+      id: checkTag
+      with:
+        tag: 'v1'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # - name: Create Release (macOS-14)
     #   if: steps.checkTag.outputs.exists == false && matrix.os == 'macos-14'

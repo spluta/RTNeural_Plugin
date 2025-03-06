@@ -24,6 +24,19 @@ add_library(
 	${PROJECT_SRC}
 )
 
+set(LIBSR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../libsamplerate/build/src")
+set(LIBSRI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../libsamplerate/include")
+include_directories(${LIBSR_PATH})
+include_directories(${LIBSRI_PATH})
+
+if(MSVC)
+        target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/samplerate.lib)
+else()
+        target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/libsamplerate.a)
+endif()
+
+target_link_libraries(rtneural PUBLIC RTNeural)
+
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../max-sdk/source/max-sdk-base/script/max-posttarget.cmake)

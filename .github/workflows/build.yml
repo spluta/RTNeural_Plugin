@@ -48,7 +48,7 @@ jobs:
         cmake --build . --config 'Release'
         
     - name: Create Build Environment
-      run: cmake -E make_directory ${{github.workspace}}/RTNeural_SC/build
+      run: cmake -E make_directory ${{github.workspace}}/build
 
 # Build the plugins
 

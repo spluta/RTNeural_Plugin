@@ -21,7 +21,7 @@ jobs:
       id: setup-compiler
       uses: rlalik/setup-cpp-compiler@master
       with:
-        compiler: gcc-latest
+        compiler: clang-latest
     
     - name: Verify GCC Installation
       run: |

@@ -23,10 +23,10 @@ jobs:
     #   with:
     #     compiler: clang-latest
     
-    - name: Verify GCC Installation
-      run: |
-        clang --version
-        clang++ --version
+    # - name: Verify GCC Installation
+    #   run: |
+    #     clang --version
+    #     clang++ --version
 
     - name: Install 7Zip (Windows)
       if: matrix.os == 'windows-latest'
@@ -38,10 +38,10 @@ jobs:
 
 # for windows we have to explicitly add the libsamplerate build job here
     - name: build_libsamplerate_win
-      if: matrix.os == 'windows-latest'
+    # if: matrix.os == 'windows-latest'
       run: |
         cd libsamplerate
-        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -G "MinGW Makefiles" ..
+        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF ..
         cmake --build . --config 'Release'
         
     - name: Create Build Environment
@@ -59,7 +59,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\RTNeural_SC\build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DSC_PATH=${{github.workspace}}\supercollider
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}\supercollider
 
     - name: Build (Unix)
       if: matrix.os != 'windows-latest'

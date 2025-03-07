@@ -9,7 +9,6 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate ${CMAKE_CURRENT_SO
 # set(RTNEURAL_STL ON ON CACHE BOOL "Use RTNeural with this backend" FORCE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../RTNeuralCPP ${CMAKE_CURRENT_SOURCE_DIR}/../RTNeuralCPP/build)
 
-
 include_directories(${SC_PATH}/include/plugin_interface)
 include_directories(${SC_PATH}/include/common)
 # include_directories(${SC_PATH}/external_libraries/libsndfile/)

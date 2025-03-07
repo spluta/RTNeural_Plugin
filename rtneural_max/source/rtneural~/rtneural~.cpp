@@ -293,7 +293,11 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
 
   //if not processing, just copy the input to the output
   if ((x->processor.m_model_loaded==0)||((t_int)x->bypass==1)) {
-    t_int small_num = min(x->n_in_chans, numins);
+    //t_int small_num = min(x->n_in_chans, numins);
+    t_int small_num = x->n_in_chans;
+    if(numins<x->n_in_chans){
+      small_num = numins;
+    }
     for (ch = 0; ch < small_num; ch++) {		// for each input channel
       if (ch<(x->n_out_chans))
         sysmem_copyptr(ins[ch], outs[ch], sizeof(double) * sampleframes);

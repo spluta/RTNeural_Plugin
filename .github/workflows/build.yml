@@ -43,7 +43,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         cd libsamplerate
-        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF ..
+        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF -G "MinGW Makefiles" ..
         cmake --build . --config 'Release'
         
     - name: Create Build Environment
@@ -61,7 +61,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DSC_PATH=${{github.workspace}}\supercollider -DPD_PATH=${{github.workspace}}\puredata\src
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -G "MinGW Makefiles" -DSC_PATH=${{github.workspace}}\supercollider -DPD_PATH=${{github.workspace}}\puredata\src
 
     - name: Build (Unix)
       if: matrix.os != 'windows-latest'

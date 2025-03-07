@@ -26,7 +26,7 @@ include_directories(${LIBSRI_PATH})
 if(MINGW)
         target_link_libraries(rtneural_tilde PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/pd.lib)
         target_link_libraries(rtneural PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/pd.lib)
-else
+endif()
 
 if(MSVC)
         target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/samplerate.lib)

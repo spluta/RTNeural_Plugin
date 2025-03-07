@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [windows-latest] #macos-14, macos-13, windows-latest
+        os: [windows-latest, macos-14, macos-13] #, windows-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -17,6 +17,7 @@ jobs:
         submodules: 'recursive'
 
     - name: Setup C/C++ Compiler
+      if: matrix.os == 'windows-latest'
       id: setup-compiler
       uses: rlalik/setup-cpp-compiler@master
       with:
@@ -27,10 +28,10 @@ jobs:
         gcc --version
         g++ --version
 
-    # - name: Install 7Zip (Windows)
-    #   if: matrix.os == 'windows-latest'
-    #   shell: powershell
-    #   run: Install-Module 7Zip4PowerShell -Force -Verbose
+    - name: Install 7Zip (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: powershell
+      run: Install-Module 7Zip4PowerShell -Force -Verbose
 
     - name: Get SC source code
       run: git clone https://github.com/supercollider/supercollider.git ${{github.workspace}}/supercollider

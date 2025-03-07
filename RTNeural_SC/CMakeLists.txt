@@ -3,6 +3,13 @@ set(CMAKE_CXX_STANDARD 17)
 cmake_minimum_required (VERSION 3.5)
 project (RTNeural_SC)
 
+# add_subdirectories manually
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate ${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/build)
+
+# set(RTNEURAL_STL ON ON CACHE BOOL "Use RTNeural with this backend" FORCE)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../RTNeuralCPP ${CMAKE_CURRENT_SOURCE_DIR}/../RTNeuralCPP/build)
+
+
 include_directories(${SC_PATH}/include/plugin_interface)
 include_directories(${SC_PATH}/include/common)
 # include_directories(${SC_PATH}/external_libraries/libsndfile/)
@@ -40,8 +47,14 @@ install(DIRECTORY DESTINATION "${CMAKE_INSTALL_PREFIX}/scx_files")
 message(STATUS "CMake current binary directory: ${CMAKE_CURRENT_BINARY_DIR}")
 
 if(APPLE)
-  install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
+  install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
 else()
-  install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
+  install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
 endif()
+
+# if(APPLE)
+#   install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
+# else()
+#   install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
+# endif()
 

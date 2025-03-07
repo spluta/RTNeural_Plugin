@@ -16,17 +16,17 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Setup C/C++ Compiler
-      if: matrix.os == 'windows-latest'
-      id: setup-compiler
-      uses: rlalik/setup-cpp-compiler@master
-      with:
-        compiler: clang-latest
+    # - name: Setup C/C++ Compiler
+    #   if: matrix.os == 'windows-latest'
+    #   id: setup-compiler
+    #   uses: rlalik/setup-cpp-compiler@master
+    #   with:
+    #     compiler: clang-latest
     
     - name: Verify GCC Installation
       run: |
-        gcc --version
-        g++ --version
+        clang --version
+        clang --version
 
     - name: Install 7Zip (Windows)
       if: matrix.os == 'windows-latest'
@@ -44,7 +44,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         cd libsamplerate
-        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF -G "MinGW Makefiles" ..
+        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -G "MinGW Makefiles" ..
         cmake --build . --config 'Release'
         
     - name: Create Build Environment
@@ -62,7 +62,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -G "MinGW Makefiles" -DSC_PATH=${{github.workspace}}\supercollider -DPD_PATH=${{github.workspace}}\puredata\src
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -G "MinGW Makefiles" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DSC_PATH=${{github.workspace}}\supercollider -DPD_PATH=${{github.workspace}}\puredata\src
 
     - name: Build (Unix)
       if: matrix.os != 'windows-latest'

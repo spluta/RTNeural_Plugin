@@ -3,11 +3,20 @@ A SuperCollider UGen which implements the RTNeural inference engine. This engine
 
 ### Installation:
 
-If you can, you probably want to use one of the pre-build binaries available on GitHub. On mac you will also need to clear the attributes so the OS doesn't think the file is trash:
+If you can, you probably want to use one of the pre-build binaries available on GitHub. The latest release is under Releases on the main github page. On mac you will also need to further purge any distrust of the builds:
 
+SC:
 ```
-xattr -cr <path to the plugin directory>
+xattr -c <path to the scx_files directory>/*.scx
 ```
+
+Max
+```
+codesign --force --deep -s - <path to the rtneural_max/externals directory>/*.mxo
+xattr -c <path to the rtneural_max/externals directory>/*.mxo
+```
+
+
 
 ###Building:
 

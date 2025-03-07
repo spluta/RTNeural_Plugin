@@ -104,43 +104,43 @@ jobs:
 
 # Zip the pd plugins
 
-    # - name: Zip up build (macOS-14)
-    #   if: matrix.os == 'macos-14'
-    #   shell: bash
-    #   working-directory: ${{github.workspace}}/build/rtneural_pd
-    #   run: zip -r rtneural_pd-mac_arm.zip rtneural_pd
-
-    # - name: Zip up build (macOS-13)
-    #   if: matrix.os == 'macos-13'
-    #   shell: bash
-    #   working-directory: ${{github.workspace}}/build/rtneural_pd
-    #   run: zip -r rtneural_pd-mac_intel.zip rtneural_pd 
-
-    # - name: Zip up build (Windows)
-    #   if: matrix.os == 'windows-latest'
-    #   shell: pwsh
-    #   working-directory: ${{github.workspace}}\build\rtneural_pd
-    #   run: Compress-7Zip "rtneural_pd" -ArchiveFileName "rtneural_pd-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
-
-# Zip the max plugins
-
     - name: Zip up build (macOS-14)
       if: matrix.os == 'macos-14'
       shell: bash
-      working-directory: ${{github.workspace}}/build/rtneural_max
-      run: zip -r rtneural_max-mac_arm.zip rtneural_max
+      working-directory: ${{github.workspace}}/build/rtneural_pd
+      run: zip -r rtneural_pd-mac_arm.zip rtneural_pd
 
     - name: Zip up build (macOS-13)
       if: matrix.os == 'macos-13'
       shell: bash
-      working-directory: ${{github.workspace}}/build/rtneural_max
-      run: zip -r rtneural_max-mac_intel.zip rtneural_max
+      working-directory: ${{github.workspace}}/build/rtneural_pd
+      run: zip -r rtneural_pd-mac_intel.zip rtneural_pd 
 
     - name: Zip up build (Windows)
       if: matrix.os == 'windows-latest'
       shell: pwsh
-      working-directory: ${{github.workspace}}\build\rtneural_max
-      run: Compress-7Zip "rtneural_max" -ArchiveFileName "rtneural_max-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
+      working-directory: ${{github.workspace}}\build\rtneural_pd
+      run: Compress-7Zip "rtneural_pd" -ArchiveFileName "rtneural_pd-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
+
+# Zip the max plugins
+
+    # - name: Zip up build (macOS-14)
+    #   if: matrix.os == 'macos-14'
+    #   shell: bash
+    #   working-directory: ${{github.workspace}}/build/rtneural_max
+    #   run: zip -r rtneural_max-mac_arm.zip rtneural_max
+
+    # - name: Zip up build (macOS-13)
+    #   if: matrix.os == 'macos-13'
+    #   shell: bash
+    #   working-directory: ${{github.workspace}}/build/rtneural_max
+    #   run: zip -r rtneural_max-mac_intel.zip rtneural_max
+
+    # - name: Zip up build (Windows)
+    #   if: matrix.os == 'windows-latest'
+    #   shell: pwsh
+    #   working-directory: ${{github.workspace}}\build\rtneural_max
+    #   run: Compress-7Zip "rtneural_max" -ArchiveFileName "rtneural_max-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
 
   # upload SC binaries to release
 

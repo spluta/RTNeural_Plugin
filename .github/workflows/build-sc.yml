@@ -169,6 +169,6 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{github.workspace}}/RTNeural_SC/RTNeural_python.zip
+        file: ${{github.workspace}}/RTNeural_python.zip
         asset_name: RTNeural_python.zip
         tag: ${{ github.ref }}

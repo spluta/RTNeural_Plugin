@@ -30,29 +30,9 @@ endif()
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/source/rtneural~)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/source/rtneural)
 
-# set(LIBSR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/build/src")
-# set(LIBSRI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/include")
-# include_directories(${LIBSR_PATH})
-# include_directories(${LIBSRI_PATH})
-
-# if(MSVC)
-#         target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/samplerate.lib)
-#         target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/samplerate.lib)
-# else()
-#         target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/libsamplerate.a)
-#         target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/libsamplerate.a)
-# endif()
-
-# target_link_libraries(rtneural_tilde PUBLIC RTNeural)
-# target_link_libraries(rtneural PUBLIC RTNeural)
-
 # set installation directory
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/rtneural_max")
 
 message(STATUS "Install directory set to: ${CMAKE_INSTALL_PREFIX}")
 
 install(DIRECTORY "examples" DESTINATION "${CMAKE_INSTALL_PREFIX}")
-
-# install(FILES "${CMAKE_CURRENT_BINARY_DIR}/rtneural.so" DESTINATION ${CMAKE_INSTALL_PREFIX})
-# install(FILES "${CMAKE_CURRENT_BINARY_DIR}/rtneural~.so" DESTINATION ${CMAKE_INSTALL_PREFIX})
-

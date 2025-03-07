@@ -48,7 +48,7 @@ message(STATUS "CMake current binary directory: ${CMAKE_CURRENT_BINARY_DIR}")
 if(APPLE)
   install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
 else()
-  install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
+  install(FILES ${CMAKE_BINARY_DIR}/Release/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
 endif()
 
 # if(APPLE)

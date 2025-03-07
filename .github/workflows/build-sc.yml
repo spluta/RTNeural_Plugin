@@ -1,4 +1,4 @@
-name: dispatch-build
+name: sc-build
 
 on:
   workflow_dispatch:
@@ -158,7 +158,7 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{github.workspace}}/RTNeural_SC/build/RTNeural_SC/RTNeural_SC-${{runner.os}}.zip
+        file: ${{github.workspace}}/RTNeural_SC/build/RTNeural_SC-${{runner.os}}.zip
         asset_name: RTNeural_SC-${{runner.os}}.zip
         tag: ${{ github.ref }}
 

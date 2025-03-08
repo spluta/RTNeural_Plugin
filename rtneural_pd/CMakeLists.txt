@@ -66,6 +66,9 @@ pd_add_external(rtneural~ rtneural~.cpp TARGET rtneuralpd_tilde)
 
 add_subdirectory(../libsamplerate libsamplerate)
 
+option(LIBSAMPLERATE_EXAMPLES "libsamplerate: build examples" OFF) 
+option(BUILD_TESTING "libsamplerate: run testing" OFF)
+
 set(LIBSR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/build/src")
 set(LIBSRI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/include")
 include_directories(${LIBSR_PATH})

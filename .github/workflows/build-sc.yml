@@ -78,13 +78,13 @@ jobs:
     - name: Zip up build (macOS-14)
       if: matrix.os == 'macos-14'
       shell: bash
-      working-directory: ${{github.workspace}}/RTNeural_SC/build/RTNeural_SC
-      run: zip -r RTNeural_SC-mac_arm.zip . -i RTNeural_SC
+      working-directory: ${{github.workspace}}/RTNeural_SC/build
+      run: zip -r RTNeural_SC-mac_arm.zip RTNeural_SC
 
     - name: Zip up build (macOS-13)
       if: matrix.os == 'macos-13'
       shell: bash
-      working-directory: ${{github.workspace}}/RTNeural_SC/build/RTNeural_SC
+      working-directory: ${{github.workspace}}/RTNeural_SC/build
       run: zip -r RTNeural_SC-mac_intel.zip . -i RTNeural_SC 
 
     - name: Zip up build (Windows)

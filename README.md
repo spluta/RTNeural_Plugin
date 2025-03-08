@@ -96,12 +96,12 @@ From the rtneural_pd directory.
 
 ```
 cmake . -B build -DPD_PATH=<PATH TO PD SOURCE>
-cmake --build build
+cmake --build build --target install
 ```
 
 if you remove the -DPD_PATH variable , CMAKE will search for the pd source in the standard locations
 
-the rtneural and rtneural~ objects will be placed in the build directory. move these to a place in your pd path.
+a folder will be placed in the build directory with the rtneural and rtneural~ objects plus the help and examples. move this folder to a place in your pd path.
 
 ## Building the Max Plugin On Mac (or Linux)
 

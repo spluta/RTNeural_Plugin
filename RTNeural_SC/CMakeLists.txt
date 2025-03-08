@@ -1,5 +1,13 @@
 set(CMAKE_CXX_STANDARD 17)
 
+if (NOT MSVC)
+  # specify the C++ standard
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17" CACHE STRING "c++ version" FORCE)
+  if(CMAKE_COMPILER_IS_CLANG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+  endif()
+endif()
+
 cmake_minimum_required (VERSION 3.5)
 project (RTNeural_SC)
 
@@ -50,12 +58,4 @@ if(MSVC)
 else()
   install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
 endif()
-
-
-
-# if(APPLE)
-#   install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
-# else()
-#   install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
-# endif()
 

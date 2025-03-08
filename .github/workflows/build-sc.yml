@@ -91,7 +91,6 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\RTNeural_SC\build\RTNeural_SC
-    #   run: Compress-7Zip "RTNeural_SC" -ArchiveFileName "RTNeural_SC-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
       run: Compress-Archive -Path ${{github.workspace}}\RTNeural_SC\build\RTNeural_SC -Destination "${{github.workspace}}/RTNeural_SC-${{runner.os}}.zip"
 
 # Zip the python folder

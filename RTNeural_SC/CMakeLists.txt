@@ -35,6 +35,11 @@ set(LIBSRI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/include")
 include_directories(${LIBSR_PATH})
 include_directories(${LIBSRI_PATH})
 
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC RTNeural)
+
+option(LIBSAMPLERATE_EXAMPLES "libsamplerate: build examples" OFF) 
+option(BUILD_TESTING "libsamplerate: run testing" OFF)
+
 if(MSVC)
         target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBSR_PATH}/Release/samplerate.lib)
 else()

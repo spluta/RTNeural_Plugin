@@ -141,7 +141,7 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{github.workspace}}/RTNeural_SC/build/RTNeural_SC/RTNeural_SC-mac_arm.zip
+        file: ${{github.workspace}}/RTNeural_SC/build/RTNeural_SC-mac_arm.zip
         asset_name: RTNeural_SC-mac_arm.zip
         tag: ${{ github.ref }}
 
@@ -150,7 +150,7 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{github.workspace}}/RTNeural_SC/build/RTNeural_SC/RTNeural_SC-mac_intel.zip
+        file: ${{github.workspace}}/RTNeural_SC/build/RTNeural_SC-mac_intel.zip
         asset_name: RTNeural_SC-mac_intel.zip
         tag: ${{ github.ref }}
 

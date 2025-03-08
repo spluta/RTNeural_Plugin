@@ -23,10 +23,10 @@ jobs:
     #   with:
     #     compiler: clang-latest
     
-    - name: Verify GCC Installation
-      run: |
-        clang --version
-        clang++ --version
+    # - name: Verify GCC Installation
+    #   run: |
+    #     clang --version
+    #     clang++ --version
 
     - name: Get puredata source code
       run: git clone https://github.com/pure-data/pure-data.git ${{github.workspace}}/puredata
@@ -36,7 +36,8 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         cd libsamplerate
-        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ..
+        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF -G "MinGW Makefiles" ..
+        # -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
         cmake --build . --config 'Release'
 
     - name: build_libsamplerate_win
@@ -61,7 +62,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\rtneural_pd\build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DPD_PATH=${{github.workspace}}\puredata\src -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DPD_PATH=${{github.workspace}}\puredata\src -G "MinGW Makefiles" 
 
     - name: Build (Unix)
       if: matrix.os != 'windows-latest'

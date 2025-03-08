@@ -47,13 +47,13 @@ jobs:
       shell: bash
       if: matrix.os != 'windows-latest'
       working-directory: ${{github.workspace}}/rtneural_pd/build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DPD_PATH=${{github.workspace}}/puredata/src
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DPD_PATH=${{github.workspace}}/puredata/src 
 
     - name: Configure CMake (Windows)
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\rtneural_pd\build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DPD_PATH=${{github.workspace}}\puredata\src
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DPD_PATH=${{github.workspace}}\puredata\src -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
 
     - name: Build (Unix)
       if: matrix.os != 'windows-latest'

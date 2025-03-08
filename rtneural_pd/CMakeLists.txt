@@ -65,6 +65,10 @@ pd_add_external(rtneural rtneural.cpp TARGET rtneuralpd)
 pd_add_external(rtneural~ rtneural~.cpp TARGET rtneuralpd_tilde)
 
 add_subdirectory(../libsamplerate libsamplerate)
+add_subdirectory(../RTNeuralCPP RTNeuralCPP)
+
+target_link_libraries(rtneuralpd_tilde LINK_PUBLIC RTNeural)
+target_link_libraries(rtneuralpd LINK_PUBLIC RTNeural)
 
 option(LIBSAMPLERATE_EXAMPLES "libsamplerate: build examples" OFF) 
 option(BUILD_TESTING "libsamplerate: run testing" OFF)
@@ -87,13 +91,5 @@ install(DIRECTORY "examples" DESTINATION "${CMAKE_INSTALL_PREFIX}")
 message(STATUS "Install directory set to: ${CMAKE_INSTALL_PREFIX}")
 
 set(ORIGINAL_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/rtneural")
-
-# # Append the variable to the file name
-# string(CONCAT NEW_FILE_NAME1 "${CMAKE_CURRENT_BINARY_DIR}/rtneural" "fuck you")
-# string(CONCAT NEW_FILE_NAME2 "${CMAKE_CURRENT_BINARY_DIR}/rtneural~" ${PD_EXTENSION})
-
-# install(FILES ${NEW_FILE_NAME1} DESTINATION ${CMAKE_INSTALL_PREFIX})
-# install(FILES ${NEW_FILE_NAME2} DESTINATION ${CMAKE_INSTALL_PREFIX})
-
 
 

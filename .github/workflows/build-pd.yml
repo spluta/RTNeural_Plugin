@@ -16,12 +16,12 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Setup C/C++ Compiler
-      if: matrix.os == 'windows-latest'
-      id: setup-compiler
-      uses: rlalik/setup-cpp-compiler@master
-      with:
-        compiler: clang-latest
+    # - name: Setup C/C++ Compiler
+    #   if: matrix.os == 'windows-latest'
+    #   id: setup-compiler
+    #   uses: rlalik/setup-cpp-compiler@master
+    #   with:
+    #     compiler: clang-latest
     
     - name: Verify GCC Installation
       run: |

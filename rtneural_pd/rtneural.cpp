@@ -244,31 +244,31 @@ void rtneural_write_json(t_rtneural *x, t_symbol *s){
 
 //this unfortunately doesn't work, though the command seems to be formatted correctly
 //it will run a simple python script, but won't do the training for some reason
-void rtneural_train_model(t_rtneural *x, t_symbol *s){
-  std::string command = "cd ";
-  command += x->python_path;
+// void rtneural_train_model(t_rtneural *x, t_symbol *s){
+//   std::string command = "cd ";
+//   command += x->python_path;
 
-  command += "; source venv/bin/activate; ";
+//   command += "; source venv/bin/activate; ";
 
-  command += "python MLP_control/mlp_control_train_convert.py -f ";
+//   command += "python MLP_control/mlp_control_train_convert.py -f ";
 
-  char absolute_path[MAXPDSTRING] = { 0 };
-  canvas_makefilename(x->canvas, s->s_name, absolute_path, MAXPDSTRING);
-  command += absolute_path;
+//   char absolute_path[MAXPDSTRING] = { 0 };
+//   canvas_makefilename(x->canvas, s->s_name, absolute_path, MAXPDSTRING);
+//   command += absolute_path;
 
-  post(command.c_str());
+//   post(command.c_str());
 
-  std::unique_ptr<FILE, void(*)(FILE*)> pipe(popen(command.c_str(), "r"),
-    [](FILE * f) -> void
-    {
-        // wrapper to ignore the return value from pclose() is needed with newer versions of gnu g++
-        std::ignore = pclose(f);
-    });
-    char buffer[128];
-  while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
-    post(buffer);
-  }
-}
+//   std::unique_ptr<FILE, void(*)(FILE*)> pipe(popen(command.c_str(), "r"),
+//     [](FILE * f) -> void
+//     {
+//         // wrapper to ignore the return value from pclose() is needed with newer versions of gnu g++
+//         std::ignore = pclose(f);
+//     });
+//     char buffer[128];
+//   while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
+//     post(buffer);
+//   }
+// }
 
 void rtneural_load_model(t_rtneural *x, t_symbol *s){
   (void)x;
@@ -333,7 +333,7 @@ void rtneural_setup(void) {
     class_addlist(rtneural_class, rtneural_list);
     class_addmethod(rtneural_class, (t_method)rtneural_load_model, gensym("load_model"), A_SYMBOL, 0);
     class_addmethod(rtneural_class, (t_method)rtneural_write_json, gensym("write_json"), A_SYMBOL, 0);
-    class_addmethod(rtneural_class, (t_method)rtneural_train_model, gensym("train_model"), A_SYMBOL, 0);
+    //class_addmethod(rtneural_class, (t_method)rtneural_train_model, gensym("train_model"), A_SYMBOL, 0);
     class_addmethod(rtneural_class, (t_method)rtneural_bypass, gensym("bypass"), A_FLOAT, 0);
     class_addmethod(rtneural_class, (t_method)rtneural_set_epochs, gensym("set_epochs"), A_DEFFLOAT, 0);
     class_addmethod(rtneural_class, (t_method)rtneural_set_layers_data, gensym("set_layers_data"), A_GIMME, 0);

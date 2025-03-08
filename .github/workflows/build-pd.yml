@@ -33,6 +33,17 @@ jobs:
   
 # for windows we have to explicitly add the libsamplerate build job here
     - name: build_libsamplerate_win
+      if: matrix.os == 'windows-latest'
+      run: |
+        cd libsamplerate
+        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ..
+        cmake --build . --config 'Release'
+        
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{github.workspace}}/rtneural_pd/build
+
+    - name: build_libsamplerate_win
+      if: matrix.os != 'windows-latest'
       run: |
         cd libsamplerate
         mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF ..

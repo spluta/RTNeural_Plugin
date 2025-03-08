@@ -33,8 +33,8 @@ jobs:
     #   shell: powershell
     #   run: Install-Module 7Zip4PowerShell -Force
 
-    # - name: Get SC source code
-    #   run: git clone https://github.com/supercollider/supercollider.git ${{github.workspace}}/supercollider
+    - name: Get SC source code
+      run: git clone https://github.com/supercollider/supercollider.git ${{github.workspace}}/supercollider
 
 # for windows we have to explicitly add the libsamplerate build job here
     - name: build_libsamplerate_win

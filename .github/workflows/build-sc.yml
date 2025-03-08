@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [windows-latest, macos-14, macos-13]
+        os: [windows-latest] #, macos-14, macos-13]
 
     steps:
     - uses: actions/checkout@v2
@@ -28,13 +28,13 @@ jobs:
     #     clang --version
     #     clang++ --version
 
-    - name: Install 7Zip (Windows)
-      if: matrix.os == 'windows-latest'
-      shell: powershell
-      run: Install-Module 7Zip4PowerShell -Force
+    # - name: Install 7Zip (Windows)
+    #   if: matrix.os == 'windows-latest'
+    #   shell: powershell
+    #   run: Install-Module 7Zip4PowerShell -Force
 
-    - name: Get SC source code
-      run: git clone https://github.com/supercollider/supercollider.git ${{github.workspace}}/supercollider
+    # - name: Get SC source code
+    #   run: git clone https://github.com/supercollider/supercollider.git ${{github.workspace}}/supercollider
 
 # for windows we have to explicitly add the libsamplerate build job here
     - name: build_libsamplerate_win
@@ -91,7 +91,8 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\RTNeural_SC\build\RTNeural_SC
-      run: Compress-7Zip "RTNeural_SC" -ArchiveFileName "RTNeural_SC-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
+    #   run: Compress-7Zip "RTNeural_SC" -ArchiveFileName "RTNeural_SC-${{runner.os}}.zip" -Format Zip -PreserveDirectoryRoot
+      run: Compress-Archive -Path ${{github.workspace}}\RTNeural_SC\build\RTNeural_SC -Destination "${{github.workspace}}/RTNeural_SC-${{runner.os}}.zip"
 
 # Zip the python folder
 
@@ -158,7 +159,7 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{github.workspace}}/RTNeural_SC/build/RTNeural_SC-${{runner.os}}.zip
+        file: ${{github.workspace}}/RTNeural_SC-${{runner.os}}.zip
         asset_name: RTNeural_SC-${{runner.os}}.zip
         tag: ${{ github.ref }}
 

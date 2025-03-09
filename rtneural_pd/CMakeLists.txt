@@ -1,4 +1,3 @@
-# set minimal version of cmake
 cmake_minimum_required(VERSION 3.5) 
 
 set(CMAKE_CXX_STANDARD 17)
@@ -36,7 +35,7 @@ include_directories(${LIBSRI_PATH})
 
 if(MSVC)
         target_link_libraries(rtneuralpd_tilde PUBLIC ${LIBSR_PATH}/Release/samplerate.lib)
-        target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/Release/samplerate.lib)
+        target_link_libraries(rtneuralpd PUBLIC ${LIBSR_PATH}/Release/samplerate.lib)
 else()
         target_link_libraries(rtneuralpd_tilde PUBLIC ${LIBSR_PATH}/libsamplerate.a)
         target_link_libraries(rtneuralpd PUBLIC ${LIBSR_PATH}/libsamplerate.a)

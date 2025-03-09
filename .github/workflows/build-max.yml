@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [windows-latest, macos-14, macos-13] #
+        os: [windows-latest] #, macos-14, macos-13]
 
     steps:
     - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         cd libsamplerate
-        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF ..
+        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF -G "MinGW Makefiles" ..
         cmake --build . --config 'Release'
 
     - name: build_libsamplerate_other
@@ -40,13 +40,13 @@ jobs:
       shell: bash
       if: matrix.os != 'windows-latest'
       working-directory: ${{github.workspace}}/rtneural_max/build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DPD_PATH=${{github.workspace}}/puredata/src 
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -G "MinGW Makefiles"
 
     - name: Configure CMake (Windows)
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\rtneural_max\build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -DPD_PATH=${{github.workspace}}\puredata\src #-G "MinGW Makefiles" 
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -G "MinGW Makefiles" 
 
     - name: Build (Unix)
       if: matrix.os != 'windows-latest'

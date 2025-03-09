@@ -279,7 +279,7 @@ void rtneural_load_model(t_rtneural *x, t_symbol *s){
   char absolute_path[MAXPDSTRING] = { 0 };
   canvas_makefilename(x->canvas, s->s_name, absolute_path, MAXPDSTRING);
 
-  int test = x->processor.load_model(absolute_path, 1);
+  t_int test = x->processor.load_model(absolute_path, 1);
   if(test==1){
     x->model_loaded = 1;
 

@@ -35,7 +35,7 @@ else()
         target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/libsamplerate.a)
 endif()
 
-add_subdirectory(../../RTNeuralCPP RTNeuralCPP)
+# add_subdirectory(../../../RTNeuralCPP RTNeuralCPP)
 target_link_libraries(rtneural_tilde PUBLIC RTNeural)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../max-sdk/source/max-sdk-base/script/max-posttarget.cmake)

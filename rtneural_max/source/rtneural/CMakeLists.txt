@@ -34,7 +34,6 @@ else()
         target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/libsamplerate.a)
 endif()
 
-add_subdirectory(../../RTNeuralCPP RTNeuralCPP)
 target_link_libraries(rtneural PUBLIC RTNeural)
 
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")

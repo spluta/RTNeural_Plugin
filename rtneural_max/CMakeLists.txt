@@ -30,6 +30,8 @@ endif()
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/source/rtneural~)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/source/rtneural)
 
+add_subdirectory(../RTNeuralCPP RTNeuralCPP)
+
 # set installation directory
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/rtneural_max")
 

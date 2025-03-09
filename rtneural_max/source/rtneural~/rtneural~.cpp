@@ -49,7 +49,6 @@ typedef struct _rtneural {
 // prototypes
 void	*rtneural_new(t_symbol *s, long argc, t_atom *argv);
 void	rtneural_free(t_rtneural *x);
-void 	rtneural_write_json(t_rtneural *x, t_symbol s);
 void 	rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv);
 void 	rtneural_bypass(t_rtneural *x, long f);
 
@@ -71,8 +70,7 @@ void ext_main(void *r)
       (method)NULL,
       A_GIMME, 0);
 
-  class_addmethod(c, (method)rtneural_load_model, "load_model", A_SYM, 0);
-  class_addmethod(c, (method)rtneural_write_json, "write_json", A_SYM, 0);
+  class_addmethod(c, (method)rtneural_load_model, "load_model", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_bypass, "bypass", A_LONG, 0);
   class_addmethod(c, (method)rtneural_dsp64, "dsp64",	A_CANT, 0);  
 
@@ -191,27 +189,6 @@ void rtneural_free (t_rtneural* x) {
   sysmem_freeptr(x->in_rs);
   sysmem_freeptr(x->out_temp);
   sysmem_freeptr(x->outbuf);
-}
-
-void rtneural_write_json(t_rtneural *x, t_symbol s){
-  	nlohmann::json data;
-
-    data["Some String"] = "Hello World";
-    data["Some Number"] = 12345;
-    data["Empty Array"] = nlohmann::json::array_t();
-    data["Array With Items"] = { true, "Hello", 3.1415 };
-    data["Empty Array"] = nlohmann::json::array_t();
-    data["xect With Items"] = nlohmann::json::object_t({{"Key", "Value"}, {"Day", true}});
-    data["Empty xect"] = nlohmann::json::object_t();
-
-    std::ofstream output_file(s.s_name);
-    if (!output_file.is_open())  {
-        post("Failed to open output file");
-    } else {
-        output_file << data;
-        output_file.close();
-        post("writing output file");
-    }
 }
 
 std::string get_abs_path(t_rtneural *x, std::string filename_in){

@@ -1,15 +1,3 @@
-/**
-	@file
-	collect - collect numbers and operate on them.
-			- demonstrates use of C++ and the STL in a Max external
-			- also demonstrates use of a mutex for thread safety
-			- on Windows, demonstrate project setup for static linking to the Microsoft Runtime
-
-	@ingroup	examples
-
-	Copyright 2009 - Cycling '74
-	Timothy Place, tim@cycling74.com
-*/
 
 #include "ext.h"
 #include "ext_obex.h"
@@ -103,10 +91,10 @@ void ext_main(void *r)
 
 	class_addmethod(c, (method)rtneural_bang,"bang",0);
 	class_addmethod(c, (method)rtneural_list,	"list",	A_GIMME,0);
-  class_addmethod(c, (method)rtneural_load_model, "load_model", A_SYM, 0);
-  class_addmethod(c, (method)rtneural_write_json, "write_json", A_SYM, 0);
-  class_addmethod(c, (method)rtneural_read_json, "read_json", A_SYM, 0);
-  class_addmethod(c, (method)rtneural_bypass, "bypass", A_LONG, 0);
+  class_addmethod(c, (method)rtneural_load_model, "load_model", A_GIMME, 0);
+  class_addmethod(c, (method)rtneural_write_json, "write_json", A_GIMME, 0);
+  class_addmethod(c, (method)rtneural_read_json, "read_json", A_GIMME, 0);
+  class_addmethod(c, (method)rtneural_bypass, "bypass", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_set_epochs, "set_epochs", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_set_layers_data, "set_layers_data", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_set_learn_rate, "set_learn_rate", A_GIMME, 0);

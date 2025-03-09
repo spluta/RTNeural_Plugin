@@ -245,7 +245,6 @@ void rtneural_tilde_setup(void) {
     CLASS_MULTICHANNEL, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
   
   class_addbang(rtneural_tilde_class, rtneural_tilde_bang);
-  // class_addfloat(rtneural_tilde_class, rtneural_float);
   class_addmethod(rtneural_tilde_class, (t_method)rtneural_tilde_load_model, gensym("load_model"), A_DEFSYMBOL, 0);
   class_addmethod(rtneural_tilde_class, (t_method)rtneural_tilde_trigger_mode, gensym("trigger_mode"), A_DEFFLOAT, 0);
   class_addmethod(rtneural_tilde_class, (t_method)rtneural_tilde_bypass, gensym("bypass"), A_DEFFLOAT, 0);

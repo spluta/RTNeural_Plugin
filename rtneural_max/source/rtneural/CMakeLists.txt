@@ -28,12 +28,13 @@ set(LIBSRI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../libsamplerate/include")
 include_directories(${LIBSR_PATH})
 include_directories(${LIBSRI_PATH})
 
-if(MSVC)
-        target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/samplerate.lib)
+if(WIN32)
+        target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/Release/samplerate.lib)
 else()
         target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/libsamplerate.a)
 endif()
 
+add_subdirectory(../../RTNeuralCPP RTNeuralCPP)
 target_link_libraries(rtneural PUBLIC RTNeural)
 
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")

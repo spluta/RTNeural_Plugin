@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 
 set(MACOSX_DEPLOYMENT_TARGET 14.0)
-
+set(CMAKE_CXX_STANDARD 17)
 
 set(C74_BUILD_FAT YES)
 set(CMAKE_BUILD_TYPE Release)

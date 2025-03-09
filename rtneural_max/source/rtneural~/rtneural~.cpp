@@ -12,7 +12,7 @@
 #include "commonsyms.h"
 #include "z_dsp.h"
 
-#include "../RTN_Processor.cpp"
+#include "../../RTN_Processor.cpp"
 
 #include <vector>
 using namespace std;

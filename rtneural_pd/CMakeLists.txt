@@ -78,8 +78,14 @@ set(LIBSRI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/include")
 include_directories(${LIBSR_PATH})
 include_directories(${LIBSRI_PATH})
 
-target_link_libraries(rtneuralpd_tilde PUBLIC ${LIBSR_PATH}/libsamplerate.a)
-target_link_libraries(rtneuralpd PUBLIC ${LIBSR_PATH}/libsamplerate.a)
+if(WIN32)
+        target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/Release/samplerate.lib)
+        target_link_libraries(rtneural PUBLIC ${LIBSR_PATH}/Release/samplerate.lib)
+else()
+        target_link_libraries(rtneuralpd_tilde PUBLIC ${LIBSR_PATH}/libsamplerate.a)
+        target_link_libraries(rtneuralpd PUBLIC ${LIBSR_PATH}/libsamplerate.a)
+endif()
+
 
 # set installation directory
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/rtneural_pd")

@@ -29,12 +29,13 @@ set(LIBSRI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../libsamplerate/include")
 include_directories(${LIBSR_PATH})
 include_directories(${LIBSRI_PATH})
 
-if(MSVC)
-        target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/samplerate.lib)
+if(WIN32)
+        target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/Release/samplerate.lib)
 else()
         target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/libsamplerate.a)
 endif()
 
+add_subdirectory(../../RTNeuralCPP RTNeuralCPP)
 target_link_libraries(rtneural_tilde PUBLIC RTNeural)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../max-sdk/source/max-sdk-base/script/max-posttarget.cmake)

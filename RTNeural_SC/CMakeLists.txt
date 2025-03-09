@@ -40,7 +40,7 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC RTNeural)
 option(LIBSAMPLERATE_EXAMPLES "libsamplerate: build examples" OFF) 
 option(BUILD_TESTING "libsamplerate: run testing" OFF)
 
-if(MSVC)
+if(WIN32)
         target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBSR_PATH}/Release/samplerate.lib)
 else()
         target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBSR_PATH}/libsamplerate.a)
@@ -57,7 +57,7 @@ install(DIRECTORY DESTINATION "${CMAKE_INSTALL_PREFIX}/scx_files")
 
 message(STATUS "CMake current binary directory: ${CMAKE_CURRENT_BINARY_DIR}")
 
-if(MSVC)
+if(WIN32)
   install(FILES ${CMAKE_BINARY_DIR}/Release/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)
 else()
   install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.scx DESTINATION ${CMAKE_INSTALL_PREFIX}/scx_files)

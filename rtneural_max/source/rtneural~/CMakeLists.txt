@@ -29,7 +29,7 @@ set(LIBSRI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../libsamplerate/include")
 include_directories(${LIBSR_PATH})
 include_directories(${LIBSRI_PATH})
 
-if(WIN32)
+if(MSVC)
         target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/Release/samplerate.lib)
 else()
         target_link_libraries(rtneural_tilde PUBLIC ${LIBSR_PATH}/libsamplerate.a)

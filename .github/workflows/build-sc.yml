@@ -38,7 +38,6 @@ jobs:
 
 # for windows we have to explicitly add the libsamplerate build job here
     - name: build_libsamplerate_win
-    # if: matrix.os == 'windows-latest'
       run: |
         cd libsamplerate
         mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF ..

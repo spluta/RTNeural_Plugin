@@ -9,7 +9,11 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
+<<<<<<< HEAD
         os: [windows-latest] #, macos-14, macos-13
+=======
+        os: [windows-latest, macos-14, macos-13]
+>>>>>>> d1c3656 (fix windows max build)
 
     steps:
     - uses: actions/checkout@v2

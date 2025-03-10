@@ -75,8 +75,6 @@ void 	rtneural_add_input(t_rtneural *x, t_symbol *s, int argc, t_atom *argv);
 void 	rtneural_add_output(t_rtneural *x, t_symbol *s, int argc, t_atom *argv);
 
 
-// globals
-//static t_class	*s_collect_class = NULL;
 static t_class *rtneural_class = NULL;
 
 /************************************************************************************/

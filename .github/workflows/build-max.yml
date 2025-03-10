@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [windows-latest, macos-14, macos-13] #]
+        os: [windows-latest] #, macos-14, macos-13
 
     steps:
     - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         cd libsamplerate
-        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF ..
+        mkdir -p build && cd build && cmake -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF -G "MinGW Makefiles" ..
         cmake --build . --config 'Release'
 
     - name: build_libsamplerate_other
@@ -46,7 +46,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       working-directory: ${{github.workspace}}\rtneural_max\build
-      run: cmake .. -DCMAKE_BUILD_TYPE='Release'
+      run: cmake .. -DCMAKE_BUILD_TYPE='Release' -G "MinGW Makefiles"
 
     - name: Build (Unix)
       if: matrix.os != 'windows-latest'
@@ -151,11 +151,11 @@ jobs:
 
 # upload python files to release
   
-    # - name: Upload binaries to release (python)
-    #   if: matrix.os == 'macOS-14'
-    #   uses: svenstaro/upload-release-action@v2
-    #   with:
-    #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-    #     file: ${{github.workspace}}/RTNeural_python.zip
-    #     asset_name: RTNeural_python.zip
-    #     tag: ${{ github.ref }}
+    - name: Upload binaries to release (python)
+      if: matrix.os == 'macOS-14'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{github.workspace}}/RTNeural_python.zip
+        asset_name: RTNeural_python.zip
+        tag: ${{ github.ref }}

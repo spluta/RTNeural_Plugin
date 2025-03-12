@@ -1,9 +1,9 @@
-# RTNeural UGen
-A SuperCollider UGen which implements the RTNeural inference engine. This engine is designed for real-time safe inference of tensorflow and pytorch trained neural networks.
+# RTNeural Plugin
+A SuperCollider/Max/pd plugin which implements the RTNeural inference engine. This engine is designed for real-time safe inference of tensorflow and pytorch trained neural networks. It can be used to process real-time audio or to run inference at control rate. Networks can have any number of inputs and any number of outputs. Networks trained at a specific sample rate can run at any samplerate due to internal resampling using libsamplerate.
 
 ### Installation:
 
-If you can, you probably want to use one of the pre-build binaries available on GitHub. The latest release is under Releases on the main github page. On mac you will also need to further purge any distrust of the builds:
+If you are on mac or windows, you probably want to use one of the pre-build binaries available on GitHub. The latest release is under Releases on the main github page. On mac you will also need to further purge any distrust of the builds:
 
 SC:
 ```
@@ -16,6 +16,10 @@ codesign --force --deep -s - <path to the rtneural_max/externals directory>/*.mx
 xattr -c <path to the rtneural_max/externals directory>/*.mxo
 ```
 
+pd
+```
+xattr -c <path to the rtneural_pd/externals directory>/*.so
+```
 
 
 ###Building:
@@ -76,17 +80,7 @@ After building make sure the RTNeuralUGen.scx and the RTNeural_SC/RTNeural direc
 
 ## On PC
 
-2. Replace the libsamplerate directory with the most recent Win64 release from (https://github.com/libsndfile/libsamplerate/releases/)
-
- - Rename the folder "libsamplerate"
-
-3. Build the Plugin (from the RTNeural_SC main directory):
-```
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DSC_PATH=<PATH TO SC SOURCE> ..
-cmake --build . --config Release
-```
+I have only been able to build this with GitHub actions. See the build-sc.yml file in the .github/workflows directory for a hope and a prayer to get this built
 
 ## Building the PD Plugin On Mac (or Linux)
 
@@ -127,3 +121,11 @@ After the mxo files are built, you will need to sign them locally:
 codesign --force --deep -s - ../externals/rtneural.mxo
 codesign --force --deep -s - ../externals/rtneural~.mxo
 ```
+
+## Building the Max Plugin On PC
+
+I have only been able to build this with GitHub actions using MinGW. See the build-max.yml file in the .github/workflows directory for a hope and a prayer to get this built
+
+## Building the pd Plugin On PC
+
+This should build just like the Mac plugin. It requires the bin directory from a built version of pd bin (bin55-2 is included) to exist inside the the rtneural_pd directory

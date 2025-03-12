@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 233.0, 184.0, 967.0, 758.0 ],
+		"rect" : [ 243.0, 138.0, 877.0, 758.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,6 +40,87 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-27",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 781.0, 142.5, 124.0, 20.0 ],
+					"text" : "or drop a training in"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-26",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 781.0, 273.0, 118.0, 22.0 ],
+					"text" : "prepend load_model"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-25",
+					"maxclass" : "dropfile",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 781.0, 178.0, 160.0, 71.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-21",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 596.0, 185.5, 167.0, 33.0 ],
+					"text" : "or use an openfile dialog to open any training"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-16",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 323.0, 203.5, 131.0, 20.0 ],
+					"text" : "a Joyo Extreme Metal"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-18",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 596.0, 229.0, 71.0, 22.0 ],
+					"text" : "load_model"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-2",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 323.0, 229.0, 256.0, 22.0 ],
+					"text" : "load_model JoyoExtremeMetal_RTNeural.json"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-11",
 					"maxclass" : "newobj",
 					"numinlets" : 2,
@@ -57,7 +138,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 10.0, 359.0, 176.0, 100.0 ],
+					"patching_rect" : [ 10.0, 359.0, 177.0, 100.0 ],
 					"text" : "models trained with the Automated-GuitarAmpModelling library usually use a skip connection in the training, so we need to add the signal back into itself to get the output of the original circuit"
 				}
 
@@ -68,7 +149,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 323.0, 159.0, 365.0, 20.0 ],
+					"patching_rect" : [ 323.0, 129.0, 365.0, 20.0 ],
 					"text" : "a TS9 trained on an LSTM model"
 				}
 
@@ -80,8 +161,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 323.0, 184.0, 617.0, 22.0 ],
-					"text" : "load_model ../../RTNeural_python/Automated-GuitarAmpModelling/AmpDistModels/TS9_HighDrive_RTNeural.json"
+					"patching_rect" : [ 323.0, 154.0, 238.0, 22.0 ],
+					"text" : "load_model TS9_HighDrive_RTNeural.json"
 				}
 
 			}
@@ -91,7 +172,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 323.0, 91.0, 365.0, 20.0 ],
+					"patching_rect" : [ 323.0, 66.0, 365.0, 20.0 ],
 					"text" : "a Muff distortion trained to a GRU model"
 				}
 
@@ -103,7 +184,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 343.0, 282.0, 392.0, 33.0 ],
+					"patching_rect" : [ 339.0, 296.0, 392.0, 33.0 ],
 					"text" : "lstm models are trained at a sample rate\nrtneural will internally resample the audio to the indicated sample rate"
 				}
 
@@ -114,7 +195,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 323.0, 46.0, 365.0, 20.0 ],
+					"patching_rect" : [ 323.0, 21.0, 365.0, 20.0 ],
 					"text" : "loads an lstm model which takes 1 input"
 				}
 
@@ -286,8 +367,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 323.0, 116.0, 592.0, 22.0 ],
-					"text" : "load_model ../../RTNeural_python/Automated-GuitarAmpModelling/AmpDistModels/Muff_GRU_RTNeural.json"
+					"patching_rect" : [ 323.0, 91.0, 213.0, 22.0 ],
+					"text" : "load_model Muff_GRU_RTNeural.json"
 				}
 
 			}
@@ -375,8 +456,22 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"source" : [ "obj-18", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-5", 0 ],
 					"source" : [ "obj-19", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"source" : [ "obj-2", 0 ]
 				}
 
 			}
@@ -391,6 +486,20 @@
 				"patchline" : 				{
 					"destination" : [ "obj-14", 1 ],
 					"source" : [ "obj-23", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-26", 0 ],
+					"source" : [ "obj-25", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"source" : [ "obj-26", 0 ]
 				}
 
 			}

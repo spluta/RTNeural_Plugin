@@ -128,7 +128,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 319.0, 155.0, 50.0, 22.0 ],
-					"text" : "0"
+					"text" : "2"
 				}
 
 			}
@@ -230,14 +230,12 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-3",
-					"linecount" : 3,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 302.0, 276.0, 321.0, 49.0 ],
-					"presentation_linecount" : 3,
-					"text" : "load_model ../../RTNeural_python/4Osc_MLP_torch/4Osc_torch_RTNeural.json"
+					"patching_rect" : [ 302.0, 276.0, 218.0, 22.0 ],
+					"text" : "load_model 4Osc_torch_RTNeural.json"
 				}
 
 			}

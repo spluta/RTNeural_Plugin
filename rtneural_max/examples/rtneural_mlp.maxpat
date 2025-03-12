@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 284.0, 183.0, 987.0, 628.0 ],
+		"rect" : [ 351.0, 96.0, 1247.0, 652.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,13 +40,36 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-6",
+					"linecount" : 8,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 569.0, 500.0, 520.0, 114.0 ],
+					"text" : "after the model data has been saved to a json file, it is ready for training. this happens in python.\n\nfrom the RTNeural_python directory in the terminal:\n1) make sure you are  in a virtual environment as described by RTNeural_python/README.md\n2) run 'python MLP_control/mlp_control_train_convert.py -f <your file>' to train the network\n\nthe file will be saved as <your file without the extension>_RTNeural.json in the same directory as <your file>"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-42",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 852.5, 359.0, 61.0, 22.0 ],
+					"text" : "read_json"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-31",
 					"linecount" : 3,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 65.5, 123.0, 134.0, 47.0 ],
-					"presentation_linecount" : 3,
 					"text" : "usually bypass the model when building a data set"
 				}
 
@@ -58,7 +81,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 390.0, 143.0, 133.0, 33.0 ],
+					"patching_rect" : [ 390.0, 143.0, 134.0, 33.0 ],
 					"text" : "add and remove points from the training"
 				}
 
@@ -114,9 +137,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 779.5, 391.0, 213.0, 22.0 ],
-					"presentation_linecount" : 2,
-					"text" : "read_json mlp_models/mlp_synth.json"
+					"patching_rect" : [ 932.5, 359.0, 216.0, 22.0 ],
+					"text" : "read_json mlp_synth.json"
 				}
 
 			}
@@ -269,7 +291,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 29.0, 124.0, 270.0, 22.0 ],
-									"text" : "0.283465 0."
+									"text" : "0. 0."
 								}
 
 							}
@@ -300,13 +322,12 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-5",
-									"linecount" : 3,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 321.0, 124.0, 301.0, 49.0 ],
-									"text" : "0.103357 0.129533 0.127906 0.13423 0.14719 0.178758 0.190253 0.226831 0.27399 0.309852 0.389701 0.486975 0.913681"
+									"text" : "0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0."
 								}
 
 							}
@@ -498,8 +519,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 764.5, 359.0, 214.0, 22.0 ],
-					"text" : "write_json mlp_models/mlp_synth.json"
+					"patching_rect" : [ 764.5, 359.0, 63.0, 22.0 ],
+					"text" : "write_json"
 				}
 
 			}
@@ -511,7 +532,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 544.0, 162.0, 280.0, 22.0 ],
-					"text" : "load_model mlp_models/mlp_synth_RTNeural.json"
+					"text" : "load_model mlp_synth_RTNeural.json"
 				}
 
 			}
@@ -760,6 +781,13 @@
 				"patchline" : 				{
 					"destination" : [ "obj-2", 0 ],
 					"source" : [ "obj-33", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-2", 0 ],
+					"source" : [ "obj-42", 0 ]
 				}
 
 			}

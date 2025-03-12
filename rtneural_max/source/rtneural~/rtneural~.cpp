@@ -191,44 +191,46 @@ void rtneural_free (t_rtneural* x) {
   sysmem_freeptr(x->outbuf);
 }
 
-std::string get_abs_path(t_rtneural *x, std::string filename_in){
-  t_object *jp;
-    t_max_err err = object_obex_lookup(x, gensym("#P"), (t_object **)&jp);
-    if (err != MAX_ERR_NONE){
-      post("Error getting parent patcher");
-      return "ERROR";
-    }
-    t_symbol *path = object_attr_getsym(jp, gensym("filepath"));
+t_int get_abs_path(t_symbol *path_in, char* filename, int read_write){
+  t_fourcc filetype = 'JSON', outtype;
+  short numtypes = 1;
+  
+  short path;
 
-    std::string parent_directory = path->s_name;
-    size_t pos = parent_directory.find_last_of("/\\");
-    if (pos != std::string::npos) {
-      parent_directory = parent_directory.substr(0, pos);
-    }
-    parent_directory = parent_directory.substr(13);
-    if (!std::filesystem::is_directory(parent_directory.c_str())) {
-      post("The directory does not exist or is not a directory");
-      return "ERROR";
-    }
-    return (parent_directory +"/"+ filename_in);
+  if (path_in == gensym("")) {      // if no argument supplied, ask for file
+      if (read_write==1) {
+          if (saveas_dialog(filename, &path, NULL)) // non-zero: user cancelled
+              return 1;
+      } else {
+          if (open_dialog(filename, &path, &outtype, &filetype, numtypes))       // non-zero: user cancelled
+              return 1;
+      }
+        
+  } else {
+      strcpy(filename, path_in->s_name);    // must copy symbol before calling locatefile_extended
+      if (locatefile_extended(filename, &path, &outtype, &filetype, 1)) { // non-zero: not found
+          //object_error(x, "%s: not found", path_in->s_name);
+          post("Failed to open input file");
+          return 1;
+      }
+  }
+
+  if(path_toabsolutesystempath(path, filename, filename)){
+    post("Failed to get absolute path");
+    return 1;
+  }
+
+  return 0;
 }
 
-
-void rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
-
-	t_symbol* path = atom_getsym(argv);
-  std::string filename_in = path->s_name;
-  size_t pos = filename_in.find_first_of("/\\");
-  std::string filename;
-  if(pos==0)
-  {
-    filename = filename_in;
-  } else {
-    filename = get_abs_path(x, filename_in);
+void rtneural_doload_model(t_rtneural *x, t_symbol *path_in){
+  char filename[MAX_PATH_CHARS];
+  if(get_abs_path(path_in, filename, 0)){
+    return;
   }
 
   post("loading model: ");
-  post(filename.c_str());
+  post(filename);
 
   t_int test = x->processor.load_model(filename, 1);
   if(test==1){
@@ -255,6 +257,14 @@ void rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
     }
     post("disabling model");
   }
+}
+
+void rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
+  (void)x;
+
+  t_symbol* path_in = atom_getsym(argv);
+
+  defer(x, (method)rtneural_doload_model, path_in, 0, NULL);
 }  
 
 void rtneural_bypass(t_rtneural *x, long f){

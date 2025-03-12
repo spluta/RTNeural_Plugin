@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 378.0, 197.0, 967.0, 536.0 ],
+		"rect" : [ 186.0, 165.0, 967.0, 536.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,17 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-2",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 244.0, 5.0, 114.0, 20.0 ],
+					"text" : "the gain knob value"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-24",
 					"linecount" : 2,
@@ -287,13 +298,12 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-3",
-					"linecount" : 2,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 321.0, 189.0, 644.0, 35.0 ],
-					"text" : "load_model ../../RTNeural_python/Automated-GuitarAmpModelling/AmpDistModels/DOD_AmericanMetal_GainKnob_RTNeural.json"
+					"patching_rect" : [ 321.0, 189.0, 330.0, 22.0 ],
+					"text" : "load_model DOD_AmericanMetal_GainKnob_RTNeural.json"
 				}
 
 			}

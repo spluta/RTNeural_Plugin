@@ -83,11 +83,11 @@ jobs:
 
 # Zip the python folder
 
-    - name: Zip up python
-      if: matrix.os == 'macOS-14'
-      shell: bash
-      working-directory: ${{github.workspace}}
-      run: zip -r RTNeural_python.zip RTNeural_python 
+    # - name: Zip up python
+    #   if: matrix.os == 'macOS-14'
+    #   shell: bash
+    #   working-directory: ${{github.workspace}}
+    #   run: zip -r RTNeural_python.zip RTNeural_python 
 
   # upload pd binaries to release
 
@@ -152,11 +152,11 @@ jobs:
 
 # upload python files to release
   
-    - name: Upload binaries to release (python)
-      if: matrix.os == 'macOS-14'
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{github.workspace}}/RTNeural_python.zip
-        asset_name: RTNeural_python.zip
-        tag: ${{ github.ref }}
+    # - name: Upload binaries to release (python)
+    #   if: matrix.os == 'macOS-14'
+    #   uses: svenstaro/upload-release-action@v2
+    #   with:
+    #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+    #     file: ${{github.workspace}}/RTNeural_python.zip
+    #     asset_name: RTNeural_python.zip
+    #     tag: ${{ github.ref }}

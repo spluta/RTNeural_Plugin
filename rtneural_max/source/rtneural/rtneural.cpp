@@ -92,7 +92,7 @@ void ext_main(void *r)
   class_addmethod(c, (method)rtneural_load_model, "load_model", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_write_json, "write_json", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_read_json, "read_json", A_GIMME, 0);
-  class_addmethod(c, (method)rtneural_bypass, "bypass", A_GIMME, 0);
+  class_addmethod(c, (method)rtneural_bypass, "bypass", A_LONG, 0);
   class_addmethod(c, (method)rtneural_set_epochs, "set_epochs", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_set_layers_data, "set_layers_data", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_set_learn_rate, "set_learn_rate", A_GIMME, 0);
@@ -453,7 +453,7 @@ void rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
 }  
 
 void rtneural_bypass(t_rtneural *x, long f){
-  x->bypass = f;
+  x->bypass = (int)f;
 
   post(f ? "Bypass ON" : "Bypass OFF");
 }  

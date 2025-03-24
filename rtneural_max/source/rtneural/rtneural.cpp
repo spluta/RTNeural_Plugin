@@ -251,9 +251,6 @@ t_int get_abs_path(t_symbol *path_in, char* filename, int read_write){
           if (open_dialog(filename, &path, &outtype, &filetype, numtypes))       // non-zero: user cancelled
               return 1;
       }
-      // if (open_dialog(filename, &path, &outtype, &filetype, 1))       // non-zero: user cancelled
-      //     return 1;
-        
   } else {
       strcpy(filename, path_in->s_name);    // must copy symbol before calling locatefile_extended
       if (locatefile_extended(filename, &path, &outtype, &filetype, 1)) { // non-zero: not found
@@ -328,8 +325,6 @@ void rtneural_doread_json(t_rtneural *x, t_symbol *path_in){
 }
 
 void rtneural_read_json(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
-  
-
   t_symbol* path_in = atom_getsym(argv);
   defer(x, (method)rtneural_doread_json, path_in, 0, NULL);
 }
@@ -364,21 +359,19 @@ void rtneural_dowrite_json(t_rtneural *x, t_symbol *path_in){
   char filename[MAX_PATH_CHARS];
   if(get_abs_path(path_in, filename, 1)){
     return;
-  }
-
-  std::ofstream output_file(filename);
-  if (!output_file.is_open())  {
-    post("Failed to open output file");
   } else {
-    output_file << data;
-    output_file.close();
-    post("writing output file");
+    std::ofstream output_file(filename);
+    if (!output_file.is_open())  {
+      post("Failed to open output file");
+    } else {
+      output_file << data;
+      output_file.close();
+      post("writing output file");
+    }
   }
 }
 
 void rtneural_write_json(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
-  
-  
   t_symbol* path_in = atom_getsym(argv);
   defer(x, (method)rtneural_dowrite_json, path_in, 0, NULL);
 }
@@ -449,6 +442,7 @@ void rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
 
   t_symbol* path_in = atom_getsym(argv);
 
+  //rtneural_doload_model(x, path_in);
   defer(x, (method)rtneural_doload_model, path_in, 0, NULL);
 }  
 

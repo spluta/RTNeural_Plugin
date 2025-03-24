@@ -101,25 +101,20 @@ a folder will be placed in the build directory with the rtneural and rtneural~ o
 
 Just like above, the libsamplerate project needs to be built before the Max plugin can be built
 
-From the rtneural_pd directory.
+From the rtneural_max directory.
 
 ```
-cp max-posttarget.cmake max-sdk/source/max-sdk-base/script/max-posttarget.cmake
-cp max-pretarget.cmake max-sdk/source/max-sdk-base/script/max-pretarget.cmake
-
 mkdir build
 cd build
 cmake ..
 cmake --build .
 ```
 
-The first two lines above will replace files in the max-sdk with custom scripts. This only needs to happen once. After that, the project should build.
-
 After the mxo files are built, you will need to sign them locally:
 
 ```
-codesign --force --deep -s - ../externals/rtneural.mxo
-codesign --force --deep -s - ../externals/rtneural~.mxo
+codesign --force --deep -s - rtneural_max/externals/rtneural.mxo
+codesign --force --deep -s - rtneural_max/externals/rtneural~.mxo
 ```
 
 ## Building the Max Plugin On PC

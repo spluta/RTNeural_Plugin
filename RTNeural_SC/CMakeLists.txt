@@ -13,9 +13,11 @@ project (RTNeural_SC)
 
 # add_subdirectories manually
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate ${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/build)
+# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate libsamplerate/build)
 
 # set(RTNEURAL_STL ON ON CACHE BOOL "Use RTNeural with this backend" FORCE)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../RTNeuralCPP ${CMAKE_CURRENT_SOURCE_DIR}/../RTNeuralCPP/build)
+# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../RTNeuralCPP ${CMAKE_CURRENT_SOURCE_DIR}/../RTNeuralCPP/build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../RTNeuralCPP RTNeuralCPP)
 
 include_directories(${SC_PATH}/include/plugin_interface)
 include_directories(${SC_PATH}/include/common)
@@ -35,15 +37,15 @@ set(LIBSRI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libsamplerate/include")
 include_directories(${LIBSR_PATH})
 include_directories(${LIBSRI_PATH})
 
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC RTNeural)
+target_link_libraries(${PROJECT_NAME} RTNeural)
 
 option(LIBSAMPLERATE_EXAMPLES "libsamplerate: build examples" OFF) 
 option(BUILD_TESTING "libsamplerate: run testing" OFF)
 
 if(WIN32)
-        target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBSR_PATH}/Release/samplerate.lib)
+        target_link_libraries(${PROJECT_NAME} ${LIBSR_PATH}/Release/samplerate.lib)
 else()
-        target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBSR_PATH}/libsamplerate.a)
+        target_link_libraries(${PROJECT_NAME} ${LIBSR_PATH}/libsamplerate.a)
 endif()
 
 # set installation directory

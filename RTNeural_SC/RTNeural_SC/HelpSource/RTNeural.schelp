@@ -79,15 +79,15 @@ code::
 //load an LSTM model from the Proteus guitar pedal
 //these trainings use an LSTM with a hidden layer of 20 and were trained at 44100
 (
-    //expecting the RTNeural_python
-    ~python_path = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(3)++"RTNeural_python/";
+    //loading from the HelpSource directory
+    ~model_path = PathName(RTNeural.filenameSymbol.asString).upMultiDir(2)++"HelpSource/audio_models/";
 
-    RTNeural.loadModel(~synth, \this_one, ~python_path++"Automated-GuitarAmpModelling/AmpDistModels/JoyoExtremeMetal_RTNeural.json", 1);
+    RTNeural.loadModel(~synth, \this_one, ~model_path++"JoyoExtremeMetal_RTNeural.json", 1);
 )
 
 //GRU model of a Muff pedal. This training using a GRU with 64 hidden layers
 (
-    RTNeural.loadModel(~synth, \this_one, ~python_path++"Automated-GuitarAmpModelling/AmpDistModels/Muff_GRU_RTNeural.json", 1);
+    RTNeural.loadModel(~synth, \this_one, ~model_path++"Muff_GRU_RTNeural.json", 1);
 )
 
 //LSTM and GRU models are trained at a sample rate, and that needs to be correctly indicated in the synthdef
@@ -100,7 +100,7 @@ SynthDef('rt_neural_wrong_sr', {
 
 ~synth = Synth("rt_neural_wrong_sr");
 
-RTNeural.loadModel(~synth, \this_one, ~python_path++"Automated-GuitarAmpModelling/AmpDistModels/JoyoExtremeMetal_RTNeural.json", 1);
+RTNeural.loadModel(~synth, \this_one, ~model_path++"JoyoExtremeMetal_RTNeural.json", 1);
 
 
 //some AGAM models have 2 or more inputs for "Gain Knobs" and such
@@ -119,7 +119,7 @@ RTNeural.loadModel(~synth, \this_one, ~python_path++"Automated-GuitarAmpModellin
 
 // move the mouse left to right to adjust the effect
 (
-    RTNeural.loadModel(~synth, \this_one, ~python_path++"Automated-GuitarAmpModelling/AmpDistModels/DOD_AmericanMetal_GainKnob_RTNeural.json");
+    RTNeural.loadModel(~synth, \this_one, ~model_path++"DOD_AmericanMetal_GainKnob_RTNeural.json");
 )
 
 ::
@@ -143,11 +143,11 @@ SynthDef('rtneural_centaur', {
 ~synth = Synth('rtneural_centaur');
 (
 //load the small model - has a little error in the low range
-~python_path = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(3)++"RTNeural_python/";
-RTNeural.loadModel(~synth, \this_one, ~python_path++"chowdhury_models/chow_centaur/centaur.json");
+~python_path = "/Users/spluta1/Dev/SC/RTNeural_Plugin/RTNeural_python";  //put the correct path of RTNeural_python here
+RTNeural.loadModel(~synth, \this_one, ~python_path++"/chowdhury_models/chow_centaur/centaur.json");
 )
 //the large model clears up the issue in the low register
-RTNeural.loadModel(~synth, \this_one, ~python_path++"chowdhury_models/chow_centaur/centaur_large.json");
+RTNeural.loadModel(~synth, \this_one, ~python_path++"/chowdhury_models/chow_centaur/centaur_large.json");
 
 //check out the excellent distortion shape
 Stethoscope(s, 2);
@@ -163,7 +163,7 @@ code::
 SynthDef('rtneural_mlp_control', {
     var rtn, in = [MouseX.kr, MouseY.kr];
     
-    rtn = RTNeural.kr(in, 10, 'mlp', \trig_mode.kr(0), 0, \bypass.kr(0));
+    rtn = RTNeural.kr(in, 13, 'mlp', \trig_mode.kr(0), 0, \bypass.kr(0));
     rtn.poll;
     nil
 }).load(s);
@@ -172,8 +172,8 @@ SynthDef('rtneural_mlp_control', {
 (
     ~synth = Synth('rtneural_mlp_control');
 
-    ~python_path = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(3)++"RTNeural_python/";
-    RTNeural.loadModel(~synth, \mlp, (~python_path++"MLP_control/trainings/dumb_data/mlp_training_RTNeural.json"));
+    ~model_path = PathName(RTNeural.filenameSymbol.asString).upMultiDir(2)++"HelpSource/mlp_control_tutorial/";
+    RTNeural.loadModel(~synth, \mlp, (~model_path++"synth_RTNeural.json"));
 )
 ::
 
@@ -185,7 +185,7 @@ SynthDef('rtneural_mlp_trig', {
     var rtn, in = [SinOsc.ar(0.1).range(0,1), SinOsc.ar(0.133).range(0,1)];
     
     //this can also operate at audio rate, but it will be very inefficient
-    rtn = RTNeural.ar(in, 10, 'mlp', \bypass.kr(0), -1, \trig_mode.kr(1), Dust.ar(1));
+    rtn = RTNeural.ar(in, 13, 'mlp', \bypass.kr(0), -1, \trig_mode.kr(1), Dust.ar(1));
     rtn.poll;
     nil
 }).load(s);
@@ -195,8 +195,8 @@ SynthDef('rtneural_mlp_trig', {
 (
     ~synth = Synth('rtneural_mlp_trig');
 
-    ~python_path = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(3)++"RTNeural_python/";
-    RTNeural.loadModel(~synth, \mlp, (~python_path++"MLP_control/trainings/dumb_data/mlp_training_RTNeural.json"));
+    ~model_path = PathName(RTNeural.filenameSymbol.asString).upMultiDir(2)++"HelpSource/mlp_control_tutorial/";
+    RTNeural.loadModel(~synth, \mlp, (~model_path++"synth_RTNeural.json"));
 )
 ::
 
@@ -205,14 +205,14 @@ A Neural Wavetable Oscillator
 
 code::
 //a multilayer perceptron neural network that has been trained on variable wavetable oscillator
+//see RTNeural_python/4Osc_MLP_torch to view how this model was trained
 //i am not saying this is a good use of a neural network
 
-//this uses neural networks to create variable oscillators
+//this uses neural networks to create variable "wavetable" oscillators
 //trained using pytorch
 (
 SynthDef('rtneural_osc_torch', {
     var rtn, in = LFSaw.ar(MouseX.kr(50, 500)).range(0,1);
-    //centaur takes 3 inputs - audio, gain, and 1/sample_rate
     in = [in, K2A.ar(MouseY.kr)];
     rtn = RTNeural.ar(in, 1, 'this_one', \trig_mode.kr(0), \bypass.kr(0));
     Out.ar(0,
@@ -225,6 +225,6 @@ SynthDef('rtneural_osc_torch', {
 ~synth = Synth('rtneural_osc_torch');
 
 //load the model
-~python_path = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(3)++"RTNeural_python/";
-RTNeural.loadModel(~synth, \this_one, ~python_path++"4Osc_MLP_torch/4Osc_torch_RTNeural.json");
+~model_path = PathName(RTNeural.filenameSymbol.asString).upMultiDir(2)++"HelpSource/audio_models/";
+RTNeural.loadModel(~synth, \this_one, ~model_path++"4Osc_torch_RTNeural.json");
 ::

@@ -140,3 +140,20 @@ RTNeural : MultiOutUGen {
 		};
 	}
 }
+
++ PathName {
+
+	upMultiDir { |index|
+		var ci = this.colonIndices;
+
+		^if(index == 0, {
+			fullPath
+		}, {
+			if((fullPath.last.isPathSeparator and: { ci.size > 1 }), {
+				fullPath.copyRange(0, ci[ci.size - (1 + index)])
+			}, {
+				fullPath.copyRange(0, ci[ci.size - index])
+			})
+		})
+	}
+}

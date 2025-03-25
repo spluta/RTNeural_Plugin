@@ -39,7 +39,9 @@ class MLPRegressor(nn.Module):
 # Create a PyTorch model instance
 model = MLPRegressor(2, 256, 1)
 
-model = torch.load(dir_path+"/4Osc_torch") # Load the model
+model_state_dict = torch.load(dir_path+"/4Osc_torch.pt")
+
+model.load_state_dict(model_state_dict) # Load the model
 
 print(model)
 

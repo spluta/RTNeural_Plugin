@@ -4,6 +4,9 @@ import time
 import torch.nn as nn
 import torch.optim as optim
 
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
 # use a gpu for training if available
 if torch.backends.mps.is_available():
     device = torch.device("mps")
@@ -72,7 +75,7 @@ criterion = nn.MSELoss()
 last_time = time.time()
 
 for nums in [[0.001,10000], [0.0001,10000], [0.00001, 30000]]:
-# for nums in [[0.001,100], [0.0001,100], [0.00001, 100]]:
+# for nums in [[0.001,10], [0.0001,10], [0.00001, 10]]:
     optimizer = optim.Adam(model.parameters(), lr=nums[0])
 
     # Train the model
@@ -95,4 +98,4 @@ print("Training loss:", loss.item())
 
 # Save the cpu model
 cpu_model = model.to('cpu')
-torch.save(cpu_model, dir_path+"/4Osc_torch")
+torch.save(cpu_model.state_dict(), dir_path+"/4Osc_torch.pt")

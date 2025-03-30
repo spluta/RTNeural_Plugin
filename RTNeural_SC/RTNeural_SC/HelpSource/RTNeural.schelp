@@ -74,7 +74,7 @@ code::
 )
 
 //make the synth
-~synth = Synth('rt_neural_dist');
+~synth = Synth('rt_neural_dist', [\buf_num, b]);
 
 //load an LSTM model from the Proteus guitar pedal
 //these trainings use an LSTM with a hidden layer of 20 and were trained at 44100

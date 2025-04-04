@@ -1,4 +1,4 @@
-#N canvas 1131 276 620 202 12;
+#N canvas 1027 284 620 202 12;
 #N canvas 32 102 729 578 trigger_mode 0;
 #X obj 184 354 tgl 30 0 empty empty empty 0 -10 0 12 #dfdfdf #000000 #000000 0 1;
 #X msg 184 389 bypass \$1;
@@ -98,7 +98,7 @@
 #X connect 20 0 11 0;
 #X connect 21 0 22 0;
 #X restore 25 97 pd trigger_mode;
-#N canvas 38 36 795 549 wavetable 0;
+#N canvas 38 36 795 549 wavetable 1;
 #X floatatom 86 187 5 0 0 0 - - - 0;
 #X obj 258 32 vsl 19 162 0 1 0 0 empty empty empty 0 -9 0 12 #dfdfdf #000000 #000000 0 1;
 #X floatatom 258 203 7 0 0 0 - - - 0;
@@ -141,7 +141,6 @@
 #X connect 19 0 5 0;
 #X connect 20 0 21 0;
 #X restore 46 127 pd wavetable;
-#X text 145 127 <-- example using [rtneural~] as a wavetable oscillator;
 #X text 145 97 <-- learn about a 4th creation argument: trigger_mode;
 #N canvas 32 102 745 588 distortion 0;
 #X obj 106 231 osc~ 200;
@@ -187,7 +186,7 @@
 #X connect 20 0 21 0;
 #X restore 39 158 pd distortion;
 #X text 145 158 <-- example using [rtneural~] as a distortion with gain control, f 63;
-#N canvas 0 0 1061 486 intro 0;
+#N canvas 262 509 1061 486 intro 0;
 #X obj 455 81 osc~ 200;
 #X floatatom 455 57 5 0 0 0 - - - 0;
 #X obj 561 225 tgl 30 0 empty empty empty 0 -10 0 12 #dfdfdf #000000 #000000 0 1;
@@ -230,14 +229,16 @@
 #X restore 549 159 pd loop;
 #X obj 244 308 output~;
 #X obj 588 185 *~ 0;
-#X text 601 320 Load the model file at the given (relative or absolute) path. The model must satisfy [rtneural~]'s channel counts., f 61;
 #X text 601 92 [rtneural~] expects an input signal of the declared channel count. This patch lets you choose between a sine wave (left cell) or speech sample (right cell).;
 #X text 601 219 set whether [rtneural~]'s signal processing is bypassed (if set to 1 \, the input signal is passed through unaffected), f 43;
 #X text 16 138 [rtneural~] runs inference from a pre-trained neural net on a multichannel input signal. It accepts three main creation arguments: input channel count \, output channel count \, and sample rate., f 69;
-#X msg 602 359 load_model models/TS9_HighDrive_RTNeural.json;
-#X msg 602 386 load_model models/GRU16c_RTNeural.json;
-#X obj 34 49 tgl 30 0 empty empty DSP\ on/off 0 -10 0 12 #ffc7c6 #000000 #000000 0 1;
+#X msg 603 387 load_model models/TS9_HighDrive_RTNeural.json;
+#X msg 602 442 load_model models/GRU16c_RTNeural.json;
+#X obj 34 50 tgl 30 0 empty empty DSP\ on/off 0 -10 0 12 #ffc7c6 #000000 #000000 0 1;
 #X obj 34 84 switch~;
+#X text 601 320 Load the model file at the given (relative or absolute) path. The model must satisfy [rtneural~]'s channel counts., f 61;
+#X text 603 365 A model trained on a TS9 guitar pedal., f 61;
+#X text 601 409 A model trained to transform a sine wave into an anti-aliased sawtooth wave., f 61;
 #X connect 0 0 3 0;
 #X connect 1 0 0 0;
 #X connect 2 0 11 0;
@@ -254,10 +255,11 @@
 #X connect 14 0 17 1;
 #X connect 15 0 17 0;
 #X connect 17 0 9 0;
+#X connect 21 0 9 0;
 #X connect 22 0 9 0;
-#X connect 23 0 9 0;
-#X connect 24 0 25 0;
+#X connect 23 0 24 0;
 #X restore 74 68 pd intro;
 #X text 144 68 <-- an introduction to [rtneural~];
 #X obj 67 15 rtneural~;
 #X text 140 15 is an interface for real-time neural net inference. Look through these examples to understand how it works:, f 64;
+#X text 145 127 <-- example using [rtneural~] as a variable wavetable oscillator, f 65;

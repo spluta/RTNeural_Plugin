@@ -1,7 +1,7 @@
 #include "m_pd.h"
 //#include <memory>
 #include "../RTN_Processor.cpp"
-#include <experimental/filesystem>
+// #include <experimental/filesystem>
 #include <vector>
 
 #include "m_pd.h"
@@ -244,39 +244,40 @@ void rtneural_write_json(t_rtneural *x, t_symbol *s){
 }
 
 void rtneural_train_model(t_rtneural *x, t_symbol *s) {
-  char absolute_path[MAXPDSTRING] = { 0 };
-  canvas_makefilename(x->canvas, s->s_name, absolute_path, MAXPDSTRING);
+  post("not yet implemented");
+  // char absolute_path[MAXPDSTRING] = { 0 };
+  // canvas_makefilename(x->canvas, s->s_name, absolute_path, MAXPDSTRING);
 
-  std::string cmd = "cd "
-    + x->python_path
-  #ifdef _WIN32
-    + "; venv\\bin\\activate.bat; "
-    + "python MLP_control\\mlp_control_train_convert.py -f "
-  #else
-    + "; . venv/bin/activate; "
-    + "python MLP_control/mlp_control_train_convert.py -f "
-  #endif
-    + absolute_path;
-  post(cmd.c_str());
+  // std::string cmd = "cd "
+  //   + x->python_path
+  // #ifdef _WIN32
+  //   + "; venv\\bin\\activate.bat; "
+  //   + "python MLP_control\\mlp_control_train_convert.py -f "
+  // #else
+  //   + "; . venv/bin/activate; "
+  //   + "python MLP_control/mlp_control_train_convert.py -f "
+  // #endif
+  //   + absolute_path;
+  // post(cmd.c_str());
 
-  std::unique_ptr<FILE, void(*)(FILE *)> pipe(popen(cmd.c_str(), "r"),
-    [](FILE *f) -> void {
-      std::ignore = pclose(f);
-    }
-  );
-  if (!pipe) {
-    post("Failed to open pipe");
-    return;
-  }
-  char buffer[128];
-  try {
-    while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
-      post(buffer);
-    }
-  } catch (...) {
-    post("Failed to read output");
-    return;
-  }
+  // std::unique_ptr<FILE, void(*)(FILE *)> pipe(popen(cmd.c_str(), "r"),
+  //   [](FILE *f) -> void {
+  //     std::ignore = pclose(f);
+  //   }
+  // );
+  // if (!pipe) {
+  //   post("Failed to open pipe");
+  //   return;
+  // }
+  // char buffer[128];
+  // try {
+  //   while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
+  //     post(buffer);
+  //   }
+  // } catch (...) {
+  //   post("Failed to read output");
+  //   return;
+  // }
 }
 
 void rtneural_load_model(t_rtneural *x, t_symbol *s){

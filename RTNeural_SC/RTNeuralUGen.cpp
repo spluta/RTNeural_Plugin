@@ -12,8 +12,6 @@ static InterfaceTable *ft;
     m_num_input_chans = numInputs()-4;
     m_num_output_chans = numOutputs();
 
-    in_vec.resize(m_num_input_chans);
-
     int nn_sample_rate = in0(1);
 
     //this is needed to handle resampling of audio when the sample rate is not the same as that at which the model was trained
@@ -29,6 +27,9 @@ static InterfaceTable *ft;
 
     input_to_nn = (float*)RTAlloc(mWorld, (double)m_num_input_chans*sizeof(float));
     output_from_nn = (float*)RTAlloc(mWorld, (double)m_num_output_chans*sizeof(float));
+
+    ins = (float const**)RTAlloc(mWorld, (double)m_num_input_chans*sizeof(float*));
+    outs = (float **)RTAlloc(mWorld, (double)m_num_output_chans*sizeof(float*));
 
     float ratio = 1.f;
     if(nn_sample_rate>0.f) {
@@ -86,15 +87,22 @@ void RTNeuralUGen::next(int nSamples)
   const float bypass = in0(0);
   const float trig_mode = in0(2);
   const float* trigger = in(3);
+  
+  for (int i = 0; i < m_num_input_chans; ++i) {
+    ins[i] = in(i+4);
+  }
+  for (int i = 0; i < m_num_output_chans; ++i) {
+    outs[i] = out(i);
+  }
 
   if ((processor.m_model_loaded==false)||((int)bypass==1)) {
     for (int i = 0; i < nSamples; ++i) {
       int small = std::min(m_num_input_chans, m_num_output_chans);
       for (int j = 0; j < m_num_output_chans; ++j) {
         if(j<small) {
-          out(j)[i] = in(j+4)[i];
+          outs[j][i] = ins[j][i];
         } else {
-          out(j)[i] = 0.f;
+          outs[j][i] = 0.f;
         }
       }
     }
@@ -102,32 +110,35 @@ void RTNeuralUGen::next(int nSamples)
   else {
     if(trig_mode==0) {
 
-      for (int j = 0; j < m_num_input_chans; ++j) {
-        in_vec[j] = in(4+j);
-      }
+      int n_samps_out = processor.process(ins, in_rs, interleaved_array, out_temp, outbuf, nSamples);
 
-      int n_samps_out = processor.process(in_vec, in_rs, interleaved_array, out_temp, outbuf, nSamples);
+      // std::cout<<" "<<std::endl;
+      // std::cout<<" "<<std::endl;
+      // std::cout<<" "<<std::endl;
+      // for (int i =0; i < n_samps_out*m_num_output_chans; i++) {
+      //   std::cout<<outbuf[i];
+      // }
 
-      //deinterleave the output and put it in the output buffers
-      for(int i = 0; i < n_samps_out; ++i) {
-        for (int j = 0; j < m_num_output_chans; ++j) {
-          out(j)[i] = outbuf[i*m_num_output_chans+j];
+      for (int j = 0; j < m_num_output_chans; j++) {
+        for(int i = 0; i < nSamples; i++) {
+          outs[j][i] = outbuf[i*m_num_output_chans+j];
         }
       }
+
     } else {
       for (int i = 0; i < nSamples; ++i){
         if(trigger[i]>0.f){
           //std::cout<<"triggered"<<std::endl;
           for (int j = 0; j < m_num_input_chans; ++j) {
-            input_to_nn[j] = (float)in(j+4)[i];
+            input_to_nn[j] = (float)ins[j][i];
           }
           processor.process1(input_to_nn, output_from_nn);
           for (int j = 0; j < m_num_output_chans; ++j) {
-            out(j)[i] = output_from_nn[j];
+            outs[j][i] = output_from_nn[j];
           }
         } else {
           for (int j = 0; j < m_num_output_chans; ++j) {
-            out(j)[i] = output_from_nn[j];
+            outs[j][i] = output_from_nn[j];
           }
         }
       }

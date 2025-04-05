@@ -293,12 +293,15 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
     if(x->trig_mode==0){
       t_int n_samps_out = x->processor.process(ins, x->in_rs, x->interleaved_array, x->out_temp, x->outbuf, x->blocksize);
 
+      //post("interleaved: %f %f %f %f %f %f ", x->outbuf[0], x->outbuf[1], x->outbuf[2], x->outbuf[3], x->outbuf[4], x->outbuf[5]);
+
       //deinterleave the output and put it in the output buffers
       for (t_int j = 0; j < x->n_out_chans; j++) {
-        for(t_int i = 0; i < n_samps_out; i++) {
-          outs[j][i] = (double)x->outbuf[j*n_samps_out+i];
+        for(t_int i = 0; i < x->blocksize; i++) {
+          outs[j][i] = (double)x->outbuf[i*x->n_out_chans+j];
         }
       }
+
     } else {
       for (t_int i = 0; i < sampleframes; ++i){
         if(ins[numins-1][i]>0.){

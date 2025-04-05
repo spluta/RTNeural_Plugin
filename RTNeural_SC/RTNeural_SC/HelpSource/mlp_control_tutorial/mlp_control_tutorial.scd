@@ -14,14 +14,14 @@
 
 (
     //save the json file (can go anywhere)
-    ~folder = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(1)++"HelpSource/mlp_control_tutorial/";
+    ~folder = PathName(RTNeural.filenameSymbol.asString).upMultiDir(2)++"HelpSource/mlp_control_tutorial/";
     ~json_path = ~folder++"dummy_values.json";
     RTNeural.saveJSONFile(~dict, ~json_path); //you must install the JSONlib Quark for this to work
 )
 
 //train the network using the values in the json file
 //we are assuming that the RTNeural_python folder is in the same directory as the RTNeural_SC folder
-~python_path = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(3)++"RTNeural_python";
+~python_path = "/Users/spluta1/Desktop/RTNeural_python";
 RTNeural.trainMLP(~json_path, nil, ~python_path); //this will save the pytorch format pt file and rtneural json file
 
 //you can also run the training in the terminal
@@ -35,7 +35,8 @@ s.boot;
 
 //declare a synthdef
 (SynthDef("test_rtneural", {
-    RTNeural.kr([MouseX.kr, MouseY.kr], 10, 'mlp', 0).poll;
+    //the audio rate UGen needs audio rate inputs
+    RTNeural.ar(K2A.ar([MouseX.kr, MouseY.kr]), 10, 'mlp', 0).poll;
 }).load(s);)
 
 a = Synth("test_rtneural"); //make the synth
@@ -52,7 +53,7 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
         var vals = Select.kr(\bypass.kr(1), [RTNeural.kr([\x.kr(0.5), \y.kr(0.5)], out_size, 'mlp', \bypass.kr), \slider_vals.kr((0!out_size))]);
         var osc1, osc2, feed, env;
 
-        vals = Lag.kr(vals);
+        vals = Lag.kr(vals,0.2);
         
         Out.kr(\vals_bus.kr, vals);
 
@@ -105,9 +106,9 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
     var bypass = 1;
     var win = Window("RTNeural MultiLayer Perceptron",Rect(0,0,500,300));
     
-    var python_path = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(3)++"RTNeural_python";
+    var python_path = PathName(RTNeural.filenameSymbol.asString).upMultiDir(3)++"RTNeural_python";
 
-    var training_path = PathName(RTNeural.filenameSymbol.asString).parentLevelPath(1)++"HelpSource/mlp_control_tutorial/";
+    var training_path = PathName(RTNeural.filenameSymbol.asString).upMultiDir(1)++"HelpSource/mlp_control_tutorial/";
 
     var msv_array = 0!out_size;
     var xy_array = 0!in_size;

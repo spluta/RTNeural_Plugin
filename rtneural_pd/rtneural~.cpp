@@ -195,12 +195,18 @@ t_int* rtneural_tilde_perform (t_int* args) {
 
       t_int n_samps_out = obj->processor.process(obj->in_vec, obj->in_rs, obj->interleaved_array, obj->out_temp, obj->outbuf, obj->blocksize);
 
-      //deinterleave the output and put it in the output buffers
-      for(t_int i = 0; i < n_samps_out; i++) {
-        for (t_int j = 0; j < obj->n_out_chans; j++) {
-          out[j*obj->blocksize+ i] = obj->outbuf[i*obj->n_out_chans+j];
+      for (t_int j = 0; j < obj->blocksize; j++) {
+        for(t_int i = 0; i < n_samps_out; i++) {
+          out[j*obj->blocksize+ i] = (t_sample)obj->outbuf[i*obj->n_out_chans+j];
         }
       }
+
+      //deinterleave the output and put it in the output buffers
+      // for(t_int i = 0; i < n_samps_out; i++) {
+      //   for (t_int j = 0; j < obj->n_out_chans; j++) {
+      //     out[j*obj->blocksize+ i] = obj->outbuf[i*obj->n_out_chans+j];
+      //   }
+      // }
     } else {
       if(n_samps>obj->n_in_chans*obj->blocksize){
         for (t_int i = 0; i < obj->blocksize; ++i){

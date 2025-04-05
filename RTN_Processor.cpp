@@ -121,13 +121,8 @@ int RTN_Processor::process(T in_vec, float* in_rs, float* interleaved_array, flo
       for (int j = 0; j < m_num_in_chans; ++j) {
         inVecSmall[j] = static_cast<float>(in_vec[j][i]);
       }
-      outbuf[i] = m_model->forward(inVecSmall.data());
-      if (m_num_out_chans > 1) {
-        auto vec = m_model->getOutputs();
-        for (int j = 0; j < m_num_out_chans; ++j) {
-          outbuf[i * m_num_out_chans + j] = vec[j];
-        }
-      }
+      
+      process1(inVecSmall.data(), outbuf + i * m_num_out_chans);
     }
     return nSamples;
   } else {
@@ -147,13 +142,14 @@ int RTN_Processor::process(T in_vec, float* in_rs, float* interleaved_array, flo
       for (int j = 0; j < m_num_in_chans; ++j) {
         inVecSmall[j] = in_rs[i * m_num_in_chans + j];
       }
-      out_temp[i * m_num_out_chans] = m_model->forward(inVecSmall.data());
-      if (m_num_out_chans > 1) {
-        auto vec = m_model->getOutputs();
-        for (int j = 1; j < m_num_out_chans; j++) {
-          out_temp[i * m_num_out_chans + j] = vec[j];
-        }
-      }
+      // out_temp[i * m_num_out_chans] = m_model->forward(inVecSmall.data());
+      // if (m_num_out_chans > 1) {
+      //   auto vec = m_model->getOutputs();
+      //   for (int j = 1; j < m_num_out_chans; j++) {
+      //     out_temp[i * m_num_out_chans + j] = vec[j];
+      //   }
+      // }
+      process1(inVecSmall.data(), out_temp + i * m_num_out_chans);
     }
 
     // resample the output back to the original sample rate

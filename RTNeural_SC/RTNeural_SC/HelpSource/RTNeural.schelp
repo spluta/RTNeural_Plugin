@@ -6,6 +6,8 @@ categories:: UGens>NeuralProcessing
 DESCRIPTION::
 RTNeural is a SuperCollider UGen which uses the RTNeural inference engine to load and run tensorflow neural network models. See the RTNeural github page (https://github.com/jatinchowdhury18/RTNeural) for neural network layers supported.  
 
+Be sure the check out mlp_control_tutorial.scd in the mlp_control_tutorial folder for a control rate multi-layer perceptron tutorial.
+
 CLASSMETHODS::
 
 METHOD:: ar
@@ -143,7 +145,7 @@ SynthDef('rtneural_centaur', {
 ~synth = Synth('rtneural_centaur');
 (
 //load the small model - has a little error in the low range
-~python_path = "/Users/spluta1/Dev/SC/RTNeural_Plugin/RTNeural_python";  //put the correct path of RTNeural_python here
+~python_path = "/Users/spluta1/Desktop/RTNeural_python";  //put the correct path of RTNeural_python here
 RTNeural.loadModel(~synth, \this_one, ~python_path++"/chowdhury_models/chow_centaur/centaur.json");
 )
 //the large model clears up the issue in the low register

@@ -49,9 +49,6 @@ void RTN_Processor::initialize(int num_inputs, int num_outputs, float ratio)
 
     m_ratio = ratio;
 
-    //in_vec.resize(num_inputs);
-    inVecSmall.resize(num_inputs);
-
     std::cout << "num_inputs: " << num_inputs << " num_outputs: " << num_outputs << std::endl;
 
     int error;
@@ -115,14 +112,14 @@ int RTN_Processor::load_model(std::string pathStr, int verbose) {
 //the output data is interleaved into the 'outbuf' and must be deinterleaved in the parent process
 //uses a template so in_vec can ba a vector of pointers to floats or a multi-dimensional array
 template <typename T>
-int RTN_Processor::process(T in_vec, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples) {
-  if (m_ratio == 1.0f) {
+int RTN_Processor::process(T in_vec, float* in_vec_small, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples) {
+  if (do_resample == false) {
     for (int i = 0; i < nSamples; ++i) {
       for (int j = 0; j < m_num_in_chans; ++j) {
-        inVecSmall[j] = static_cast<float>(in_vec[j][i]);
+        in_vec_small[j] = static_cast<float>(in_vec[j][i]);
       }
       
-      process1(inVecSmall.data(), outbuf + i * m_num_out_chans);
+      process1(in_vec_small, outbuf + i * m_num_out_chans);
     }
     return nSamples;
   } else {
@@ -140,16 +137,9 @@ int RTN_Processor::process(T in_vec, float* in_rs, float* interleaved_array, flo
     // run the model on the resampled audio
     for (int i = 0; i < resampled_size; ++i) {
       for (int j = 0; j < m_num_in_chans; ++j) {
-        inVecSmall[j] = in_rs[i * m_num_in_chans + j];
+        in_vec_small[j] = in_rs[i * m_num_in_chans + j];
       }
-      // out_temp[i * m_num_out_chans] = m_model->forward(inVecSmall.data());
-      // if (m_num_out_chans > 1) {
-      //   auto vec = m_model->getOutputs();
-      //   for (int j = 1; j < m_num_out_chans; j++) {
-      //     out_temp[i * m_num_out_chans + j] = vec[j];
-      //   }
-      // }
-      process1(inVecSmall.data(), out_temp + i * m_num_out_chans);
+      process1(in_vec_small, out_temp + i * m_num_out_chans);
     }
 
     // resample the output back to the original sample rate

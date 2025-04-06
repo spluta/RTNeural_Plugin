@@ -8,9 +8,6 @@ public:
     RTN_Processor();
     ~RTN_Processor();
 
-    std::vector<float> inVecSmall;
-    std::vector<float> outVecSmall;
-
     size_t resample (const float* input, float* output, size_t numSamples) noexcept;
     size_t resample_out (const float* input, float* output, size_t inSamples, size_t outSamples) noexcept;
 
@@ -27,6 +24,7 @@ public:
     int m_num_out_chans;
 
     float m_ratio{1.0f};
+    bool do_resample{false};
 
     void reset_ratio(float ratio);
     void initialize(int num_inputs, int num_outputs, float sr_in);
@@ -36,7 +34,7 @@ public:
     //template <typename T> T process(T in_vec, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
     // int process(const std::vector<const float*>& in, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
     template <typename T>
-    int process(T in_vec, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
+    int process(T in_vec, float* in_vec_small, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
 
     void process1(const float* input, float* output);
 };

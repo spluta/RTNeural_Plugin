@@ -32,9 +32,16 @@ static InterfaceTable *ft;
     outs = (float **)RTAlloc(mWorld, (double)m_num_output_chans*sizeof(float*));
 
     float ratio = 1.f;
+    //if the model was trained at a different sample rate, we need to resample the input and output
     if(nn_sample_rate>0.f) {
-      ratio = nn_sample_rate / sampleRate();
+      ratio = (float)nn_sample_rate / (float)sampleRate();
     }
+    if(ratio!=1.f) {
+      processor.do_resample = true;
+    } else {
+      processor.do_resample = false;
+    }
+    std::cout<<"do_resample: "<<processor.do_resample<<std::endl;
 
     processor.initialize(m_num_input_chans, m_num_output_chans, ratio);
 
@@ -54,6 +61,9 @@ static InterfaceTable *ft;
     const bool verbose = args->geti();
 
     std::string pathStr = path;
+
+    //suspend inference while loading the model
+    unit->processor.m_model_loaded=false;
 
     int test = unit->processor.load_model(pathStr, verbose);
 
@@ -110,14 +120,7 @@ void RTNeuralUGen::next(int nSamples)
   else {
     if(trig_mode==0) {
 
-      int n_samps_out = processor.process(ins, in_rs, interleaved_array, out_temp, outbuf, nSamples);
-
-      // std::cout<<" "<<std::endl;
-      // std::cout<<" "<<std::endl;
-      // std::cout<<" "<<std::endl;
-      // for (int i =0; i < n_samps_out*m_num_output_chans; i++) {
-      //   std::cout<<outbuf[i];
-      // }
+      int n_samps_out = processor.process(ins, input_to_nn, in_rs, interleaved_array, out_temp, outbuf, nSamples);
 
       for (int j = 0; j < m_num_output_chans; j++) {
         for(int i = 0; i < nSamples; i++) {

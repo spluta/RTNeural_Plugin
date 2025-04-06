@@ -1,12 +1,13 @@
 #include "m_pd.h"
 //#include <memory>
 #include "../RTN_Processor.cpp"
+#include <thread>
 //#include <vector>
 
 static t_class *rtneural_tilde_class;
 
 typedef struct _rtneural_tilde {
-  t_object obj;
+  t_object x;
 	t_canvas *canvas; // necessary for relative paths
 
   t_float f;
@@ -23,12 +24,9 @@ typedef struct _rtneural_tilde {
 	t_outlet *signal_out;
 
   t_float ratio;
-  t_float model_loaded;
+  t_int model_loaded;
 
-  std::vector<const t_float*> in_vec;
-  std::vector<t_float> inVecSmall;
-  std::vector<t_float> outVecSmall;
-  std::vector< std::vector<t_float> > outVecs;
+  t_sample** in_vec;
 
   RTN_Processor processor;
 
@@ -42,6 +40,9 @@ typedef struct _rtneural_tilde {
   float* input_to_nn;
   float* output_from_nn;
 
+  std::thread loading_thread;
+  std::atomic<bool> thread_running{false};
+
 } t_rtneural_tilde;  
 
 void rtneural_tilde_bang(t_rtneural_tilde *x) {
@@ -49,8 +50,7 @@ void rtneural_tilde_bang(t_rtneural_tilde *x) {
   post("stop that!");
 }  
 
-void rtneural_tilde_load_model(t_rtneural_tilde *x, t_symbol* s){
-  (void)x;
+void do_load (t_rtneural_tilde *x, t_symbol* s){
 
   post("loading model: ");
   post(s->s_name);
@@ -60,12 +60,11 @@ void rtneural_tilde_load_model(t_rtneural_tilde *x, t_symbol* s){
 
   t_int test = x->processor.load_model(absolute_path, 1);
   if(test==1){
-    x->model_loaded = 1;
 
     post("model input size: %i", x->processor.m_model_input_size);
     post("model output size: %i", x->processor.m_model_output_size);
-  }
-  else {
+    x->model_loaded = 1;
+  } else {
     x->model_loaded = 0;
     switch(test){
       case 0:
@@ -83,6 +82,13 @@ void rtneural_tilde_load_model(t_rtneural_tilde *x, t_symbol* s){
       }
       post("disabling model");
     }
+}
+
+void rtneural_tilde_load_model(t_rtneural_tilde *x, t_symbol* s){
+  (void)x;
+
+  x->model_loaded = 0;
+  do_load(x, s);
 }  
 
 void rtneural_tilde_bypass(t_rtneural_tilde *x, t_floatarg f){
@@ -91,23 +97,52 @@ void rtneural_tilde_bypass(t_rtneural_tilde *x, t_floatarg f){
   post(f ? "Bypass ON" : "Bypass OFF");
 }  
 
+void reset_vars_and_mem(t_rtneural_tilde *x) {
+  x->sample_rate = sys_getsr();
+  post("sample rate: %f", x->sample_rate);
+  x->blocksize = sys_getblksize();
+  x->control_rate = x->sample_rate/t_float(x->blocksize);
 
-void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floatarg nn_sample_rate, t_floatarg trig_mode) {  
+  t_int rs_size = t_int(ceil(x->nn_sample_rate/x->control_rate));
 
-  //post("%f %f %f", n_in_chans, n_out_chans, nn_sample_rate);
+  //this is needed to handle resampling of audio when the sample rate is not the same as that at which the model was trained
+  t_int in_size = x->blocksize*x->n_in_chans;
+  t_int in_rs_size = rs_size*x->n_in_chans;
+  t_int out_temp_size = rs_size*x->n_out_chans; 
+  t_int out_buf_size = x->blocksize*x->n_out_chans; 
 
+  x->interleaved_array = (t_float*)calloc(in_size, sizeof(t_float));
+  x->in_rs = (t_float*)calloc(in_rs_size, sizeof(t_float));
+  x->out_temp = (t_float*)calloc(out_temp_size, sizeof(t_float));
+  x->outbuf = (t_float*)calloc(out_buf_size, sizeof(t_float));
+  x->in_vec = (t_sample**)calloc(x->n_in_chans, sizeof(t_sample*));
+
+  if(x->nn_sample_rate<=0.f){
+    x->ratio = 1.f;
+  } else {
+    x->ratio = x->nn_sample_rate/x->sample_rate;
+  }
+
+  x->processor.initialize(x->n_in_chans, x->n_out_chans, x->ratio);
+
+  if(x->ratio==1.f){
+    x->processor.do_resample = false;
+  } else {
+    x->processor.do_resample = true;
+  }
+
+  post("ratio: %f", x->ratio);
+  post("resample: %i", x->processor.do_resample);
+}
+
+void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floatarg nn_sample_rate, t_floatarg trig_mode) { 
+  
   if(n_in_chans<1.f){
     n_in_chans = 1.f;
   }
   if(n_out_chans<1.f){
     n_out_chans = 1.f;
   }
-  if(nn_sample_rate<=0.f){
-    nn_sample_rate = sys_getsr();
-  }
-
-  //post("%f %f %f", n_in_chans, n_out_chans, nn_sample_rate);
-
   t_rtneural_tilde *x = (t_rtneural_tilde *)pd_new(rtneural_tilde_class);
   x->canvas = canvas_getcurrent();
 
@@ -120,54 +155,31 @@ void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floata
   }
   x->trig_mode = t_int(trig_mode);
 
-  x->signal_out = outlet_new(&x->obj, &s_signal);
-
-  x->sample_rate = sys_getsr();
-  x->blocksize = sys_getblksize();
-  x->control_rate = x->sample_rate/t_float(x->blocksize);
+  x->signal_out = outlet_new(&x->x, &s_signal);
 
   x->bypass = 0;
-  x->model_loaded = 0.f;
+  x->model_loaded = 0;
 
-  if (nn_sample_rate>0.f) {
-    x->nn_sample_rate = nn_sample_rate;
-  } else {
-    x->nn_sample_rate = x->sample_rate;
-  }
-  x->ratio = x->nn_sample_rate/x->sample_rate;
-  post("ratio: %f", x->ratio);
+  reset_vars_and_mem(x);
 
-  x->in_vec.resize(x->n_in_chans);
-
-  t_int rs_size = t_int(ceil(x->nn_sample_rate/x->control_rate));
-
-  //this is needed to handle resampling of audio when the sample rate is not the same as that at which the model was trained
-  t_int in_size = x->blocksize*x->n_in_chans;
-  t_int in_rs_size = rs_size*x->n_in_chans;
-  t_int out_temp_size = rs_size*x->n_out_chans; 
-  t_int out_buf_size = x->blocksize*x->n_out_chans; 
-
-  x->processor.initialize(x->n_in_chans, x->n_out_chans, x->ratio);
-
-  x->interleaved_array = (float*)calloc(in_size, sizeof(float));
-  x->in_rs = (float*)calloc(in_rs_size, sizeof(float));
-  x->out_temp = (float*)calloc(out_temp_size, sizeof(float));
-  x->outbuf = (float*)calloc(out_buf_size, sizeof(float));
-
-  x->input_to_nn = (float*)calloc(x->n_in_chans, sizeof(float));
-  x->output_from_nn = (float*)calloc(x->n_out_chans, sizeof(float));
+  x->input_to_nn = (t_sample*)calloc(x->n_in_chans, sizeof(t_sample));
+  x->output_from_nn = (t_sample*)calloc(x->n_out_chans, sizeof(t_sample));
 
   return (void *)x;
 }
 
-void rtneural_tilde_free (t_rtneural_tilde* obj) {
-  free(obj->interleaved_array);
-  free(obj->in_rs);
-  free(obj->out_temp);
-  free(obj->outbuf);
-  free(obj->input_to_nn);
-  free(obj->output_from_nn);
-	outlet_free(obj->signal_out);
+void rtneural_tilde_free (t_rtneural_tilde* x) {
+  free(x->interleaved_array);
+  free(x->in_rs);
+  free(x->out_temp);
+  free(x->outbuf);
+  free(x->input_to_nn);
+  free(x->output_from_nn);
+  free(x->in_vec);
+
+  x->processor.~RTN_Processor();
+
+	outlet_free(x->signal_out);
 }
 
 void rtneural_tilde_trigger_mode (t_rtneural_tilde *x, t_floatarg f){
@@ -176,51 +188,58 @@ void rtneural_tilde_trigger_mode (t_rtneural_tilde *x, t_floatarg f){
 }
 
 t_int* rtneural_tilde_perform (t_int* args) {
-  t_rtneural_tilde* obj = (t_rtneural_tilde*)args[1];
+  t_rtneural_tilde* x = (t_rtneural_tilde*)args[1];
   t_sample    *in =      (t_sample *)(args[2]);
   t_sample* out = (t_sample *)args[3];
   t_int n_samps = (t_int)args[4];
 
 
-  if ((obj->processor.m_model_loaded==0)||((t_int)obj->bypass==1)) {
-    for (t_int i = 0; i < obj->blocksize; ++i) {
+  if ((x->processor.m_model_loaded==0)||((t_int)x->bypass==1)) {
+    for (t_int i = 0; i < x->blocksize; ++i) {
       out[i] = in[i];
     }
   } else {
-    if(obj->trig_mode==0){
-      obj->in_vec[0] = in;
-      for (t_int j = 1; j < obj->n_in_chans; j++) {
-        obj->in_vec[j] = in + j * static_cast<t_int>(obj->blocksize);
-      }
+    if(x->trig_mode==0){
+      //this should not be neeeded, but pd crashes the other way - I don't know why
+      if (x->processor.do_resample==false) {
+        for (t_int i = 0; i < x->blocksize; ++i){
+          for (t_int j = 0; j < x->n_in_chans; ++j) {
+            x->input_to_nn[j] = (float)in[j*x->blocksize+i];
+          }
+          x->processor.process1(x->input_to_nn, x->output_from_nn);
+          for (t_int j = 0; j < x->n_out_chans; ++j) {
+            out[j*x->blocksize+i] = t_sample(x->output_from_nn[j]);
+          }
+        }
+      } else {
+        //only run this if the ratio is not 1
+        x->in_vec[0] = in;
+        for (t_int j = 1; j < x->n_in_chans; j++) {
+          x->in_vec[j] = in + j * static_cast<t_int>(x->blocksize);
+        }
 
-      t_int n_samps_out = obj->processor.process(obj->in_vec, obj->in_rs, obj->interleaved_array, obj->out_temp, obj->outbuf, obj->blocksize);
+        t_int n_samps_out = x->processor.process(x->in_vec, x->input_to_nn, x->in_rs, x->interleaved_array, x->out_temp, x->outbuf, x->blocksize);
 
-      for (t_int j = 0; j < obj->blocksize; j++) {
-        for(t_int i = 0; i < n_samps_out; i++) {
-          out[j*obj->blocksize+ i] = (t_sample)obj->outbuf[i*obj->n_out_chans+j];
+        for (t_int j = 0; j < x->blocksize; j++) {
+          for(t_int i = 0; i < n_samps_out; i++) {
+            out[j*x->blocksize+ i] = (t_sample)x->outbuf[i*x->n_out_chans+j];
+          }
         }
       }
-
-      //deinterleave the output and put it in the output buffers
-      // for(t_int i = 0; i < n_samps_out; i++) {
-      //   for (t_int j = 0; j < obj->n_out_chans; j++) {
-      //     out[j*obj->blocksize+ i] = obj->outbuf[i*obj->n_out_chans+j];
-      //   }
-      // }
     } else {
-      if(n_samps>obj->n_in_chans*obj->blocksize){
-        for (t_int i = 0; i < obj->blocksize; ++i){
-          if(in[obj->n_in_chans*obj->blocksize+i]>0.){
-            for (t_int j = 0; j < obj->n_in_chans; ++j) {
-              obj->input_to_nn[j] = (float)in[j*obj->blocksize+i];
+      if(n_samps>x->n_in_chans*x->blocksize){
+        for (t_int i = 0; i < x->blocksize; ++i){
+          if(in[x->n_in_chans*x->blocksize+i]>0.){
+            for (t_int j = 0; j < x->n_in_chans; ++j) {
+              x->input_to_nn[j] = (float)in[j*x->blocksize+i];
             }
-            obj->processor.process1(obj->input_to_nn, obj->output_from_nn);
-            for (t_int j = 0; j < obj->n_out_chans; ++j) {
-              out[j*obj->blocksize+i] = t_sample(obj->output_from_nn[j]);
+            x->processor.process1(x->input_to_nn, x->output_from_nn);
+            for (t_int j = 0; j < x->n_out_chans; ++j) {
+              out[j*x->blocksize+i] = t_sample(x->output_from_nn[j]);
             }
           } else {
-            for (t_int j = 0; j < obj->n_out_chans; ++j) {
-              out[j*obj->blocksize+i] = t_sample(obj->output_from_nn[j]);
+            for (t_int j = 0; j < x->n_out_chans; ++j) {
+              out[j*x->blocksize+i] = t_sample(x->output_from_nn[j]);
             }
           }
         }
@@ -231,10 +250,14 @@ t_int* rtneural_tilde_perform (t_int* args) {
   return (t_int *) (args + 5);
 }
 
-void rtneural_tilde_dsp (t_rtneural_tilde* obj, t_signal** sp) {
-  signal_setmultiout(&sp[1], obj->n_out_chans);
-  dsp_add(rtneural_tilde_perform, 4, obj, sp[0]->s_vec, sp[1]->s_vec, (t_int)(sp[0]->s_length * sp[0]->s_nchans));
+void rtneural_tilde_dsp (t_rtneural_tilde* x, t_signal** sp) {
+  signal_setmultiout(&sp[1], x->n_out_chans);
+  if(sys_getsr() != x->sample_rate || sys_getblksize()!=x->blocksize){
+    reset_vars_and_mem(x);
+    x->processor.reset_ratio(x->ratio);
+  }
 
+  dsp_add(rtneural_tilde_perform, 4, x, sp[0]->s_vec, sp[1]->s_vec, (t_int)(sp[0]->s_length * sp[0]->s_nchans));
 }
 
 #if defined(_LANGUAGE_C_PLUS_PLUS) || defined(__cplusplus)

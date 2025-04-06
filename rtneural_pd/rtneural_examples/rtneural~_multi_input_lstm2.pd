@@ -23,7 +23,6 @@
 #X obj 246 278 snake~ in 2;
 #X obj 236 341 rtneural~ 2 1 44100;
 #X msg 27 80 1;
-#X msg 460 286 load_model ../../RTNeural_python/Automated-GuitarAmpModelling/AmpDistModels/DOD_AmericanMetal_GainKnob_RTNeural.json;
 #N canvas 0 22 450 278 (subpatch) 0;
 #X array \$0-lstm_dist 4410 float 0;
 #X coords 0 1 4409 -1 200 100 1 0 0;
@@ -31,6 +30,7 @@
 #X obj 385 413 metro 100;
 #X obj 385 385 loadbang;
 #X obj 366 447 tabwrite~ \$0-lstm_dist;
+#X msg 460 286 load_model models/DOD_AmericanMetal_GainKnob_RTNeural.json;
 #X connect 0 0 22 0;
 #X connect 2 0 22 0;
 #X connect 3 0 1 0;
@@ -53,9 +53,9 @@
 #X connect 19 0 21 1;
 #X connect 21 0 22 0;
 #X connect 22 0 3 0;
-#X connect 22 0 28 0;
+#X connect 22 0 27 0;
 #X connect 23 0 8 0;
 #X connect 23 0 10 0;
-#X connect 24 0 22 0;
-#X connect 26 0 28 0;
-#X connect 27 0 26 0;
+#X connect 25 0 27 0;
+#X connect 26 0 25 0;
+#X connect 28 0 22 0;

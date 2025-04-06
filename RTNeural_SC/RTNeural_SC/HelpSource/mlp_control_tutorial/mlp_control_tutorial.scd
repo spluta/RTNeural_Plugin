@@ -73,9 +73,9 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
         osc2 = (osc2*vals[12].linlin(0,1,0.5,10)).tanh;
 
         LocalOut.ar([osc2]);
-        
+
         env = Env.asr(0.1,1,0.01).kr(2, \gate.kr(1));
-        Out.ar(0,LeakDC.ar([osc1,osc2],mul: 0.1)*env);
+        Out.ar(0,LeakDC.ar([osc1,osc2])*0.5*\vol.kr(0.1)*env);
         
     }).load(s);
 )
@@ -237,14 +237,22 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
         msv.valueAction_(msv_array);
     });
 
+    var vol_slider = Slider()
+    .orientation_(\horizontal)
+    .action_({arg sl; synth.set(\vol, sl.value)})
+    .valueAction_(0.1);
+
     reset_dict.value;
     dict['epochs']=2000;
 
     win.layout_(
-        HLayout(
-            msv,
-            VLayout(s2d, post_points_butt, clear_points_butt, add_point_butt, HLayout(remove_point_butt, remove_point_numbox), random_button), 
-            VLayout(save_points_butt, load_points_butt, train_butt, load_butt, bypass_butt)
+        VLayout(
+            HLayout(
+                msv,
+                VLayout(s2d, post_points_butt, clear_points_butt, add_point_butt, HLayout(remove_point_butt, remove_point_numbox), random_button), 
+                VLayout(save_points_butt, load_points_butt, train_butt, load_butt, bypass_butt)
+            ),
+            vol_slider
         )
     );
     

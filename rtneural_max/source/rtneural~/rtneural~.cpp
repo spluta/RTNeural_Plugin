@@ -117,9 +117,6 @@ void *rtneural_new(t_symbol *s, long argc, t_atom *argv)
     x->output_from_nn[i] = 0.f;
   }
   
-  if(nn_sample_rate<=0.f){
-    nn_sample_rate = sys_getsr();
-  }
   x->nn_sample_rate = nn_sample_rate;
 
   if (trig_mode!=1.f) {
@@ -152,9 +149,18 @@ void reset_vars_and_mem(t_rtneural *x, float sample_rate, t_int blocksize){
   x->blocksize = blocksize;
   x->control_rate = x->sample_rate/t_float(x->blocksize);
 
-  x->ratio = 1.f;
-  x->ratio = x->nn_sample_rate/x->sample_rate;
-  post("ratio: %f", x->ratio);
+  if(x->nn_sample_rate<=0.f){
+    x->ratio = 1.f;
+    x->processor.do_resample = false;
+  } else {
+    x->ratio = x->nn_sample_rate/x->sample_rate;
+    if(x->ratio==1.f){
+      x->processor.do_resample = false;
+    } else {
+      x->processor.do_resample = true;
+    }
+  }
+  post("ratio: %f, resample: %i", x->ratio, x->processor.do_resample);
 
   t_int rs_size = t_int(ceil(x->nn_sample_rate/x->control_rate));
 
@@ -183,6 +189,7 @@ void reset_vars_and_mem(t_rtneural *x, float sample_rate, t_int blocksize){
 
 void rtneural_free (t_rtneural* x) {
   z_dsp_free((t_pxobject *)x);
+  
   x->processor.~RTN_Processor();
 
   sysmem_freeptr(x->interleaved_array);
@@ -291,7 +298,7 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
     }
   } else {
     if(x->trig_mode==0){
-      t_int n_samps_out = x->processor.process(ins, x->in_rs, x->interleaved_array, x->out_temp, x->outbuf, x->blocksize);
+      t_int n_samps_out = x->processor.process(ins, x->input_to_nn, x->in_rs, x->interleaved_array, x->out_temp, x->outbuf, x->blocksize);
 
       //post("interleaved: %f %f %f %f %f %f ", x->outbuf[0], x->outbuf[1], x->outbuf[2], x->outbuf[3], x->outbuf[4], x->outbuf[5]);
 

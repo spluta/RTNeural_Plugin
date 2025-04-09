@@ -122,17 +122,6 @@ void reset_vars_and_mem(t_rtneural_tilde *x) {
   } else {
     x->ratio = x->nn_sample_rate/x->sample_rate;
   }
-
-  x->processor.initialize(x->n_in_chans, x->n_out_chans, x->ratio);
-
-  if(x->ratio==1.f){
-    x->processor.do_resample = false;
-  } else {
-    x->processor.do_resample = true;
-  }
-
-  post("ratio: %f", x->ratio);
-  post("resample: %i", x->processor.do_resample);
 }
 
 void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floatarg nn_sample_rate, t_floatarg trig_mode) { 
@@ -161,6 +150,17 @@ void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floata
   x->model_loaded = 0;
 
   reset_vars_and_mem(x);
+
+  x->processor.initialize(x->n_in_chans, x->n_out_chans, x->ratio);
+
+  if(x->ratio==1.f){
+    x->processor.do_resample = false;
+  } else {
+    x->processor.do_resample = true;
+  }
+
+  post("ratio: %f", x->ratio);
+  post("resample: %i", x->processor.do_resample);
 
   x->input_to_nn = (t_sample*)calloc(x->n_in_chans, sizeof(t_sample));
   x->output_from_nn = (t_sample*)calloc(x->n_out_chans, sizeof(t_sample));
@@ -200,18 +200,18 @@ t_int* rtneural_tilde_perform (t_int* args) {
     }
   } else {
     if(x->trig_mode==0){
-      //this should not be neeeded, but pd crashes the other way - I don't know why
-      if (x->processor.do_resample==false) {
-        for (t_int i = 0; i < x->blocksize; ++i){
-          for (t_int j = 0; j < x->n_in_chans; ++j) {
-            x->input_to_nn[j] = (float)in[j*x->blocksize+i];
-          }
-          x->processor.process1(x->input_to_nn, x->output_from_nn);
-          for (t_int j = 0; j < x->n_out_chans; ++j) {
-            out[j*x->blocksize+i] = t_sample(x->output_from_nn[j]);
-          }
-        }
-      } else {
+      // //this should not be neeeded, but pd crashes the other way - I don't know why
+      // if (x->processor.do_resample==false) {
+      //   for (t_int i = 0; i < x->blocksize; ++i){
+      //     for (t_int j = 0; j < x->n_in_chans; ++j) {
+      //       x->input_to_nn[j] = (float)in[j*x->blocksize+i];
+      //     }
+      //     x->processor.process1(x->input_to_nn, x->output_from_nn);
+      //     for (t_int j = 0; j < x->n_out_chans; ++j) {
+      //       out[j*x->blocksize+i] = t_sample(x->output_from_nn[j]);
+      //     }
+      //   }
+      // } else {
         //only run this if the ratio is not 1
         x->in_vec[0] = in;
         for (t_int j = 1; j < x->n_in_chans; j++) {
@@ -220,12 +220,20 @@ t_int* rtneural_tilde_perform (t_int* args) {
 
         t_int n_samps_out = x->processor.process(x->in_vec, x->input_to_nn, x->in_rs, x->interleaved_array, x->out_temp, x->outbuf, x->blocksize);
 
-        for (t_int j = 0; j < x->blocksize; j++) {
+        //post("n_samps_out: %i", n_samps_out);
+
+        // for (t_int j = 0; j < x->n_out_chans; j++) {
+        //   for(t_int i = 0; i < x->blocksize; i++) {
+        //     outs[j][i] = (double)x->outbuf[i*x->n_out_chans+j];
+        //   }
+        // }
+
+        for (t_int j = 0; j < x->n_out_chans; j++) {
           for(t_int i = 0; i < n_samps_out; i++) {
             out[j*x->blocksize+ i] = (t_sample)x->outbuf[i*x->n_out_chans+j];
           }
         }
-      }
+      //}
     } else {
       if(n_samps>x->n_in_chans*x->blocksize){
         for (t_int i = 0; i < x->blocksize; ++i){

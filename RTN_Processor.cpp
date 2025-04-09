@@ -139,7 +139,7 @@ int RTN_Processor::process(T in_vec, float* in_vec_small, float* in_rs, float* i
       for (int j = 0; j < m_num_in_chans; ++j) {
         in_vec_small[j] = in_rs[i * m_num_in_chans + j];
       }
-      process1(in_vec_small, out_temp + i * m_num_out_chans);
+      process1(in_vec_small, out_temp + (i * m_num_out_chans));
     }
 
     // resample the output back to the original sample rate

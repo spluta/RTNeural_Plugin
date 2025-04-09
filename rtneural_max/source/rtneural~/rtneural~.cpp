@@ -173,8 +173,6 @@ void reset_vars_and_mem(t_rtneural *x, float sample_rate, t_int blocksize){
   x->blocksize = blocksize;
   x->control_rate = x->sample_rate/t_float(x->blocksize);
 
-  x->ratio = 1.f;
-
   sysmem_freeptr(x->interleaved_array);
   sysmem_freeptr(x->in_rs);
   sysmem_freeptr(x->out_temp);
@@ -300,7 +298,6 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
     if(x->trig_mode==0){
       t_int n_samps_out = x->processor.process(ins, x->input_to_nn, x->in_rs, x->interleaved_array, x->out_temp, x->outbuf, x->blocksize);
 
-      //post("interleaved: %f %f %f %f %f %f ", x->outbuf[0], x->outbuf[1], x->outbuf[2], x->outbuf[3], x->outbuf[4], x->outbuf[5]);
 
       //deinterleave the output and put it in the output buffers
       for (t_int j = 0; j < x->n_out_chans; j++) {

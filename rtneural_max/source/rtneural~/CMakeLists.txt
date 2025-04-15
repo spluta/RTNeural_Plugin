@@ -2,14 +2,15 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../../max-sdk/source/max-sdk-base/script/max
 # include(${CMAKE_CURRENT_SOURCE_DIR}/../../max-pretarget.cmake)
 
 # Automatically set CMAKE_OSX_DEPLOYMENT_TARGET to the current macOS version
-execute_process(
-	COMMAND sw_vers -productVersion
-	OUTPUT_VARIABLE MACOS_VERSION
-	OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-string(REGEX REPLACE "([0-9]+\\.[0-9]+)\\..*" "\\1" MACOS_VERSION ${MACOS_VERSION})
-set(CMAKE_OSX_DEPLOYMENT_TARGET "${MACOS_VERSION}" CACHE STRING "Minimum OS X deployment version" FORCE)
-
+if(APPLE)
+	execute_process(
+		COMMAND sw_vers -productVersion
+		OUTPUT_VARIABLE MACOS_VERSION
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	string(REGEX REPLACE "([0-9]+\\.[0-9]+)\\..*" "\\1" MACOS_VERSION ${MACOS_VERSION})
+	set(CMAKE_OSX_DEPLOYMENT_TARGET "${MACOS_VERSION}" CACHE STRING "Minimum OS X deployment version" FORCE)
+endif()
 # set(CMAKE_OSX_DEPLOYMENT_TARGET "11" CACHE STRING "Minimum OS X deployment version" FORCE)
 
 #############################################################

@@ -30,6 +30,7 @@ public:
     void initialize(int num_inputs, int num_outputs, float sr_in);
 
     int load_model(std::string pathStr, int verbose);
+    void reset();
 
     //template <typename T> T process(T in_vec, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
     // int process(const std::vector<const float*>& in, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);

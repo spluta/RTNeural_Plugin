@@ -101,6 +101,12 @@ int RTN_Processor::load_model(std::string pathStr, int verbose) {
     return 1;
 }
 
+void RTN_Processor::reset () {
+  if (m_model_loaded) {
+    m_model->reset();
+  }
+}
+
 //processes the input data through the model
 //receives 5 data structures that must be declared in the parent process: 
 //1) a vector of pointers to the N channels of float* (a pointer per input channel)

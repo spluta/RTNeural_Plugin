@@ -50,6 +50,7 @@ typedef struct _rtneural {
 void	*rtneural_new(t_symbol *s, long argc, t_atom *argv);
 void	rtneural_free(t_rtneural *x);
 void 	rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv);
+void 	rtneural_reset(t_rtneural *x, long f);
 void 	rtneural_bypass(t_rtneural *x, long f);
 
 void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam);
@@ -71,6 +72,7 @@ void ext_main(void *r)
       A_GIMME, 0);
 
   class_addmethod(c, (method)rtneural_load_model, "load_model", A_GIMME, 0);
+  class_addmethod(c, (method)rtneural_reset, "reset", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_bypass, "bypass", A_LONG, 0);
   class_addmethod(c, (method)rtneural_dsp64, "dsp64",	A_CANT, 0);  
 
@@ -271,6 +273,13 @@ void rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
 
   defer(x, (method)rtneural_doload_model, path_in, 0, NULL);
 }  
+
+void rtneural_reset(t_rtneural *x, long f){
+  x->processor.m_model->reset();
+  if(int(f)==1){
+    post("model reset");
+  }
+}
 
 void rtneural_bypass(t_rtneural *x, long f){
   x->bypass = f;

@@ -64,6 +64,7 @@ void 	rtneural_write_json(t_rtneural *x, t_symbol s, long argc, t_atom *argv);
 void 	rtneural_read_json(t_rtneural *x, t_symbol s, long argc, t_atom *argv);
 void 	rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv);
 void 	rtneural_bypass(t_rtneural *x, long f);
+void 	rtneural_reset(t_rtneural *x, long f);
 
 void 	rtneural_set_epochs(t_rtneural *x, t_symbol *s, int argc, t_atom *argv);
 void 	rtneural_set_layers_data(t_rtneural *x, t_symbol *s, int argc, t_atom *argv);
@@ -92,6 +93,7 @@ void ext_main(void *r)
   class_addmethod(c, (method)rtneural_load_model, "load_model", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_write_json, "write_json", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_read_json, "read_json", A_GIMME, 0);
+  class_addmethod(c, (method)rtneural_reset, "reset", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_bypass, "bypass", A_LONG, 0);
   class_addmethod(c, (method)rtneural_set_epochs, "set_epochs", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_set_layers_data, "set_layers_data", A_GIMME, 0);
@@ -445,6 +447,13 @@ void rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
   //rtneural_doload_model(x, path_in);
   defer(x, (method)rtneural_doload_model, path_in, 0, NULL);
 }  
+
+void rtneural_reset(t_rtneural *x, long f){
+  x->processor.reset();
+  if((int)f==1){
+    post("model reset");
+  }
+}
 
 void rtneural_bypass(t_rtneural *x, long f){
   x->bypass = (int)f;

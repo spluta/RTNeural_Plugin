@@ -396,6 +396,10 @@ void rtneural_list(t_rtneural *x, t_symbol *s, long argc, t_atom *argv) {
     for(int i=0; i<x->n_in_chans; i++){
         x->input_to_nn[i] = atom_getfloat(argv+i);
     }
+    post("input to nn:");
+    for(int i=0; i<x->n_in_chans; i++){
+        post("%f", x->input_to_nn[i]);
+    }
     x->processor.process1(x->input_to_nn, x->output_from_nn);
     for(int i=0; i<x->n_out_chans; i++){
         atom_setfloat(x->out_list+i, x->output_from_nn[i]);

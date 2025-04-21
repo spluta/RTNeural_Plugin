@@ -115,6 +115,7 @@ def save_model_json(model, layers_to_skip=(keras.layers.InputLayer)):
 
     model_dict = {}
     model_dict["in_shape"] = model.input_shape
+    print(f'Input shape: {model_dict["in_shape"]}')
     layers = []
     for layer in model.layers:
         if isinstance(layer, layers_to_skip):

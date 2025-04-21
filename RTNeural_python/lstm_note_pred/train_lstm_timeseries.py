@@ -8,6 +8,15 @@ import json
 import argparse
 import os
 
+# adding folder two dirs up to the system path
+from pathlib import Path
+import sys
+double_parent = Path(__file__).parents[1]
+print("double_parent", double_parent)
+sys.path.insert(0, str(double_parent))
+from model_utils import save_model
+
+
 parser = argparse.ArgumentParser(
     description='Train a Linear only neural net on data from a file.')
 
@@ -42,7 +51,6 @@ for i in range(len(in_vals)):
 print("max_len", max_len)
 print("hidden_size", hidden_size)
 
-
 print("in_vals", in_vals)
 print("out_vals", out_vals)
 
@@ -65,7 +73,7 @@ X = np.reshape(X, (X.shape[0], max_len, 1))
 X = (X - in_min) / (in_max - in_min + 1)
 
 print(X)
-print("X shape", X.shape[1])
+print("X shape", X.shape[0], X.shape[1], X.shape[2])
 
 # one hot encode the output variable
 y = keras.utils.to_categorical(out_vals)
@@ -75,12 +83,15 @@ print("y shape", y.shape[1])
 # create and fit the model
 batch_size = 1
 model = keras.Sequential()
-model.add(layers.LSTM(hidden_size, input_shape=(X.shape[1], 1)))
+
+# keras_model.add(keras.layers.InputLayer(batch_input_shape=(32, 0, input_size)))
+model.add(layers.Input((X.shape[1],1)))
+model.add(layers.LSTM(hidden_size))
 model.add(layers.Dense(y.shape[1], activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # fit the model
-model.fit(X, y, epochs=epochs, batch_size=1, verbose=args.verbose)
+model.fit(X, y, epochs=epochs, batch_size=batch_size, verbose=args.verbose)
 
 # summarize performance of the model
 scores = model.evaluate(X, y, verbose=0)
@@ -93,14 +104,12 @@ if args.outfile is None:
     keras_path = raw_filename+".keras"
     keras_path = json_dir+"/"+keras_path
 else:
-    out_path = args.outfile
-    keras_path = args.outfile
+    out_path = os.path.abspath(args.outfile)
+    keras_path = out_path
     keras_path = os.path.splitext(keras_path)[0]+".keras"
 
-print("keras path", keras_path)
+print("out_path", out_path)
 
-from model_utils import save_model
 save_model(model, out_path)
-
 model.save(keras_path)
 

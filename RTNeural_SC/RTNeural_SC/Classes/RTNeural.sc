@@ -1,11 +1,11 @@
 RTNeural : MultiOutUGen {
 	var <>id, <>desc;
-	*ar { |input_array, num_outputs, id, bypass=0, sample_rate=(-1), trig_mode=0, trigger=0|
-        ^this.multiNewList(['audio', num_outputs, id, bypass, sample_rate, trig_mode, trigger] ++ input_array.asArray)
+	*ar { |input_array, num_outputs, id, bypass=0, sample_rate=(-1), trig_mode=0, trigger=0, reset=0, input_size=(-1)|
+        ^this.multiNewList(['audio', num_outputs, id, bypass, sample_rate, trig_mode, trigger, reset, input_size] ++ input_array.asArray)
 	}
 
-	*kr { |input_array, num_outputs, id, bypass=0, sample_rate=(-1), trig_mode=0, trigger=0|
-        ^this.multiNewList(['control', num_outputs, id, bypass, sample_rate, trig_mode, trigger] ++ input_array.asArray)
+	*kr { |input_array, num_outputs, id, bypass=0, sample_rate=(-1), trig_mode=0, trigger=0, reset=0, input_size=(-1)|
+        ^this.multiNewList(['control', num_outputs, id, bypass, sample_rate, trig_mode, trigger, reset, input_size] ++ input_array.asArray)
 	}
 
 	init { arg argNumOutChannels, argID ... theInputs;
@@ -89,6 +89,11 @@ RTNeural : MultiOutUGen {
 		var f = File(path, "w");
 		f.write(j);
 		f.close;	
+	}
+
+	*readJSONFile{arg path;
+		var f = File(path, "r");
+		^JSONlib.convertToSC(f.readAllString);
 	}
 
 	checkInputs {

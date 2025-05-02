@@ -16,7 +16,6 @@ print("double_parent", double_parent)
 sys.path.insert(0, str(double_parent))
 from model_utils import save_model
 
-
 parser = argparse.ArgumentParser(
     description='Train a Linear only neural net on data from a file.')
 

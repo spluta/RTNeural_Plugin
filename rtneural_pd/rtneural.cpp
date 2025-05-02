@@ -48,18 +48,34 @@ void rtneural_bang(t_rtneural *obj)
     outlet_list(obj->obj.ob_outlet, s, obj->n_out_chans, obj->out_list);
 }
 
-void rtneural_list(t_rtneural* obj, t_symbol *s, int argc, t_atom *argv) {
-    if ((obj->processor.m_model_loaded==0)||((t_int)obj->bypass==1)) {
+void rtneural_list(t_rtneural* x, t_symbol *s, int argc, t_atom *argv) {
+    if ((x->processor.m_model_loaded==0)||((t_int)x->bypass==1)) {
         return;
     }
-    for(int i=0; i<obj->n_in_chans; i++){
-        obj->input_to_nn[i] = atom_getfloat(argv+i);
+
+    t_int insize = argc;
+    t_int loops = insize / x->n_in_chans;
+
+    if (insize % x->n_in_chans != 0) {
+      post("input size is not a multiple of the number of input channels");
+      return;
     }
-    obj->processor.process1(obj->input_to_nn, obj->output_from_nn);
-    for(int i=0; i<obj->n_out_chans; i++){
-        SETFLOAT(obj->out_list+i, obj->output_from_nn[i]);
+
+    for (int i = 0; i < loops; i++) {
+        for (int j = 0; j < x->n_in_chans; j++) {
+            x->input_to_nn[j] = atom_getfloat(argv + i * x->n_in_chans + j);
+        }
+        x->processor.process1(x->input_to_nn, x->output_from_nn);
     }
-    outlet_list(obj->obj.ob_outlet, s, obj->n_out_chans, obj->out_list);
+      // for(int i=0; i<x->n_in_chans; i++){
+      //     x->input_to_nn[i] = atom_getfloat(argv+i);
+      // }
+      // x->processor.process1(x->input_to_nn, x->output_from_nn);
+
+    for(int i=0; i<x->n_out_chans; i++){
+        SETFLOAT(x->out_list+i, x->output_from_nn[i]);
+    }
+    outlet_list(x->obj.ob_outlet, s, x->n_out_chans, x->out_list);
 }
 
 void* rtneural_new(t_floatarg n_in_chans, t_floatarg n_out_chans) {  
@@ -320,6 +336,14 @@ void rtneural_free (t_rtneural* obj) {
 
 }
 
+void rtneural_reset(t_rtneural *x, t_symbol *s, int argc, t_atom *argv){
+  t_int temp = atom_getint(argv);
+  x->processor.reset();
+  if((int)temp==1){
+    post("model reset");
+  }
+}
+
 void rtneural_bypass(t_rtneural *x, t_float f){
   x->bypass = t_int(f);
 
@@ -345,6 +369,7 @@ void rtneural_setup(void) {
     class_addmethod(rtneural_class, (t_method)rtneural_write_json, gensym("write_json"), A_SYMBOL, 0);
     class_addmethod(rtneural_class, (t_method)rtneural_train_model, gensym("train_model"), A_SYMBOL, 0);
     class_addmethod(rtneural_class, (t_method)rtneural_bypass, gensym("bypass"), A_FLOAT, 0);
+    class_addmethod(rtneural_class, (t_method)rtneural_reset, gensym("reset"), A_GIMME, 0);
     class_addmethod(rtneural_class, (t_method)rtneural_set_epochs, gensym("set_epochs"), A_DEFFLOAT, 0);
     class_addmethod(rtneural_class, (t_method)rtneural_set_layers_data, gensym("set_layers_data"), A_GIMME, 0);
     class_addmethod(rtneural_class, (t_method)rtneural_set_learn_rate, gensym("set_learn_rate"), A_DEFFLOAT, 0);

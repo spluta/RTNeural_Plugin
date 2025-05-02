@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 5,
-			"revision" : 6,
+			"minor" : 6,
+			"revision" : 5,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 243.0, 138.0, 877.0, 758.0 ],
+		"rect" : [ 43.0, 194.0, 1098.0, 726.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,11 +40,24 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-28",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 17.5, 24.0, 308.0, 33.0 ],
+					"presentation_linecount" : 2,
+					"text" : "See the additional examples, like how to load a multi-input model, in the rnn_distortion folder"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-27",
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 781.0, 142.5, 124.0, 20.0 ],
+					"patching_rect" : [ 791.0, 218.0, 124.0, 20.0 ],
 					"text" : "or drop a training in"
 				}
 
@@ -56,7 +69,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 781.0, 273.0, 118.0, 22.0 ],
+					"patching_rect" : [ 791.0, 348.0, 118.0, 22.0 ],
 					"text" : "prepend load_model"
 				}
 
@@ -68,7 +81,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 781.0, 178.0, 160.0, 71.0 ]
+					"patching_rect" : [ 791.0, 253.0, 160.0, 71.0 ]
 				}
 
 			}
@@ -79,7 +92,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 596.0, 185.5, 167.0, 33.0 ],
+					"patching_rect" : [ 606.0, 261.0, 167.0, 33.0 ],
 					"text" : "or use an openfile dialog to open any training"
 				}
 
@@ -90,7 +103,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 323.0, 203.5, 131.0, 20.0 ],
+					"patching_rect" : [ 333.0, 279.0, 131.0, 20.0 ],
 					"text" : "a Joyo Extreme Metal"
 				}
 
@@ -102,7 +115,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 596.0, 229.0, 71.0, 22.0 ],
+					"patching_rect" : [ 606.0, 304.0, 71.0, 22.0 ],
 					"text" : "load_model"
 				}
 
@@ -114,7 +127,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 323.0, 229.0, 256.0, 22.0 ],
+					"patching_rect" : [ 333.0, 304.0, 256.0, 22.0 ],
 					"text" : "load_model JoyoExtremeMetal_RTNeural.json"
 				}
 
@@ -126,7 +139,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 202.0, 398.0, 29.5, 22.0 ],
+					"patching_rect" : [ 212.0, 473.0, 29.5, 22.0 ],
 					"text" : "+~"
 				}
 
@@ -138,7 +151,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 10.0, 359.0, 177.0, 100.0 ],
+					"patching_rect" : [ 20.0, 434.0, 177.0, 100.0 ],
 					"text" : "models trained with the Automated-GuitarAmpModelling library usually use a skip connection in the training, so we need to add the signal back into itself to get the output of the original circuit"
 				}
 
@@ -149,7 +162,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 323.0, 129.0, 365.0, 20.0 ],
+					"patching_rect" : [ 333.0, 204.0, 365.0, 20.0 ],
 					"text" : "a TS9 trained on an LSTM model"
 				}
 
@@ -161,7 +174,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 323.0, 154.0, 238.0, 22.0 ],
+					"patching_rect" : [ 333.0, 229.0, 238.0, 22.0 ],
 					"text" : "load_model TS9_HighDrive_RTNeural.json"
 				}
 
@@ -172,7 +185,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 323.0, 66.0, 365.0, 20.0 ],
+					"patching_rect" : [ 333.0, 141.0, 365.0, 20.0 ],
 					"text" : "a Muff distortion trained to a GRU model"
 				}
 
@@ -184,7 +197,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 339.0, 296.0, 392.0, 33.0 ],
+					"patching_rect" : [ 349.0, 371.0, 392.0, 33.0 ],
 					"text" : "lstm models are trained at a sample rate\nrtneural will internally resample the audio to the indicated sample rate"
 				}
 
@@ -195,7 +208,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 323.0, 21.0, 365.0, 20.0 ],
+					"patching_rect" : [ 333.0, 96.0, 365.0, 20.0 ],
 					"text" : "loads an lstm model which takes 1 input"
 				}
 
@@ -207,7 +220,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 10.0, 114.0, 70.0, 22.0 ],
+					"patching_rect" : [ 20.0, 189.0, 70.0, 22.0 ],
 					"text" : "loadmess 1"
 				}
 
@@ -241,7 +254,7 @@
 					"originaltempo" : 120.0,
 					"outlettype" : [ "signal", "signal", "signal", "", "dictionary" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 3.0, 33.0, 150.0, 30.0 ],
+					"patching_rect" : [ 13.0, 108.0, 150.0, 30.0 ],
 					"pitchcorrection" : 0,
 					"quality" : "basic",
 					"timestretch" : [ 0 ]
@@ -260,7 +273,7 @@
 					"offset" : 29,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 87.0, 104.0, 19.0, 89.0 ],
+					"patching_rect" : [ 97.0, 179.0, 19.0, 89.0 ],
 					"size" : 3,
 					"value" : 1
 				}
@@ -273,7 +286,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 118.0, 120.0, 68.0, 22.0 ],
+					"patching_rect" : [ 128.0, 195.0, 68.0, 22.0 ],
 					"text" : "selector~ 2"
 				}
 
@@ -286,7 +299,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 97.0, 201.5, 24.0, 24.0 ]
+					"patching_rect" : [ 107.0, 277.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -297,7 +310,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 97.0, 241.0, 63.0, 22.0 ],
+					"patching_rect" : [ 107.0, 316.0, 63.0, 22.0 ],
 					"text" : "bypass $1"
 				}
 
@@ -309,7 +322,7 @@
 					"maxclass" : "scope~",
 					"numinlets" : 2,
 					"numoutlets" : 0,
-					"patching_rect" : [ 387.0, 433.0, 130.0, 130.0 ]
+					"patching_rect" : [ 397.0, 508.0, 130.0, 130.0 ]
 				}
 
 			}
@@ -319,7 +332,7 @@
 					"maxclass" : "ezdac~",
 					"numinlets" : 2,
 					"numoutlets" : 0,
-					"patching_rect" : [ 202.0, 494.0, 45.0, 45.0 ]
+					"patching_rect" : [ 212.0, 569.0, 45.0, 45.0 ]
 				}
 
 			}
@@ -332,7 +345,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 202.0, 447.0, 130.0, 30.0 ]
+					"patching_rect" : [ 212.0, 522.0, 130.0, 30.0 ]
 				}
 
 			}
@@ -344,7 +357,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 157.0, 33.0, 50.0, 22.0 ]
+					"patching_rect" : [ 167.0, 108.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -355,7 +368,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 157.0, 76.0, 66.0, 22.0 ],
+					"patching_rect" : [ 167.0, 151.0, 66.0, 22.0 ],
 					"text" : "cycle~ 100"
 				}
 
@@ -367,7 +380,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 323.0, 91.0, 213.0, 22.0 ],
+					"patching_rect" : [ 333.0, 166.0, 213.0, 22.0 ],
 					"text" : "load_model Muff_GRU_RTNeural.json"
 				}
 
@@ -376,10 +389,10 @@
 				"box" : 				{
 					"id" : "obj-1",
 					"maxclass" : "newobj",
-					"numinlets" : 1,
+					"numinlets" : 3,
 					"numoutlets" : 1,
 					"outlettype" : [ "multichannelsignal" ],
-					"patching_rect" : [ 202.0, 282.0, 123.0, 22.0 ],
+					"patching_rect" : [ 212.0, 357.0, 123.0, 22.0 ],
 					"text" : "rtneural~ 1 1 44100 0"
 				}
 

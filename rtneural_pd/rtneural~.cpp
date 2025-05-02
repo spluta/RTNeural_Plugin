@@ -21,6 +21,8 @@ typedef struct _rtneural_tilde {
   t_int n_in_chans;
   t_int n_out_chans;
 
+  t_inlet *x_in2;
+  t_inlet *x_in3;
 	t_outlet *signal_out;
 
   t_float ratio;
@@ -144,6 +146,8 @@ void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floata
   }
   x->trig_mode = t_int(trig_mode);
 
+  x->x_in2 = inlet_new(&x->x, &x->x.ob_pd, &s_signal, &s_signal);
+  x->x_in3 = inlet_new(&x->x, &x->x.ob_pd, &s_signal, &s_signal);
   x->signal_out = outlet_new(&x->x, &s_signal);
 
   x->bypass = 0;
@@ -179,6 +183,8 @@ void rtneural_tilde_free (t_rtneural_tilde* x) {
 
   x->processor.~RTN_Processor();
 
+  inlet_free(x->x_in2);
+  inlet_free(x->x_in3);
 	outlet_free(x->signal_out);
 }
 
@@ -187,65 +193,141 @@ void rtneural_tilde_trigger_mode (t_rtneural_tilde *x, t_floatarg f){
   post(f ? "Trigger mode ON" : "Trigger mode OFF");
 }
 
+// t_int* rtneural_tilde_perform (t_int* args) {
+//   t_rtneural_tilde* x = (t_rtneural_tilde*)args[1];
+//   t_sample    *in =      (t_sample *)(args[2]);
+//   t_sample    *in2 =     (t_sample *)(args[3]);
+//   t_sample    *in3 =     (t_sample *)(args[4]);
+//   t_sample* out = (t_sample *)args[5];
+//   t_int numins = (t_int)args[6];
+//   t_int s_vec_length = (t_int)args[7];
+
+//   post("numins: %i", numins);
+//   post("s_vec_length: %i", s_vec_length);
+//   post("blocksize: %i", x->blocksize);
+
+//   if ((x->processor.m_model_loaded==0)||((t_int)x->bypass==1)) {
+//     for (t_int i = 0; i < x->blocksize; ++i) {
+//       out[i] = in[i];
+//     }
+//   } else {
+//     if(x->trig_mode==0){
+//         x->in_vec[0] = in;
+//         for (t_int j = 1; j < x->n_in_chans; j++) {
+//           x->in_vec[j] = in + j * static_cast<t_int>(x->blocksize);
+//         }
+
+//         t_int n_samps_out = x->processor.process(x->in_vec, x->input_to_nn, x->in_rs, x->interleaved_array, x->out_temp, x->outbuf, x->blocksize);
+
+
+//         for (t_int j = 0; j < x->n_out_chans; j++) {
+//           for(t_int i = 0; i < n_samps_out; i++) {
+//             out[j*x->blocksize+ i] = (t_sample)x->outbuf[i*x->n_out_chans+j];
+//           }
+//         }
+//     } else {
+//       if(numins>x->n_in_chans*x->blocksize){
+//         for (t_int i = 0; i < x->blocksize; ++i){
+//           if(in2[i]>0.){
+//             for (t_int j = 0; j < x->n_in_chans; ++j) {
+//               x->input_to_nn[j] = (float)in[j*x->blocksize+i];
+//             }
+//             x->processor.process1(x->input_to_nn, x->output_from_nn);
+//             for (t_int j = 0; j < x->n_out_chans; ++j) {
+//               out[j*x->blocksize+i] = t_sample(x->output_from_nn[j]);
+//             }
+//           } else {
+//             for (t_int j = 0; j < x->n_out_chans; ++j) {
+//               out[j*x->blocksize+i] = t_sample(x->output_from_nn[j]);
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+
+//   return (args + 8);
+// }
+
 t_int* rtneural_tilde_perform (t_int* args) {
   t_rtneural_tilde* x = (t_rtneural_tilde*)args[1];
   t_sample    *in =      (t_sample *)(args[2]);
-  t_sample* out = (t_sample *)args[3];
-  t_int n_samps = (t_int)args[4];
+  t_sample    *trigger =     (t_sample *)(args[3]);
+  t_sample    *reset =     (t_sample *)(args[4]);
+  t_sample* out = (t_sample *)args[5];
+  t_int numins = (t_int)args[6];
+  t_int n_samps = (t_int)args[7];
 
+  t_int input_model_ratio = (numins)/x->processor.m_model_input_size;
+  if(input_model_ratio<1){
+    input_model_ratio = 1;
+  }
 
   if ((x->processor.m_model_loaded==0)||((t_int)x->bypass==1)) {
-    for (t_int i = 0; i < x->blocksize; ++i) {
+    for (t_int i = 0; i < n_samps; ++i) {
       out[i] = in[i];
     }
   } else {
     if(x->trig_mode==0){
         x->in_vec[0] = in;
         for (t_int j = 1; j < x->n_in_chans; j++) {
-          x->in_vec[j] = in + j * static_cast<t_int>(x->blocksize);
+          x->in_vec[j] = in + j * static_cast<t_int>(n_samps);
         }
 
-        t_int n_samps_out = x->processor.process(x->in_vec, x->input_to_nn, x->in_rs, x->interleaved_array, x->out_temp, x->outbuf, x->blocksize);
+        t_int n_samps_out = x->processor.process(x->in_vec, x->input_to_nn, x->in_rs, x->interleaved_array, x->out_temp, x->outbuf, n_samps);
 
 
         for (t_int j = 0; j < x->n_out_chans; j++) {
           for(t_int i = 0; i < n_samps_out; i++) {
-            out[j*x->blocksize+ i] = (t_sample)x->outbuf[i*x->n_out_chans+j];
+            out[j*n_samps+ i] = (t_sample)x->outbuf[i*x->n_out_chans+j];
           }
+        }
+        for (t_int j = 0; j < x->n_out_chans; j++) {
+          x->output_from_nn[j] = (t_sample)out[j*n_samps+n_samps-1];
         }
       //}
     } else {
-      if(n_samps>x->n_in_chans*x->blocksize){
-        for (t_int i = 0; i < x->blocksize; ++i){
-          if(in[x->n_in_chans*x->blocksize+i]>0.){
-            for (t_int j = 0; j < x->n_in_chans; ++j) {
-              x->input_to_nn[j] = (float)in[j*x->blocksize+i];
+        //trigger mode
+        for (t_int i = 0; i < n_samps; ++i){
+          //if reset is greater than 0, reset the model
+          if(reset[i]>0.){
+            x->processor.reset();
+          }
+          //if the trigger is greater than 0, process the input
+          
+          if(trigger[i]>0.){
+            //the input vector could be l times larger than the model input size
+            //so we need process l sets of j samples at a time
+            for (int l = 0; l < input_model_ratio; l++) {
+              for (t_int j = 0; j < x->n_in_chans; ++j) {
+                x->input_to_nn[j] = (float)in[(j+l*x->n_in_chans)*n_samps+i];
+              }
+              x->processor.process1(x->input_to_nn, x->output_from_nn);
             }
-            x->processor.process1(x->input_to_nn, x->output_from_nn);
             for (t_int j = 0; j < x->n_out_chans; ++j) {
-              out[j*x->blocksize+i] = t_sample(x->output_from_nn[j]);
+              out[j*n_samps+i] = t_sample(x->output_from_nn[j]);
             }
           } else {
             for (t_int j = 0; j < x->n_out_chans; ++j) {
-              out[j*x->blocksize+i] = t_sample(x->output_from_nn[j]);
+              out[j*n_samps+i] = t_sample(x->output_from_nn[j]);
             }
           }
-        }
+      
       }
     }
   }
 
-  return (t_int *) (args + 5);
+  return (t_int *) (args + 8);
 }
 
 void rtneural_tilde_dsp (t_rtneural_tilde* x, t_signal** sp) {
-  signal_setmultiout(&sp[1], x->n_out_chans);
+  signal_setmultiout(&sp[3], x->n_out_chans);
   if(sys_getsr() != x->sample_rate || sys_getblksize()!=x->blocksize){
     reset_vars_and_mem(x);
     x->processor.reset_ratio(x->ratio);
   }
 
-  dsp_add(rtneural_tilde_perform, 4, x, sp[0]->s_vec, sp[1]->s_vec, (t_int)(sp[0]->s_length * sp[0]->s_nchans));
+  dsp_add(rtneural_tilde_perform, 7, x, sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[3]->s_vec, sp[0]->s_nchans, sp[0]->s_length);
 }
 
 #if defined(_LANGUAGE_C_PLUS_PLUS) || defined(__cplusplus)

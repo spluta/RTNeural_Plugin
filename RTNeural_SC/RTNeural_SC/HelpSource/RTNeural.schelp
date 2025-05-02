@@ -34,6 +34,9 @@ normally this will be set to 0, which will run inference at audio rate or contro
 ARGUMENT:: trigger
 An audio rate or control rate trigger which will activate inference at sample accurate timing. Only works when trig_mode is set to 1.
 
+ARGUMENT:: reset
+rtneural RNN models are stateful. in order to create a stateless RNN, send a trigger to the reset argument before each inference stream. resets will only work if RTNeural is in trigger mode and there is no sample_rate correction.
+
 METHOD:: kr
 RTNeural models can operate at audio rate or control rate. At audio rate the input array should be audio rate. At control rate, the input array should be control rate.
 
@@ -53,6 +56,8 @@ ARGUMENT:: verbose
 default is true. writes information about the network to the screen while loading.
 
 EXAMPLES::
+
+----------------Audio Rate Recurrent Neural Networks---------------
 
 Proteus and other Automated-GuitarAmpModelling GRU and LSTM trainings
 
@@ -155,9 +160,13 @@ RTNeural.loadModel(~synth, \this_one, ~python_path++"/chowdhury_models/chow_cent
 Stethoscope(s, 2);
 ::
 
+See the lstm_predict_tutorial on how to use RTNeural as an RNN note predictor!!
+
+----------------Multi Layer Perceptron---------------
+
 Using the UGen as a Control Rate Multi Layer Perceptron
 
-See the mlp_control_tutorial for a much more comprehensive overview of this functionality
+See the mlp_control_tutorial for a much more comprehensive overview of this functionality and the mlp_adding_tutorial for a simple example of MLP training
 
 code::
 //a control-rate Multi Layer Perceptron that uses mouse input to give ten channels of control outputs
@@ -229,4 +238,9 @@ SynthDef('rtneural_osc_torch', {
 //load the model
 ~model_path = PathName(RTNeural.filenameSymbol.asString).upMultiDir(2)++"HelpSource/audio_models/";
 RTNeural.loadModel(~synth, \this_one, ~model_path++"4Osc_torch_RTNeural.json");
+
+
+Stethoscope(s, 2)
 ::
+
+See the lstm_predict_tutorial on how to use RTNeural as an RNN note predictor!!

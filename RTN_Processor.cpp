@@ -119,6 +119,8 @@ void RTN_Processor::reset () {
 //uses a template so in_vec can ba a vector of pointers to floats or a multi-dimensional array
 template <typename T>
 int RTN_Processor::process(T in_vec, float* in_vec_small, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples) {
+  
+  // if there is no resampling, we can just run the model on the input data
   if (do_resample == false) {
     for (int i = 0; i < nSamples; ++i) {
       for (int j = 0; j < m_num_in_chans; ++j) {

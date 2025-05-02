@@ -390,19 +390,27 @@ void rtneural_bang(t_rtneural *x)
 }
 
 void rtneural_list(t_rtneural *x, t_symbol *s, long argc, t_atom *argv) {
+
     if ((x->processor.m_model_loaded==0)||((t_int)x->bypass==1)) {
         return;
     }
-    for(int i=0; i<x->n_in_chans; i++){
-        x->input_to_nn[i] = atom_getfloat(argv+i);
+
+    int insize = argc;
+    int loops = insize / x->n_in_chans;
+    
+    if (insize % x->n_in_chans != 0) {
+        post("input size is not a multiple of the number of input channels");
+        return;
     }
-    post("input to nn:");
-    for(int i=0; i<x->n_in_chans; i++){
-        post("%f", x->input_to_nn[i]);
+
+    for (int i = 0; i < loops; i++) {
+        for (int j = 0; j < x->n_in_chans; j++) {
+            x->input_to_nn[j] = atom_getfloat(argv + i * x->n_in_chans + j);
+        }
+        x->processor.process1(x->input_to_nn, x->output_from_nn);
     }
-    x->processor.process1(x->input_to_nn, x->output_from_nn);
-    for(int i=0; i<x->n_out_chans; i++){
-        atom_setfloat(x->out_list+i, x->output_from_nn[i]);
+    for (int j = 0; j < x->n_out_chans; j++) {
+      atom_setfloat(x->out_list + j, x->output_from_nn[j]);
     }
     outlet_list(x->outlet, NULL, x->n_out_chans, x->out_list);
 }

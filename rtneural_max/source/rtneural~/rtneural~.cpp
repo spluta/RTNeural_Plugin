@@ -57,6 +57,7 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
 void rtneural_dsp64(t_rtneural *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
 void reset_vars_and_mem(t_rtneural *x, float sample_rate, t_int blocksize);
 long rtneural_multichanneloutputs(t_rtneural *x, long outletindex);
+void rtneural_assist(t_rtneural *x, void *b, long io, long index, char *s);
 
 // globals
 static t_class *rtneural_class = NULL;
@@ -74,7 +75,8 @@ void ext_main(void *r)
   class_addmethod(c, (method)rtneural_load_model, "load_model", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_reset, "reset", A_GIMME, 0);
   class_addmethod(c, (method)rtneural_bypass, "bypass", A_LONG, 0);
-  class_addmethod(c, (method)rtneural_dsp64, "dsp64",	A_CANT, 0);  
+  class_addmethod(c, (method)rtneural_dsp64, "dsp64",	A_CANT, 0); 
+  class_addmethod(c, (method)rtneural_assist, "assist", A_CANT, 0); 
 
   class_addmethod(c, (method)rtneural_multichanneloutputs, "multichanneloutputs", A_CANT, 0);
 
@@ -133,7 +135,7 @@ void *rtneural_new(t_symbol *s, long argc, t_atom *argv)
 
   x->processor.initialize(x->n_in_chans, x->n_out_chans, x->ratio);
 	
-	dsp_setup((t_pxobject *)x, 1);
+	dsp_setup((t_pxobject *)x, 3);
 	x->m_obj.z_misc |= Z_NO_INPLACE | Z_MC_INLETS;
 	outlet_new((t_object *)x, "multichannelsignal");
 	return x;
@@ -291,10 +293,14 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
 {
 	long ch;
 	double *in, *out;
+  
+  t_int input_model_ratio = (numins-2)/x->processor.m_model_input_size;
+  if(input_model_ratio<1){
+    input_model_ratio = 1;
+  }
 
   //if not processing, just copy the input to the output
   if ((x->processor.m_model_loaded==0)||((t_int)x->bypass==1)) {
-    //t_int small_num = min(x->n_in_chans, numins);
     t_int small_num = x->n_in_chans;
     if(numins<x->n_in_chans){
       small_num = numins;
@@ -318,10 +324,16 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
     } else {
       for (t_int i = 0; i < sampleframes; ++i){
         if(ins[numins-1][i]>0.){
-          for (t_int j = 0; j < x->n_in_chans; ++j) {
-            x->input_to_nn[j] = (float)ins[j][i];
+          x->processor.reset();
+        }
+        if(ins[numins-2][i]>0.){
+      
+          for (int l = 0; l < input_model_ratio; l++) {
+            for (t_int j = 0; j < x->n_in_chans; ++j) {
+              x->input_to_nn[j] = (float)ins[j + (l*x->n_in_chans)][i];
+            }
+            x->processor.process1(x->input_to_nn, x->output_from_nn);
           }
-          x->processor.process1(x->input_to_nn, x->output_from_nn);
           for (t_int j = 0; j < x->n_out_chans; ++j) {
             outs[j][i] = (double)x->output_from_nn[j];
           }
@@ -332,6 +344,28 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
         }
       }
     }
+  }
+}
+
+void rtneural_assist(t_rtneural *x, void *b, long io, long index, char *s)
+{
+  switch (io) {
+    case 1:
+      switch (index) {
+        case 0:
+          strncpy_zero(s, "audio/data inlet", 512);
+          break;
+        case 1:
+          strncpy_zero(s, "trigger inlet - only works in trigger mode", 512);
+          break;
+        case 2:
+          strncpy_zero(s, "reset inlet - only works in trigger mode", 512);
+          break;
+      }
+      break;
+    case 2:
+      strncpy_zero(s, "network inference", 512);
+      break;
   }
 }
 

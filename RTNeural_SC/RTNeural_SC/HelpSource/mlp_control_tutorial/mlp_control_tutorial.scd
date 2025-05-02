@@ -11,6 +11,8 @@
 //learn_rate - the initial learning rate of the training
 ~dict.keysDo{|key| [key, ~dict[key]].postln}; nil;
 
+//set the epochs to 1000
+~dict[\epochs] = 1000;
 
 (
     //save the json file (can go anywhere)
@@ -19,9 +21,10 @@
     RTNeural.saveJSONFile(~dict, ~json_path); //you must install the JSONlib Quark for this to work
 )
 
-//train the network using the values in the json file
-//we are assuming that the RTNeural_python folder is in the same directory as the RTNeural_SC folder
+//~python_path needs to point to the rtneural_python folder on your computer
 ~python_path = "/Users/spluta1/Desktop/RTNeural_python";
+//train the network using the values in the json file
+//this assumes you have created a python virtual environment in the RTNeural_python folder and installed the torch, keras, and tensorflow dependencies (if not see the README in the RTNeural_python folder)
 RTNeural.trainMLP(~json_path, nil, ~python_path); //this will save the pytorch format pt file and rtneural json file
 
 //you can also run the training in the terminal
@@ -36,7 +39,7 @@ s.boot;
 //declare a synthdef
 (SynthDef("test_rtneural", {
     //the audio rate UGen needs audio rate inputs
-    RTNeural.ar(K2A.ar([MouseX.kr, MouseY.kr]), 10, 'mlp', 0).poll;
+    RTNeural.ar(K2A.ar([MouseX.kr, MouseY.kr]), 10, 'mlp', \bypass.kr(0)).poll;
 }).load(s);)
 
 a = Synth("test_rtneural"); //make the synth

@@ -10,7 +10,9 @@ public:
 
   RTN_Processor processor;
 
-  int m_num_input_chans;
+  int m_num_model_input_chans;
+  int m_num_data_input_chans;
+  int m_input_model_ratio;
   int m_num_output_chans;
 
   float* input_to_nn;

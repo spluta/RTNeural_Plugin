@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 43.0, 194.0, 1098.0, 726.0 ],
+		"rect" : [ 198.0, 252.0, 1098.0, 726.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,348 +40,56 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
-					"id" : "obj-28",
-					"linecount" : 2,
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 17.5, 24.0, 308.0, 33.0 ],
-					"presentation_linecount" : 2,
-					"text" : "See the additional examples, like how to load a multi-input model, in the rnn_distortion folder"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-27",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 791.0, 218.0, 124.0, 20.0 ],
-					"text" : "or drop a training in"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-26",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 791.0, 348.0, 118.0, 22.0 ],
-					"text" : "prepend load_model"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-25",
-					"maxclass" : "dropfile",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 791.0, 253.0, 160.0, 71.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-21",
-					"linecount" : 2,
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 606.0, 261.0, 167.0, 33.0 ],
-					"text" : "or use an openfile dialog to open any training"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-16",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 333.0, 279.0, 131.0, 20.0 ],
-					"text" : "a Joyo Extreme Metal"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-18",
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 606.0, 304.0, 71.0, 22.0 ],
-					"text" : "load_model"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-2",
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 333.0, 304.0, 256.0, 22.0 ],
-					"text" : "load_model JoyoExtremeMetal_RTNeural.json"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-11",
-					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 212.0, 473.0, 29.5, 22.0 ],
-					"text" : "+~"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-9",
-					"linecount" : 7,
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 20.0, 434.0, 177.0, 100.0 ],
-					"text" : "models trained with the Automated-GuitarAmpModelling library usually use a skip connection in the training, so we need to add the signal back into itself to get the output of the original circuit"
-				}
-
-			}
-, 			{
-				"box" : 				{
 					"id" : "obj-6",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 333.0, 204.0, 365.0, 20.0 ],
-					"text" : "a TS9 trained on an LSTM model"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-8",
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 333.0, 229.0, 238.0, 22.0 ],
-					"text" : "load_model TS9_HighDrive_RTNeural.json"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-4",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 333.0, 141.0, 365.0, 20.0 ],
-					"text" : "a Muff distortion trained to a GRU model"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-24",
-					"linecount" : 2,
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 349.0, 371.0, 392.0, 33.0 ],
-					"text" : "lstm models are trained at a sample rate\nrtneural will internally resample the audio to the indicated sample rate"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-22",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 333.0, 96.0, 365.0, 20.0 ],
-					"text" : "loads an lstm model which takes 1 input"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-7",
 					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 20.0, 189.0, 70.0, 22.0 ],
-					"text" : "loadmess 1"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"basictuning" : 440,
-					"data" : 					{
-						"clips" : [ 							{
-								"absolutepath" : "drumLoop.aif",
-								"filename" : "drumLoop.aif",
-								"filekind" : "audiofile",
-								"id" : "u111006437",
-								"loop" : 1,
-								"content_state" : 								{
-									"loop" : 1
-								}
-
-							}
- ]
-					}
-,
-					"followglobaltempo" : 0,
-					"formantcorrection" : 0,
-					"id" : "obj-23",
-					"maxclass" : "playlist~",
-					"mode" : "basic",
-					"numinlets" : 1,
-					"numoutlets" : 5,
-					"originallength" : [ 0.0, "ticks" ],
-					"originaltempo" : 120.0,
-					"outlettype" : [ "signal", "signal", "signal", "", "dictionary" ],
-					"parameter_enable" : 0,
-					"patching_rect" : [ 13.0, 108.0, 150.0, 30.0 ],
-					"pitchcorrection" : 0,
-					"quality" : "basic",
-					"timestretch" : [ 0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"disabled" : [ 0, 0, 0 ],
-					"flagmode" : 1,
-					"id" : "obj-20",
-					"itemtype" : 0,
-					"maxclass" : "radiogroup",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"offset" : 29,
-					"outlettype" : [ "" ],
-					"parameter_enable" : 0,
-					"patching_rect" : [ 97.0, 179.0, 19.0, 89.0 ],
-					"size" : 3,
-					"value" : 1
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-14",
-					"maxclass" : "newobj",
-					"numinlets" : 3,
-					"numoutlets" : 1,
-					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 128.0, 195.0, 68.0, 22.0 ],
-					"text" : "selector~ 2"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-19",
-					"maxclass" : "toggle",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "int" ],
-					"parameter_enable" : 0,
-					"patching_rect" : [ 107.0, 277.0, 24.0, 24.0 ]
+					"numinlets" : 0,
+					"numoutlets" : 0,
+					"patching_rect" : [ 610.0, 278.0, 108.0, 22.0 ],
+					"text" : "rtneural~_gru_saw"
 				}
 
 			}
 , 			{
 				"box" : 				{
 					"id" : "obj-5",
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 107.0, 316.0, 63.0, 22.0 ],
-					"text" : "bypass $1"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"automatic" : 1,
-					"id" : "obj-17",
-					"maxclass" : "scope~",
-					"numinlets" : 2,
-					"numoutlets" : 0,
-					"patching_rect" : [ 397.0, 508.0, 130.0, 130.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-15",
-					"maxclass" : "ezdac~",
-					"numinlets" : 2,
-					"numoutlets" : 0,
-					"patching_rect" : [ 212.0, 569.0, 45.0, 45.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-13",
-					"maxclass" : "gain~",
-					"multichannelvariant" : 0,
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "signal", "" ],
-					"parameter_enable" : 0,
-					"patching_rect" : [ 212.0, 522.0, 130.0, 30.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-12",
-					"maxclass" : "number",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "bang" ],
-					"parameter_enable" : 0,
-					"patching_rect" : [ 167.0, 108.0, 50.0, 22.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-10",
 					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 167.0, 151.0, 66.0, 22.0 ],
-					"text" : "cycle~ 100"
+					"numinlets" : 0,
+					"numoutlets" : 0,
+					"patching_rect" : [ 608.5, 483.0, 134.0, 22.0 ],
+					"text" : "test_lstm_max_vs_msp"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-4",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 0,
+					"patching_rect" : [ 608.5, 410.0, 143.0, 22.0 ],
+					"text" : "rtneural~_mlp_wavetable"
 				}
 
 			}
 , 			{
 				"box" : 				{
 					"id" : "obj-3",
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 333.0, 166.0, 213.0, 22.0 ],
-					"text" : "load_model Muff_GRU_RTNeural.json"
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 0,
+					"patching_rect" : [ 610.0, 339.0, 160.0, 22.0 ],
+					"text" : "rtneural~_mlp_trigger_mode"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-2",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 0,
+					"patching_rect" : [ 610.0, 204.0, 149.0, 22.0 ],
+					"text" : "rtneural~_lstm_two_inputs"
 				}
 
 			}
@@ -389,171 +97,115 @@
 				"box" : 				{
 					"id" : "obj-1",
 					"maxclass" : "newobj",
-					"numinlets" : 3,
-					"numoutlets" : 1,
-					"outlettype" : [ "multichannelsignal" ],
-					"patching_rect" : [ 212.0, 357.0, 123.0, 22.0 ],
-					"text" : "rtneural~ 1 1 44100 0"
+					"numinlets" : 0,
+					"numoutlets" : 0,
+					"patching_rect" : [ 610.0, 138.0, 140.0, 22.0 ],
+					"text" : "rtneural~_lstm_distortion"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-8",
+					"linecount" : 7,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 58.0, 60.0, 363.0, 100.0 ],
+					"text" : "rtneural~ is the audio rate max rtneural external.\n\nthis object can load any neural network model saved in rtneural format for inference.\n\nif the patchers on the right are not available, be sure to add the rtneural_max folder to your path"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-7",
+					"linecount" : 27,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 584.0, 93.0, 489.0, 382.0 ],
+					"text" : "use a single input LSTM or GRU as a distortion\n\n\n\n\n\nuse a two channel LSTM or GRU as a distortion\n\n\n\n\na GRU model trained to convert a sine wave into an anti-aliased sawtooth wave\n\n\n\n\nrun multi layer perceptron inference at audio rate at triggered moments\n\n\n\n\nuse a multi layer perceptron as a wavetable lookup\n\n\n\n\ncompare the output of the max lstm note prediction and the msp note prediction\n"
 				}
 
 			}
  ],
-		"lines" : [ 			{
-				"patchline" : 				{
-					"destination" : [ "obj-11", 1 ],
-					"order" : 1,
-					"source" : [ "obj-1", 0 ]
+		"lines" : [  ],
+		"parameters" : 		{
+			"obj-5::obj-32" : [ "level", "level", 0 ],
+			"parameterbanks" : 			{
+				"0" : 				{
+					"index" : 0,
+					"name" : "",
+					"parameters" : [ "-", "-", "-", "-", "-", "-", "-", "-" ]
 				}
 
 			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-17", 0 ],
-					"order" : 0,
-					"source" : [ "obj-1", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-14", 2 ],
-					"source" : [ "obj-10", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-13", 0 ],
-					"source" : [ "obj-11", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-10", 0 ],
-					"source" : [ "obj-12", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-15", 1 ],
-					"order" : 0,
-					"source" : [ "obj-13", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-15", 0 ],
-					"order" : 1,
-					"source" : [ "obj-13", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"order" : 1,
-					"source" : [ "obj-14", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-11", 0 ],
-					"order" : 0,
-					"source" : [ "obj-14", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"source" : [ "obj-18", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-5", 0 ],
-					"source" : [ "obj-19", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"source" : [ "obj-2", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-14", 0 ],
-					"source" : [ "obj-20", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-14", 1 ],
-					"source" : [ "obj-23", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-26", 0 ],
-					"source" : [ "obj-25", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"source" : [ "obj-26", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"source" : [ "obj-3", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"source" : [ "obj-5", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-20", 0 ],
-					"source" : [ "obj-7", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"source" : [ "obj-8", 0 ]
-				}
-
-			}
- ],
+,
+			"inherited_shortname" : 1
+		}
+,
 		"dependency_cache" : [ 			{
+				"name" : "div_by_maxval.js",
+				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
+				"patcherrelativepath" : "./lstm_note_prediciton",
+				"type" : "TEXT",
+				"implicit" : 1
+			}
+, 			{
 				"name" : "drumLoop.aif",
 				"bootpath" : "C74:/media/msp",
 				"type" : "AIFF",
 				"implicit" : 1
 			}
 , 			{
+				"name" : "rtneural.mxo",
+				"type" : "iLaX"
+			}
+, 			{
 				"name" : "rtneural~.mxo",
 				"type" : "iLaX"
+			}
+, 			{
+				"name" : "rtneural~_gru_saw.maxpat",
+				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/rnn_distortion",
+				"patcherrelativepath" : "./rnn_distortion",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "rtneural~_lstm_distortion.maxpat",
+				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/rnn_distortion",
+				"patcherrelativepath" : "./rnn_distortion",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "rtneural~_lstm_two_inputs.maxpat",
+				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/rnn_distortion",
+				"patcherrelativepath" : "./rnn_distortion",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "rtneural~_mlp_trigger_mode.maxpat",
+				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/mlp",
+				"patcherrelativepath" : "./mlp",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "rtneural~_mlp_wavetable.maxpat",
+				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/mlp",
+				"patcherrelativepath" : "./mlp",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "test_lstm_max_vs_msp.maxpat",
+				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
+				"patcherrelativepath" : "./lstm_note_prediciton",
+				"type" : "JSON",
+				"implicit" : 1
 			}
  ],
 		"autosave" : 0

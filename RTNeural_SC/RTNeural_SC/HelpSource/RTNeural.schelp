@@ -4,7 +4,7 @@ categories:: UGens>NeuralProcessing
 
 
 DESCRIPTION::
-RTNeural is a SuperCollider UGen which uses the RTNeural inference engine to load and run tensorflow neural network models. See the RTNeural github page (https://github.com/jatinchowdhury18/RTNeural) for neural network layers supported.  
+RTNeural is a SuperCollider UGen which uses the RTNeural inference engine to load and run tensorflow neural network models. See the RTNeural github page (https://github.com/jatinchowdhury18/RTNeural) for neural network layers supported.
 
 Be sure the check out mlp_control_tutorial.scd in the mlp_control_tutorial folder for a control rate multi-layer perceptron tutorial.
 
@@ -71,10 +71,15 @@ code::
         s.sync;
         SynthDef('rt_neural_dist', {
             var in = PlayBuf.ar(1, \buf_num.kr(0), BufRateScale.kr(\buf_dur.kr), loop:1);
-    
+
             //models trained with the Automated-GuitarAmpModelling library usually use a skip connection in the training, so we need to add the signal back into itself to get the output of the original circuit
             //the two trainings below al
             var synth = RTNeural.ar([in], 1, 'this_one', \bypass.kr(0), \sr.kr(44100))+in*0.5;
+
+			//many Guitar Distortion models are trained with a skip
+			//when this is the case, the clean signal needs to be added back into the distorted signal to get the correct output
+			var out = synth+in;
+
             Out.ar(0, synth.dup);
         }).load(s);
     })
@@ -150,7 +155,7 @@ SynthDef('rtneural_centaur', {
 ~synth = Synth('rtneural_centaur');
 (
 //load the small model - has a little error in the low range
-~python_path = "/Users/spluta1/Desktop/RTNeural_python";  //put the correct path of RTNeural_python here
+~python_path = "~/Desktop/RTNeural_python".absolutePath;  //put the correct path of RTNeural_python here
 RTNeural.loadModel(~synth, \this_one, ~python_path++"/chowdhury_models/chow_centaur/centaur.json");
 )
 //the large model clears up the issue in the low register
@@ -173,7 +178,7 @@ code::
 (
 SynthDef('rtneural_mlp_control', {
     var rtn, in = [MouseX.kr, MouseY.kr];
-    
+
     rtn = RTNeural.kr(in, 13, 'mlp', \trig_mode.kr(0), 0, \bypass.kr(0));
     rtn.poll;
     nil
@@ -194,7 +199,7 @@ code::
 SynthDef('rtneural_mlp_trig', {
     //3 inputs - 1 and 2 are inputs to the NN, 3 is an audio rate trigger
     var rtn, in = [SinOsc.ar(0.1).range(0,1), SinOsc.ar(0.133).range(0,1)];
-    
+
     //this can also operate at audio rate, but it will be very inefficient
     rtn = RTNeural.ar(in, 13, 'mlp', \bypass.kr(0), -1, \trig_mode.kr(1), Dust.ar(1));
     rtn.poll;

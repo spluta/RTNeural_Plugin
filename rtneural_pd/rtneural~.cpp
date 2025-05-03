@@ -28,6 +28,8 @@ typedef struct _rtneural_tilde {
   t_float ratio;
   t_int model_loaded;
 
+  t_int input_model_ratio;
+
   t_sample** in_vec;
 
   RTN_Processor processor;
@@ -153,6 +155,8 @@ void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floata
   x->bypass = 0;
   x->model_loaded = 0;
 
+  x->input_model_ratio = 1;
+
   reset_vars_and_mem(x);
 
   x->processor.initialize(x->n_in_chans, x->n_out_chans, x->ratio);
@@ -193,61 +197,6 @@ void rtneural_tilde_trigger_mode (t_rtneural_tilde *x, t_floatarg f){
   post(f ? "Trigger mode ON" : "Trigger mode OFF");
 }
 
-// t_int* rtneural_tilde_perform (t_int* args) {
-//   t_rtneural_tilde* x = (t_rtneural_tilde*)args[1];
-//   t_sample    *in =      (t_sample *)(args[2]);
-//   t_sample    *in2 =     (t_sample *)(args[3]);
-//   t_sample    *in3 =     (t_sample *)(args[4]);
-//   t_sample* out = (t_sample *)args[5];
-//   t_int numins = (t_int)args[6];
-//   t_int s_vec_length = (t_int)args[7];
-
-//   post("numins: %i", numins);
-//   post("s_vec_length: %i", s_vec_length);
-//   post("blocksize: %i", x->blocksize);
-
-//   if ((x->processor.m_model_loaded==0)||((t_int)x->bypass==1)) {
-//     for (t_int i = 0; i < x->blocksize; ++i) {
-//       out[i] = in[i];
-//     }
-//   } else {
-//     if(x->trig_mode==0){
-//         x->in_vec[0] = in;
-//         for (t_int j = 1; j < x->n_in_chans; j++) {
-//           x->in_vec[j] = in + j * static_cast<t_int>(x->blocksize);
-//         }
-
-//         t_int n_samps_out = x->processor.process(x->in_vec, x->input_to_nn, x->in_rs, x->interleaved_array, x->out_temp, x->outbuf, x->blocksize);
-
-
-//         for (t_int j = 0; j < x->n_out_chans; j++) {
-//           for(t_int i = 0; i < n_samps_out; i++) {
-//             out[j*x->blocksize+ i] = (t_sample)x->outbuf[i*x->n_out_chans+j];
-//           }
-//         }
-//     } else {
-//       if(numins>x->n_in_chans*x->blocksize){
-//         for (t_int i = 0; i < x->blocksize; ++i){
-//           if(in2[i]>0.){
-//             for (t_int j = 0; j < x->n_in_chans; ++j) {
-//               x->input_to_nn[j] = (float)in[j*x->blocksize+i];
-//             }
-//             x->processor.process1(x->input_to_nn, x->output_from_nn);
-//             for (t_int j = 0; j < x->n_out_chans; ++j) {
-//               out[j*x->blocksize+i] = t_sample(x->output_from_nn[j]);
-//             }
-//           } else {
-//             for (t_int j = 0; j < x->n_out_chans; ++j) {
-//               out[j*x->blocksize+i] = t_sample(x->output_from_nn[j]);
-//             }
-//           }
-//         }
-//       }
-//     }
-//   }
-
-//   return (args + 8);
-// }
 
 t_int* rtneural_tilde_perform (t_int* args) {
   t_rtneural_tilde* x = (t_rtneural_tilde*)args[1];
@@ -257,11 +206,6 @@ t_int* rtneural_tilde_perform (t_int* args) {
   t_sample* out = (t_sample *)args[5];
   t_int numins = (t_int)args[6];
   t_int n_samps = (t_int)args[7];
-
-  t_int input_model_ratio = (numins)/x->processor.m_model_input_size;
-  if(input_model_ratio<1){
-    input_model_ratio = 1;
-  }
 
   if ((x->processor.m_model_loaded==0)||((t_int)x->bypass==1)) {
     for (t_int i = 0; i < n_samps; ++i) {
@@ -288,6 +232,12 @@ t_int* rtneural_tilde_perform (t_int* args) {
       //}
     } else {
         //trigger mode
+
+        x->input_model_ratio = (numins)/x->processor.m_model_input_size;
+        if(x->input_model_ratio<1){
+          x->input_model_ratio = 1;
+        }
+
         for (t_int i = 0; i < n_samps; ++i){
           //if reset is greater than 0, reset the model
           if(reset[i]>0.){
@@ -298,7 +248,7 @@ t_int* rtneural_tilde_perform (t_int* args) {
           if(trigger[i]>0.){
             //the input vector could be l times larger than the model input size
             //so we need process l sets of j samples at a time
-            for (int l = 0; l < input_model_ratio; l++) {
+            for (int l = 0; l < x->input_model_ratio; l++) {
               for (t_int j = 0; j < x->n_in_chans; ++j) {
                 x->input_to_nn[j] = (float)in[(j+l*x->n_in_chans)*n_samps+i];
               }

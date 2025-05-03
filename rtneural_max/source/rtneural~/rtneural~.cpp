@@ -36,6 +36,8 @@ typedef struct _rtneural {
   float* input_to_nn;
   float* output_from_nn;
 
+  t_int input_model_ratio;
+
 	RTN_Processor processor;
 
   float* interleaved_array;
@@ -101,6 +103,8 @@ void *rtneural_new(t_symbol *s, long argc, t_atom *argv)
   float n_out_chans = atom_getfloatarg(1, argc, argv);
   float nn_sample_rate = atom_getfloatarg(2, argc, argv);
   float trig_mode = atom_getfloatarg(3, argc, argv);
+
+  x->input_model_ratio = 1;
 
   if(n_in_chans<1.f){
     n_in_chans = 1.f;
@@ -293,10 +297,14 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
 {
 	long ch;
 	double *in, *out;
-  
-  t_int input_model_ratio = (numins-2)/x->processor.m_model_input_size;
-  if(input_model_ratio<1){
-    input_model_ratio = 1;
+
+  t_int small_num = x->n_in_chans;
+  if(numins<x->n_in_chans){
+    small_num = numins;
+  }
+  for (ch = 0; ch < small_num; ch++) {		// for each input channel
+    if (ch<(x->n_out_chans))
+      sysmem_copyptr(ins[ch], outs[ch], sizeof(double) * sampleframes);
   }
 
   //if not processing, just copy the input to the output
@@ -322,13 +330,19 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
       }
 
     } else {
+
+      x->input_model_ratio = (numins-2)/x->processor.m_model_input_size;
+      if(x->input_model_ratio<1){
+        x->input_model_ratio = 1;
+      }
+
       for (t_int i = 0; i < sampleframes; ++i){
         if(ins[numins-1][i]>0.){
           x->processor.reset();
         }
         if(ins[numins-2][i]>0.){
       
-          for (int l = 0; l < input_model_ratio; l++) {
+          for (int l = 0; l < x->input_model_ratio; l++) {
             for (t_int j = 0; j < x->n_in_chans; ++j) {
               x->input_to_nn[j] = (float)ins[j + (l*x->n_in_chans)][i];
             }
@@ -343,7 +357,7 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
           }
         }
       }
-    }
+     }
   }
 }
 

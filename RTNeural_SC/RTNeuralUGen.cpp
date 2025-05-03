@@ -51,6 +51,10 @@ static InterfaceTable *ft;
     ins = (float const**)RTAlloc(mWorld, (double)m_num_data_input_chans*sizeof(float*));
     outs = (float **)RTAlloc(mWorld, (double)m_num_output_chans*sizeof(float*));
 
+    for(int i=0; i<m_num_output_chans; i++){
+      output_from_nn[i] = 0.f;
+    }
+
     float ratio = 1.f;
     //if the model was trained at a different sample rate, we need to resample the input and output
     if(nn_sample_rate>0.f) {

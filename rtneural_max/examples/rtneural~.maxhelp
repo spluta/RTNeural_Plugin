@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 198.0, 207.0, 1098.0, 726.0 ],
+		"rect" : [ 100.0, 100.0, 723.0, 726.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -147,7 +147,7 @@
 		"dependency_cache" : [ 			{
 				"name" : "div_by_maxval.js",
 				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
-				"patcherrelativepath" : "../../../../../Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
+				"patcherrelativepath" : "./lstm_note_prediciton",
 				"type" : "TEXT",
 				"implicit" : 1
 			}
@@ -168,42 +168,42 @@
 , 			{
 				"name" : "rtneural~_gru_saw.maxpat",
 				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/rnn_distortion",
-				"patcherrelativepath" : "../../../../../Documents/Max 8/Library/rtneural_max/examples/rnn_distortion",
+				"patcherrelativepath" : "./rnn_distortion",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "rtneural~_lstm_distortion.maxpat",
 				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/rnn_distortion",
-				"patcherrelativepath" : "../../../../../Documents/Max 8/Library/rtneural_max/examples/rnn_distortion",
+				"patcherrelativepath" : "./rnn_distortion",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "rtneural~_lstm_two_inputs.maxpat",
 				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/rnn_distortion",
-				"patcherrelativepath" : "../../../../../Documents/Max 8/Library/rtneural_max/examples/rnn_distortion",
+				"patcherrelativepath" : "./rnn_distortion",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "rtneural~_mlp_trigger_mode.maxpat",
 				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/mlp",
-				"patcherrelativepath" : "../../../../../Documents/Max 8/Library/rtneural_max/examples/mlp",
+				"patcherrelativepath" : "./mlp",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "rtneural~_mlp_wavetable.maxpat",
 				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/mlp",
-				"patcherrelativepath" : "../../../../../Documents/Max 8/Library/rtneural_max/examples/mlp",
+				"patcherrelativepath" : "./mlp",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "test_lstm_max_vs_msp.maxpat",
 				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
-				"patcherrelativepath" : "../../../../../Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
+				"patcherrelativepath" : "./lstm_note_prediciton",
 				"type" : "JSON",
 				"implicit" : 1
 			}

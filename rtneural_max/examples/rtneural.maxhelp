@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 34.0, 171.0, 1029.0, 495.0 ],
+		"rect" : [ 142.0, 109.0, 962.0, 586.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -37,7 +37,6 @@
 		"tags" : "",
 		"style" : "",
 		"subpatcher_template" : "",
-		"showontab" : 1,
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{

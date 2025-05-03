@@ -44,7 +44,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 0,
 					"numoutlets" : 0,
-					"patching_rect" : [ 505.0, 354.0, 134.0, 22.0 ],
+					"patching_rect" : [ 505.0, 367.0, 134.0, 22.0 ],
 					"text" : "test_lstm_max_vs_msp"
 				}
 
@@ -101,7 +101,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 486.0, 60.0, 489.0, 275.0 ],
+					"patching_rect" : [ 487.0, 65.0, 489.0, 275.0 ],
 					"text" : "use a multi layered perceptron to control a synthesizer\n    see the mlp/rtneural_mlp_control tutorial\n\n\n\n\nteach a multi layered perceptron to add\n    see the mlp/rtneural_mlp_adder tutorial\n\n\n\n\nteach a recurrent neural network about note prediction\n    see the lstm_note_prediction/rtneural_lstm_pred tutorial\n\n\n\n\nsee how to do note prediction at audio rate\n    see the test_lstm_max_vs_msp tutorial"
 				}
 

@@ -44,7 +44,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 0,
 					"numoutlets" : 0,
-					"patching_rect" : [ 505.0, 367.0, 134.0, 22.0 ],
+					"patching_rect" : [ 505.0, 353.0, 134.0, 22.0 ],
 					"text" : "test_lstm_max_vs_msp"
 				}
 
@@ -55,8 +55,8 @@
 					"maxclass" : "newobj",
 					"numinlets" : 0,
 					"numoutlets" : 0,
-					"patching_rect" : [ 505.0, 265.0, 109.0, 22.0 ],
-					"text" : "rtneural_lstm_pred"
+					"patching_rect" : [ 505.0, 265.0, 115.0, 22.0 ],
+					"text" : "rtneural_lstm_pred2"
 				}
 
 			}
@@ -130,29 +130,8 @@
 				"implicit" : 1
 			}
 , 			{
-				"name" : "get_lstm_vectors.js",
-				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
-				"patcherrelativepath" : "./lstm_note_prediciton",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "get_note_durs.js",
-				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
-				"patcherrelativepath" : "./lstm_note_prediciton",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
 				"name" : "rtneural.mxo",
 				"type" : "iLaX"
-			}
-, 			{
-				"name" : "rtneural_lstm_pred.maxpat",
-				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
-				"patcherrelativepath" : "./lstm_note_prediciton",
-				"type" : "JSON",
-				"implicit" : 1
 			}
 , 			{
 				"name" : "rtneural_mlp_adder.maxpat",
@@ -184,13 +163,6 @@
 				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
 				"patcherrelativepath" : "./lstm_note_prediciton",
 				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "top_n_weighted.js",
-				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
-				"patcherrelativepath" : "./lstm_note_prediciton",
-				"type" : "TEXT",
 				"implicit" : 1
 			}
  ],

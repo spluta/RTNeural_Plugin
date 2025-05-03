@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 271.0, 113.0, 1486.0, 959.0 ],
+		"rect" : [ 105.0, 96.0, 918.0, 837.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -37,7 +37,6 @@
 		"tags" : "",
 		"style" : "",
 		"subpatcher_template" : "",
-		"showontab" : 1,
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
@@ -1444,12 +1443,12 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-86",
-					"linecount" : 11,
+					"linecount" : 10,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1115.0, 114.0, 532.0, 156.0 ],
+					"patching_rect" : [ 1115.0, 114.0, 539.0, 143.0 ],
 					"text" : "20 20 2 2 10 6 9 5 5 10 29 2 2 15 2 2 2 2 2 2 2 2 2 2 2 2 2 2 5 5 2 2 5 2 2 5 10 29 20 20 2 2 10 5 10 5 5 10 20 2 2 2 2 2 7 2 7 2 7 2 7 5 10 5 2 12 5 10 2 2 25 20 20 2 2 10 5 5 5 5 40 1 1 1 20 2 2 2 2 2 2 2 2 2 2 2 2 2 2 5 5 10 5 5 2 2 2 2 2 2 2 2 2 10 10 5 5 5 5 10 22 2 5 5 5 5 5 10 5 17 2 5 5 5 5 5 10 20 10 5 7 2 2 2 10 29 2 2 15 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 5 5 5 5 5 10 20 10 5 10 2 2 10 1 1 17 2 2 2 2 15 5 10 20 10 2 2 10 5 10 15 5 2 2 2 2 2 7 2 7 5 20 5 5 5 15 5 5 5 2 3 5 10 10 5 10 2 2 10 29 10 5 5 10 20 5 5 2 2 5 2 2 5 10 20 5 5 5 5 5 5 5 5 5 5 25 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 25 5 5 5 5 14 2 2 15 2 2 2 2 2 2 2 2 2 1 2 1 2 2 2 2 2 5 5 5 5 5 10 20 10 5 10 2 2 10 1 1 17 2 2 2 2 15 5 10 20 10 2 2 10 5 10 15 5 2 3 2 2 2 7 2 7 5 20 5 5 5 15 5 5 5 2 2 5 10 10 5 10 2 3 10 29 10 5 5 10 20 5 5 2 2 5 2 2 5 10 20 5 5 5 5 5 5 5 5 5 5 25 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 25 5 5 5 5 20"
 				}
 
@@ -1720,7 +1719,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 1000.0, 352.0, 754.0, 640.0 ],
+						"rect" : [ 708.0, 293.0, 754.0, 640.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1748,7 +1747,6 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"assistshowspatchername" : 0,
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-4",
@@ -3449,7 +3447,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 1486.0, 933.0 ],
+						"rect" : [ 34.0, 96.0, 1173.0, 837.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -3476,7 +3474,7 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
-						"showontab" : 1,
+						"showontab" : 0,
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
@@ -3810,7 +3808,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 1357.0, 313.0, 680.0, 116.0 ],
+									"patching_rect" : [ 1357.0, 313.0, 686.0, 116.0 ],
 									"text" : "20 20 2 2 10 6 9 5 5 10 29 2 2 15 2 2 2 2 2 2 2 2 2 2 2 2 2 2 5 5 2 2 5 2 2 5 10 29 20 20 2 2 10 5 10 5 5 10 20 2 2 2 2 2 7 2 7 2 7 2 7 5 10 5 2 12 5 10 2 2 25 20 20 2 2 10 5 5 5 5 40 1 1 1 20 2 2 2 2 2 2 2 2 2 2 2 2 2 2 5 5 10 5 5 2 2 2 2 2 2 2 2 2 10 10 5 5 5 5 10 22 2 5 5 5 5 5 10 5 17 2 5 5 5 5 5 10 20 10 5 7 2 2 2 10 29 2 2 15 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 5 5 5 5 5 10 20 10 5 10 2 2 10 1 1 17 2 2 2 2 15 5 10 20 10 2 2 10 5 10 15 5 2 2 2 2 2 7 2 7 5 20 5 5 5 15 5 5 5 2 3 5 10 10 5 10 2 2 10 29 10 5 5 10 20 5 5 2 2 5 2 2 5 10 20 5 5 5 5 5 5 5 5 5 5 25 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 25 5 5 5 5 14 2 2 15 2 2 2 2 2 2 2 2 2 1 2 1 2 2 2 2 2 5 5 5 5 5 10 20 10 5 10 2 2 10 1 1 17 2 2 2 2 15 5 10 20 10 2 2 10 5 10 15 5 2 3 2 2 2 7 2 7 5 20 5 5 5 15 5 5 5 2 2 5 10 10 5 10 2 3 10 29 10 5 5 10 20 5 5 2 2 5 2 2 5 10 20 5 5 5 5 5 5 5 5 5 5 25 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 25 5 5 5 5 20"
 								}
 
@@ -5301,41 +5299,7 @@
 				}
 
 			}
- ],
-		"dependency_cache" : [ 			{
-				"name" : "div_by_maxval.js",
-				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
-				"patcherrelativepath" : ".",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "get_lstm_vectors.js",
-				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
-				"patcherrelativepath" : ".",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "get_note_durs.js",
-				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
-				"patcherrelativepath" : ".",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "rtneural.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "top_n_weighted.js",
-				"bootpath" : "~/Documents/Max 8/Library/rtneural_max/examples/lstm_note_prediciton",
-				"patcherrelativepath" : ".",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
- ],
-		"autosave" : 0
+ ]
 	}
 
 }

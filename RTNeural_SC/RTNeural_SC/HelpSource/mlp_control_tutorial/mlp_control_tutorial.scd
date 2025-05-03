@@ -22,7 +22,7 @@
 )
 
 //~python_path needs to point to the rtneural_python folder on your computer
-~python_path = "/Users/spluta1/Desktop/RTNeural_python";
+~python_path = "~/Desktop/RTNeural_python".absolutePath;
 //train the network using the values in the json file
 //this assumes you have created a python virtual environment in the RTNeural_python folder and installed the torch, keras, and tensorflow dependencies (if not see the README in the RTNeural_python folder)
 RTNeural.trainMLP(~json_path, nil, ~python_path); //this will save the pytorch format pt file and rtneural json file
@@ -57,7 +57,7 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
         var osc1, osc2, feed, env;
 
         vals = Lag.kr(vals,0.2);
-        
+
         Out.kr(\vals_bus.kr, vals);
 
         feed = LocalIn.ar(1);
@@ -71,7 +71,7 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
         osc2 = SinOsc.ar(vals[7].linexp(0,1,1, 3000)+(vals[8].linlin(0,1,0,5000)*osc1));
 
         osc2 = Latch.ar(osc2, Impulse.ar(vals[9].linexp(0,1,200, SampleRate.ir/2)));
-        
+
         osc2 = RLPF.ar(osc2, vals[10].linexp(0,1,200, SampleRate.ir/2), vals[11]);
         osc2 = (osc2*vals[12].linlin(0,1,0.5,10)).tanh;
 
@@ -79,9 +79,15 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
 
         env = Env.asr(0.1,1,0.01).kr(2, \gate.kr(1));
         Out.ar(0,LeakDC.ar([osc1,osc2])*0.5*\vol.kr(0.1)*env);
-        
+
     }).load(s);
 )
+
+
+//make sure to set the ~python_path (where you put the RTNeural_python directory) before loading the program
+//this is needed to trigger the training from the gui
+~python_path = "~/Desktop/RTNeural_python".absolutePath;
+
 
 //run this code to create the control window
 (
@@ -96,7 +102,7 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
         var layers;
         dict['in_vals'] = [];
         dict['out_vals'] = [];
-        
+
         layers = 0!hidden_layers;
         ((in_size+2)..out_size).do{|item, i| layers.put(ceil(i * 3 / 11).asInt, item)};
         (layers.size-1).do{|i| layers.put(i, [layers[i], "relu"])};
@@ -108,8 +114,6 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
 
     var bypass = 1;
     var win = Window("RTNeural MultiLayer Perceptron",Rect(0,0,500,300));
-    
-    var python_path = PathName(RTNeural.filenameSymbol.asString).upMultiDir(3)++"RTNeural_python";
 
     var training_path = PathName(RTNeural.filenameSymbol.asString).upMultiDir(1)++"HelpSource/mlp_control_tutorial/";
 
@@ -124,7 +128,7 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
     }
     .size_(out_size)
     .elasticMode_(true);
-    
+
     var s2d = Slider2D()
     .action_({ |sl|
         xy_array[0]=sl.x;
@@ -191,12 +195,12 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
 
         }, false, training_path)
     });
-    
+
     var save_points_butt = Button()
     .states_([["Save Points", Color.black, Color.blue]])
     .action_({
         Dialog.savePanel({ |path|
-            RTNeural.saveJSONFile(dict, path); 
+            RTNeural.saveJSONFile(dict, path);
         }, {
             "cancelled".postln;
         }, training_path);
@@ -205,11 +209,13 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
     var train_butt = Button()
     .states_([["Train from File", Color.red, Color.black]])
     .action_({
-        Dialog.openPanel({ |path|
-            RTNeural.trainMLP(path, nil, python_path);
-        }, {
-            "cancelled".postln;
-        }, false, training_path);
+	if (~python_path==nil){"NO PYTHON PATH!!".postln;}{
+		Dialog.openPanel({ |path|
+			RTNeural.trainMLP(path, nil, ~python_path);
+		}, {
+			"cancelled".postln;
+		}, false, training_path);
+	}
     });
 
     var load_butt = Button()
@@ -223,7 +229,7 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
             "cancelled".postln;
         }, false, training_path);
     });
-    
+
     var bypass_butt = Button()
     .states_([["Bypass",Color.yellow,Color.black],["Predicting",Color.green,Color.black]])
     .action_({
@@ -252,17 +258,17 @@ RTNeural.loadModel(a, 'mlp', ~folder++"dummy_values_RTNeural.json", true)
         VLayout(
             HLayout(
                 msv,
-                VLayout(s2d, post_points_butt, clear_points_butt, add_point_butt, HLayout(remove_point_butt, remove_point_numbox), random_button), 
+                VLayout(s2d, post_points_butt, clear_points_butt, add_point_butt, HLayout(remove_point_butt, remove_point_numbox), random_button),
                 VLayout(save_points_butt, load_points_butt, train_butt, load_butt, bypass_butt)
             ),
             vol_slider
         )
     );
-    
+
     vals_rout = Routine({inf.do{
         if(bypass==0){
 
-            vals_bus.getn(out_size,{|array| 
+            vals_bus.getn(out_size,{|array|
                 {msv.value_(array)}.defer
             });
         };

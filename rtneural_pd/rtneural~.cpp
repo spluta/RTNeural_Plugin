@@ -172,6 +172,13 @@ void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floata
 
   x->input_to_nn = (t_sample*)calloc(x->n_in_chans, sizeof(t_sample));
   x->output_from_nn = (t_sample*)calloc(x->n_out_chans, sizeof(t_sample));
+  
+  for(int i=0; i<x->n_in_chans; i++){
+    x->input_to_nn[i] = 0.f;
+  }
+  for(int i=0; i<x->n_out_chans; i++){
+    x->output_from_nn[i] = 0.f;
+  }
 
   return (void *)x;
 }
@@ -237,6 +244,7 @@ t_int* rtneural_tilde_perform (t_int* args) {
         if(x->input_model_ratio<1){
           x->input_model_ratio = 1;
         }
+        
 
         for (t_int i = 0; i < n_samps; ++i){
           //if reset is greater than 0, reset the model

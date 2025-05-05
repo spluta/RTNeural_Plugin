@@ -28,8 +28,6 @@ static InterfaceTable *ft;
     std::cout<<"m_num_data_input_chans: "<<m_num_data_input_chans<<std::endl;
     std::cout<<"m_input_model_ratio: "<<m_input_model_ratio<<std::endl;
 
-    
-    
     m_num_output_chans = numOutputs();
 
     int nn_sample_rate = in0(1);
@@ -51,6 +49,10 @@ static InterfaceTable *ft;
     ins = (float const**)RTAlloc(mWorld, (double)m_num_data_input_chans*sizeof(float*));
     outs = (float **)RTAlloc(mWorld, (double)m_num_output_chans*sizeof(float*));
 
+    for(int i=0; i<m_num_model_input_chans; i++){
+      input_to_nn[i] = 0.f;
+    }
+
     for(int i=0; i<m_num_output_chans; i++){
       output_from_nn[i] = 0.f;
     }
@@ -62,6 +64,7 @@ static InterfaceTable *ft;
     }
     if(ratio!=1.f) {
       processor.do_resample = true;
+      
     } else {
       processor.do_resample = false;
     }
@@ -101,6 +104,10 @@ static InterfaceTable *ft;
     if(test==1){
       std::cout<<"model input size: " << unit->processor.m_model_input_size<<std::endl;
       std::cout<<"model output size: " << unit->processor.m_model_output_size<<std::endl;
+      unit->m_load_count = 512/unit->mWorld->mBufLength;
+      if(unit->m_load_count<1){
+        unit->m_load_count = 1;
+      }
     }
     else {
       switch(test){
@@ -120,6 +127,7 @@ static InterfaceTable *ft;
         std::cout<<"disabling model"<<std::endl;
       }
 }
+
 
 void RTNeuralUGen::next(int nSamples)
 {
@@ -146,17 +154,30 @@ void RTNeuralUGen::next(int nSamples)
         }
       }
     }
-  } 
-  else {
+  } else {
     if(trig_mode==0) {
       int n_samps_out = processor.process(ins, input_to_nn, in_rs, interleaved_array, out_temp, outbuf, nSamples);
 
-      for (int j = 0; j < m_num_output_chans; j++) {
-        for(int i = 0; i < nSamples; i++) {
-          outs[j][i] = outbuf[i*m_num_output_chans+j];
+      if(m_load_count>0){
+        m_load_count--;
+        //std::cout<<"m_load_count: "<<m_load_count<<std::endl;
+        for (int i = 0; i < nSamples; ++i) {
+          int small = std::min(m_num_data_input_chans, m_num_output_chans);
+          for (int j = 0; j < m_num_output_chans; ++j) {
+            if(j<small) {
+              outs[j][i] = ins[j][i];
+            } else {
+              outs[j][i] = 0.f;
+            }
+          }
+        }
+      } else {
+        for (int j = 0; j < m_num_output_chans; j++) {
+          for(int i = 0; i < nSamples; i++) {
+            outs[j][i] = outbuf[i*m_num_output_chans+j];
+          }
         }
       }
-
     } else {
       for (int i = 0; i < nSamples; ++i){
         if(reset[i]>0.f){

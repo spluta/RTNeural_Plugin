@@ -24,6 +24,8 @@ public:
   float const** ins;
   float** outs;
 
+  int m_load_count{0};
+
 private:
   // Calc function
   void next(int nSamples);

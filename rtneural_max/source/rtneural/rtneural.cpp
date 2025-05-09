@@ -20,7 +20,11 @@ using namespace std;
 #endif
 
 // max object instance data
-typedef struct _rtneural {
+class t_rtneural {
+public:
+  ~t_rtneural() {
+    //post("RTNeural destructor");
+  }
   t_object m_obj;
   void	*outlet;
   t_systhread_mutex	mutex;
@@ -53,7 +57,7 @@ typedef struct _rtneural {
 
 	RTN_Processor processor;
 
-} t_rtneural; 
+}; 
 
 
 // prototypes
@@ -384,6 +388,10 @@ void rtneural_write_json(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
 }
 
 void rtneural_free (t_rtneural* x) {
+  //systhread_mutex_free(&x->c_mutex);
+  //outlet_free(x->outlet);
+  x->~t_rtneural();
+  free(x);
 }
 
 void rtneural_bang(t_rtneural *x)
@@ -410,7 +418,7 @@ void rtneural_list(t_rtneural *x, t_symbol *s, long argc, t_atom *argv) {
         for (int j = 0; j < x->n_in_chans; j++) {
             x->input_to_nn[j] = atom_getfloat(argv + i * x->n_in_chans + j);
         }
-        x->processor.process1(x->input_to_nn, x->output_from_nn);
+        x->processor.process1(x->input_to_nn.data(), x->output_from_nn.data());
     }
     for (int j = 0; j < x->n_out_chans; j++) {
       atom_setfloat(&x->out_list[j], x->output_from_nn[j]);

@@ -18,7 +18,12 @@
 using namespace std;
 
 // max xect instance data
-typedef struct _rtneural {
+class t_rtneural {
+public:
+  ~t_rtneural() {
+    //post("RTNeural_tilde destructor");
+  }
+
   t_pxobject m_obj;
   
   float sample_rate;
@@ -47,15 +52,15 @@ typedef struct _rtneural {
   std::vector<float> input_to_nn;
   std::vector<float> output_from_nn;
 
-} t_rtneural; 
+}; 
 
 
 // prototypes
-void	*rtneural_new(t_symbol *s, long argc, t_atom *argv);
-void	rtneural_free(t_rtneural *x);
-void 	rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv);
-void 	rtneural_reset(t_rtneural *x, long f);
-void 	rtneural_bypass(t_rtneural *x, long f);
+void *rtneural_new(t_symbol *s, long argc, t_atom *argv);
+void rtneural_free(t_rtneural *x);
+void rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv);
+void rtneural_reset(t_rtneural *x, long f);
+void rtneural_bypass(t_rtneural *x, long f);
 
 void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam);
 void rtneural_dsp64(t_rtneural *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
@@ -137,9 +142,13 @@ void *rtneural_new(t_symbol *s, long argc, t_atom *argv)
   x->bypass = 0;
   x->model_loaded = 0.f;
 
-  reset_vars_and_mem(x, sys_getsr(), sys_getblksize());
+  //reset_vars_and_mem(x, sys_getsr(), sys_getblksize());
+  x->sample_rate = 0.f;
+  x->blocksize = 0.f;
+  x->control_rate = 0.f;
+  x->processor.do_resample = false;
 
-  x->processor.initialize(x->n_in_chans, x->n_out_chans, x->ratio);
+  x->processor.initialize(x->n_in_chans, x->n_out_chans, 1.0f); // initialize with a dummy ratio
 	
 	dsp_setup((t_pxobject *)x, 3);
 	x->m_obj.z_misc |= Z_NO_INPLACE | Z_MC_INLETS;
@@ -153,7 +162,7 @@ long rtneural_multichanneloutputs(t_rtneural *x, long outletindex)
 }
 
 void reset_vars_and_mem(t_rtneural *x, float sample_rate, t_int blocksize){
-  post("resetting nn sample rate and block size");
+  post("resetting nn sample rate and block size B");
 
   x->sample_rate = sample_rate;
   x->blocksize = blocksize;
@@ -192,8 +201,8 @@ void reset_vars_and_mem(t_rtneural *x, float sample_rate, t_int blocksize){
 
 void rtneural_free (t_rtneural* x) {
   z_dsp_free((t_pxobject *)x);
+  x->~t_rtneural();
   
-  x->processor.~RTN_Processor();
 }
 
 t_int get_abs_path(t_symbol *path_in, char* filename, int read_write){
@@ -311,7 +320,7 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
     }
   } else {
     if(x->trig_mode==0){
-      t_int n_samps_out = x->processor.process(ins, x->input_to_nn, x->in_rs, x->interleaved_array, x->out_temp, x->outbuf, x->blocksize);
+      t_int n_samps_out = x->processor.process(ins, x->input_to_nn.data(), x->in_rs.data(), x->interleaved_array.data(), x->out_temp.data(), x->outbuf.data(), x->blocksize);
 
 
       //deinterleave the output and put it in the output buffers
@@ -338,7 +347,7 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
             for (t_int j = 0; j < x->n_in_chans; ++j) {
               x->input_to_nn[j] = (float)ins[j + (l*x->n_in_chans)][i];
             }
-            x->processor.process1(x->input_to_nn, x->output_from_nn);
+            x->processor.process1(x->input_to_nn.data(), x->output_from_nn.data());
           }
           for (t_int j = 0; j < x->n_out_chans; ++j) {
             outs[j][i] = (double)x->output_from_nn[j];

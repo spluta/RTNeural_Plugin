@@ -7,14 +7,8 @@ static t_class *rtneural_tilde_class;
 
 class RTNeural_tilde {
 public:
-  ~RTNeural_tilde() {
-    //post("RTNeural_tilde destructor");
-    inlet_free(x_in2);
-    inlet_free(x_in3);
-    outlet_free(signal_out);
-  }
-
   t_object x;
+
 	t_canvas *canvas; // necessary for relative paths
 
   t_float f;
@@ -41,15 +35,15 @@ public:
 
   RTN_Processor processor;
 
-  std::vector<float> interleaved_array;
-  std::vector<float> outbuf;
+  std::vector<t_float> interleaved_array;
+  std::vector<t_float> outbuf;
 
-  std::vector<float> in_rs;
-  std::vector<float> out_temp;
+  std::vector<t_float> in_rs;
+  std::vector<t_float> out_temp;
 
   //for triggered input only
-  std::vector<float> input_to_nn;
-  std::vector<float> output_from_nn;
+  std::vector<t_float> input_to_nn;
+  std::vector<t_float> output_from_nn;
 
 };  
 
@@ -117,11 +111,10 @@ void reset_vars_and_mem(RTNeural_tilde *x) {
   t_int out_temp_size = rs_size*x->n_out_chans; 
   t_int out_buf_size = x->blocksize*x->n_out_chans; 
 
-  x->interleaved_array = std::vector<float>(in_size);
-  x->in_rs = std::vector<float>(in_rs_size);
-  x->out_temp = std::vector<float>(out_temp_size);
-  x->outbuf = std::vector<float>(out_buf_size);
-  x->in_vec = std::vector<t_sample*>(x->n_in_chans);
+  x->interleaved_array.resize(in_size);
+  x->in_rs.resize(in_rs_size);
+  x->out_temp.resize(out_temp_size);
+  x->outbuf.resize(out_buf_size);
 
   if(x->nn_sample_rate<=0.f){
     x->ratio = 1.f;
@@ -138,14 +131,16 @@ void reset_vars_and_mem(RTNeural_tilde *x) {
 }
 
 static void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floatarg nn_sample_rate, t_floatarg trig_mode) { 
-  
+  //void* y = pd_new(rtneural_tilde_class);
+  RTNeural_tilde *x = (RTNeural_tilde *)pd_new(rtneural_tilde_class);
+
   if(n_in_chans<1.f){
     n_in_chans = 1.f;
   }
   if(n_out_chans<1.f){
     n_out_chans = 1.f;
   }
-  RTNeural_tilde *x = (RTNeural_tilde *)pd_new(rtneural_tilde_class);
+
   x->canvas = canvas_getcurrent();
 
   x->n_in_chans = t_int(n_in_chans);
@@ -175,8 +170,9 @@ static void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t
   x->blocksize = 0.f;
   x->processor.do_resample = false;
 
-  x->input_to_nn = std::vector<float>(x->n_in_chans, 0.f);
-  x->output_from_nn = std::vector<float>(x->n_out_chans, 0.f);
+  x->input_to_nn = std::vector<t_float>(x->n_in_chans, 0.f);
+  x->output_from_nn = std::vector<t_float>(x->n_out_chans, 0.f);
+  x->in_vec = std::vector<t_sample*>(x->n_in_chans);
 
   return x;
 }
@@ -246,7 +242,7 @@ t_int* rtneural_tilde_perform (t_int* args) {
             //so we need process l sets of j samples at a time
             for (int l = 0; l < x->input_model_ratio; l++) {
               for (t_int j = 0; j < x->n_in_chans; ++j) {
-                x->input_to_nn[j] = (float)in[(j+l*x->n_in_chans)*n_samps+i];
+                x->input_to_nn[j] = (t_float)in[(j+l*x->n_in_chans)*n_samps+i];
               }
               x->processor.process1(x->input_to_nn.data(), x->output_from_nn.data());
             }

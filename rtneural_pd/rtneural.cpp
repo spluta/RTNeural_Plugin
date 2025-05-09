@@ -9,14 +9,6 @@ static t_class *rtneural_class;
 
 class RTNeural_pd {
 public:
-  ~RTNeural_pd() {
-    // Destructor
-    //post("RTNeural_pd destructor");
-    if (out_list) {
-      freebytes(out_list, n_out_chans * sizeof(t_atom));
-    }
-  }
-
   t_object obj;
   t_float f;
 
@@ -38,13 +30,14 @@ public:
   t_int n_in_chans;
   t_int n_out_chans;
 
-  t_atom *out_list;
+
+  std::vector<t_atom> out_list;
 
   t_float ratio;
   t_float model_loaded;
 
-  std::vector<float> input_to_nn;
-  std::vector<float> output_from_nn;
+  std::vector<t_float> input_to_nn;
+  std::vector<t_float> output_from_nn;
 
   RTN_Processor processor;
 
@@ -53,7 +46,7 @@ public:
 static void rtneural_bang(RTNeural_pd *obj)
 {
     t_symbol *s = gensym("list");
-    outlet_list(obj->obj.ob_outlet, s, obj->n_out_chans, obj->out_list);
+    outlet_list(obj->obj.ob_outlet, s, obj->n_out_chans, obj->out_list.data());
 }
 
 void rtneural_list(RTNeural_pd* x, t_symbol *s, int argc, t_atom *argv) {
@@ -77,16 +70,17 @@ void rtneural_list(RTNeural_pd* x, t_symbol *s, int argc, t_atom *argv) {
     }
 
     for(int i=0; i<x->n_out_chans; i++){
-        SETFLOAT(x->out_list+i, x->output_from_nn[i]);
+        SETFLOAT(&x->out_list[i], x->output_from_nn[i]);
     }
-    outlet_list(x->obj.ob_outlet, s, x->n_out_chans, x->out_list);
+    outlet_list(x->obj.ob_outlet, s, x->n_out_chans, x->out_list.data());
 }
 
 void* rtneural_new(t_floatarg n_in_chans, t_floatarg n_out_chans) {  
 
-RTNeural_pd *x = (RTNeural_pd *)pd_new(rtneural_class);
+  //void *y = pd_new(rtneural_class);
+  RTNeural_pd *x = (RTNeural_pd*)pd_new(rtneural_class);
 
-x->canvas = canvas_getcurrent();
+  x->canvas = canvas_getcurrent();
 
   // char absolute_path[MAXPDSTRING] = { 0 };
   // canvas_makefilename(x->canvas, "../../RTNeural_python", absolute_path, MAXPDSTRING);
@@ -116,7 +110,7 @@ x->canvas = canvas_getcurrent();
   }
   x->n_in_chans = t_int(n_in_chans);
   x->n_out_chans = t_int(n_out_chans);
-  x->out_list = (t_atom *)getbytes(n_out_chans * sizeof(t_atom));
+  x->out_list.resize(n_out_chans);
 
   x->bypass = 0;
   x->model_loaded = 0.f;
@@ -354,7 +348,6 @@ void rtneural_bypass(RTNeural_pd *x, t_float f){
 
   post(f ? "Bypass ON" : "Bypass OFF");
 }  
-
 
 extern "C" void rtneural_setup(void) {
   rtneural_class = class_new(gensym("rtneural"),

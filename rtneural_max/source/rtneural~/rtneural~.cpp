@@ -20,10 +20,6 @@ using namespace std;
 // max xect instance data
 class t_rtneural {
 public:
-  ~t_rtneural() {
-    //post("RTNeural_tilde destructor");
-  }
-
   t_pxobject m_obj;
   
   float sample_rate;

@@ -22,9 +22,6 @@ using namespace std;
 // max object instance data
 class t_rtneural {
 public:
-  ~t_rtneural() {
-    //post("RTNeural destructor");
-  }
   t_object m_obj;
   void	*outlet;
   t_systhread_mutex	mutex;

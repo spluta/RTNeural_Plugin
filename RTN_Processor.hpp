@@ -34,8 +34,9 @@ public:
 
     //template <typename T> T process(T in_vec, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
     // int process(const std::vector<const float*>& in, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
-    template <typename T>
-    int process(T in_vec, float* in_vec_small, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples);
+    template <typename T, typename U>
+    int process(T in_vec, U in_vec_small, U in_rs, U interleaved_array, U out_temp, U outbuf, int nSamples);
 
-    void process1(const float* input, float* output);
+    template <typename T, typename U>
+    void process1(T input, U output);
 };

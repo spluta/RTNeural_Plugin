@@ -294,7 +294,7 @@
 #X text 159 73 <-- an introduction to [rtneural~];
 #X obj 82 20 rtneural~;
 #X text 155 20 is an interface for real-time neural net inference. Look through these examples to understand how it works:, f 64;
-#N canvas 150 427 1496 578 rnn_trigger_mode 0;
+#N canvas 150 427 1496 578 rnn_trigger_mode 1;
 #X obj 911 352 tgl 30 0 empty empty empty 0 -10 0 12 #dfdfdf #000000 #000000 0 1;
 #X msg 911 387 bypass \$1;
 #N canvas 0 0 450 300 (subpatch) 0;
@@ -404,7 +404,7 @@
 #X obj 747 231 rtneural~ 1 84 -1 1;
 #N canvas 469 494 450 278 (subpatch) 0;
 #X array \$0-softmax 20 float 3;
-#A 0 0.0359105 7.3992e-09 0.0104549 0.667537 6.26768e-09 0.000547354 7.88858e-09 8.9069e-08 1.40849e-11 0.0196602 0.151302 1.00791e-08 0.000129277 5.33255e-13 2.74462e-08 0.113759 8.07413e-09 0.000693031 8.03065e-09 6.54212e-06;
+#A 0 6.53649e-09 1.88481e-15 1.2141e-06 0.000153356 2.86755e-15 0.988436 1.82281e-15 0.0113576 2.39399e-10 3.27055e-05 1.55271e-06 4.48365e-15 1.71489e-05 3.60273e-15 3.60311e-11 9.50868e-09 3.28544e-15 1.36071e-11 5.94093e-15 1.16318e-13;
 #X coords 0 1 20 0 300 200 1 0 0;
 #X restore 1129 104 graph;
 #X obj 411 418 t b l;
@@ -472,7 +472,7 @@
 #X connect 26 1 1 0;
 #X connect 26 2 4 0;
 #X restore 96 139 pd get_5;
-#X obj 170 65 bng 19 250 50 0 empty empty empty 0 -10 0 12 #fcfcfc #000000 #000000;
+#X obj 150 63 bng 19 250 50 0 empty empty empty 0 -10 0 12 #fcfcfc #000000 #000000;
 #X listbox 17 265 43 0 0 0 - - - 0;
 #X listbox 18 194 43 0 0 0 - - - 0;
 #X obj 798 103 sig~;
@@ -498,6 +498,7 @@
 #X text 921 36 send a reset and a trigger to the audio rate process to process the N input values;
 #X text 78 10 this shows that rtneural~ gives the same outputs as rtneural when given a list of N values \, a reset \, and a trigger, f 61;
 #X msg 377 195 load_model saved_models/lstm_note_prediction/bach_RTNeural.json, f 63;
+#X text 177 57 bang to trigger inference on both pd and ~ externals, f 28;
 #X connect 0 0 1 0;
 #X connect 1 0 9 0;
 #X connect 4 0 5 0;

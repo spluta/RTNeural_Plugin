@@ -42,13 +42,14 @@ typedef struct _rtneural {
   t_int n_in_chans;
   t_int n_out_chans;
 
-  t_atom *out_list;
+  // t_atom *out_list;
+  std::vector<t_atom> out_list;
 
   float ratio;
   float model_loaded;
 
-	float* input_to_nn;
-	float* output_from_nn;
+  std::vector<float> input_to_nn;
+  std::vector<float> output_from_nn;
 
 	RTN_Processor processor;
 
@@ -143,14 +144,18 @@ void* rtneural_new(t_symbol *s, long argc, t_atom *argv) {
 			n_out_chans = 1.f;
 		}
 		x->n_in_chans = t_int(n_in_chans);
-		x->n_out_chans = t_int(n_out_chans);
-		x->out_list = (t_atom *)getbytes(n_out_chans * sizeof(t_atom));
+    x->n_out_chans = t_int(n_out_chans);
+
+    x->out_list.resize(n_out_chans);
+    for (int i = 0; i < n_out_chans; ++i) {
+      atom_setfloat(&x->out_list[i], 0.f);
+    }
 
 		x->bypass = 0;
 		x->model_loaded = 0.f;
 
-		x->input_to_nn = (float*)sysmem_newptr(x->n_in_chans*sizeof(float));
-		x->output_from_nn = (float*)sysmem_newptr(x->n_out_chans*sizeof(float));
+    x->input_to_nn.resize(x->n_in_chans, 0.0f);
+    x->output_from_nn.resize(x->n_out_chans, 0.0f);
 
 		x->processor.initialize(x->n_in_chans, x->n_out_chans, x->ratio);
 	}
@@ -379,14 +384,12 @@ void rtneural_write_json(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
 }
 
 void rtneural_free (t_rtneural* x) {
-  sysmem_freeptr(x->input_to_nn);
-  sysmem_freeptr(x->output_from_nn);
 }
 
 void rtneural_bang(t_rtneural *x)
 {
     t_symbol *s = gensym("list");
-    outlet_list(x->outlet, s, x->n_out_chans, x->out_list);
+    outlet_list(x->outlet, s, x->n_out_chans, x->out_list.data());
 }
 
 void rtneural_list(t_rtneural *x, t_symbol *s, long argc, t_atom *argv) {
@@ -410,9 +413,9 @@ void rtneural_list(t_rtneural *x, t_symbol *s, long argc, t_atom *argv) {
         x->processor.process1(x->input_to_nn, x->output_from_nn);
     }
     for (int j = 0; j < x->n_out_chans; j++) {
-      atom_setfloat(x->out_list + j, x->output_from_nn[j]);
+      atom_setfloat(&x->out_list[j], x->output_from_nn[j]);
     }
-    outlet_list(x->outlet, NULL, x->n_out_chans, x->out_list);
+    outlet_list(x->outlet, NULL, x->n_out_chans, x->out_list.data());
 }
 
 void rtneural_doload_model(t_rtneural *x, t_symbol *path_in){

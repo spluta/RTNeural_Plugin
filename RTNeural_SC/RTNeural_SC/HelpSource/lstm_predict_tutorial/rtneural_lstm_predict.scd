@@ -163,6 +163,7 @@ python <path_to train_lstm_timeseries.py> -f <the json file we just saved>
     //RTNeural.loadModel(a, \waits,~folder++"waits_RTNeural.json");
 )
 
+~folder = PathName(RTNeural.filenameSymbol.asString).upMultiDir(2)++"HelpSource/lstm_predict_tutorial/";
 ~notes = Object.readArchive(~folder++"notes");
 
 (

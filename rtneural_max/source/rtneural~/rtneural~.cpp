@@ -33,18 +33,20 @@ typedef struct _rtneural {
   float ratio;
   float model_loaded;
 
-  float* input_to_nn;
-  float* output_from_nn;
-
   t_int input_model_ratio;
 
 	RTN_Processor processor;
 
-  float* interleaved_array;
-  float* outbuf;
+  std::vector<float> interleaved_array;
+  std::vector<float> outbuf;
 
-  float *in_rs;
-  float *out_temp;
+  std::vector<float> in_rs;
+  std::vector<float> out_temp;
+
+  //for triggered input only
+  std::vector<float> input_to_nn;
+  std::vector<float> output_from_nn;
+
 } t_rtneural; 
 
 
@@ -115,8 +117,8 @@ void *rtneural_new(t_symbol *s, long argc, t_atom *argv)
   x->n_in_chans = (t_int)n_in_chans;
   x->n_out_chans = (t_int)n_out_chans;
 
-  x->input_to_nn = (float*)sysmem_newptr(x->n_in_chans*sizeof(float));
-	x->output_from_nn = (float*)sysmem_newptr(x->n_out_chans*sizeof(float));
+  x->input_to_nn.resize(x->n_in_chans, 0.f);
+  x->output_from_nn.resize(x->n_out_chans, 0.f);
 
   for(int i=0; i<x->n_in_chans; i++){
     x->input_to_nn[i] = 0.f;
@@ -181,15 +183,10 @@ void reset_vars_and_mem(t_rtneural *x, float sample_rate, t_int blocksize){
   x->blocksize = blocksize;
   x->control_rate = x->sample_rate/t_float(x->blocksize);
 
-  sysmem_freeptr(x->interleaved_array);
-  sysmem_freeptr(x->in_rs);
-  sysmem_freeptr(x->out_temp);
-  sysmem_freeptr(x->outbuf);
-
-  x->interleaved_array = (float *)sysmem_newptr(in_size * sizeof(float));
-  x->in_rs = (float *)sysmem_newptr(in_rs_size * sizeof(float));
-  x->out_temp = (float *)sysmem_newptr(out_temp_size * sizeof(float));
-  x->outbuf = (float *)sysmem_newptr(out_buf_size * sizeof(float));
+  x->interleaved_array.resize(in_size, 0.f);
+  x->in_rs.resize(in_rs_size, 0.f);
+  x->out_temp.resize(out_temp_size, 0.f);
+  x->outbuf.resize(out_buf_size, 0.f);
 
 }
 
@@ -197,11 +194,6 @@ void rtneural_free (t_rtneural* x) {
   z_dsp_free((t_pxobject *)x);
   
   x->processor.~RTN_Processor();
-
-  sysmem_freeptr(x->interleaved_array);
-  sysmem_freeptr(x->in_rs);
-  sysmem_freeptr(x->out_temp);
-  sysmem_freeptr(x->outbuf);
 }
 
 t_int get_abs_path(t_symbol *path_in, char* filename, int read_write){

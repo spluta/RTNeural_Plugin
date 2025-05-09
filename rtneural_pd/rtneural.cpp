@@ -2,13 +2,21 @@
 //#include <memory>
 #include "../RTN_Processor.cpp"
 // #include <experimental/filesystem>
-#include <vector>
 
 #include "m_pd.h"
 
 static t_class *rtneural_class;
 
-typedef struct _rtneural {
+class RTNeural_pd {
+public:
+  ~RTNeural_pd() {
+    // Destructor
+    //post("RTNeural_pd destructor");
+    if (out_list) {
+      freebytes(out_list, n_out_chans * sizeof(t_atom));
+    }
+  }
+
   t_object obj;
   t_float f;
 
@@ -21,7 +29,7 @@ typedef struct _rtneural {
   std::vector<t_int> layers_ints;
   std::vector<std::string> layers_strings;
 
-  std::string python_path;
+  //std::string python_path;
   
   t_float learn_rate;
 
@@ -35,20 +43,20 @@ typedef struct _rtneural {
   t_float ratio;
   t_float model_loaded;
 
-  float* input_to_nn;
-  float* output_from_nn;
+  std::vector<float> input_to_nn;
+  std::vector<float> output_from_nn;
 
   RTN_Processor processor;
 
-} t_rtneural;  
+};  
 
-void rtneural_bang(t_rtneural *obj)
+static void rtneural_bang(RTNeural_pd *obj)
 {
     t_symbol *s = gensym("list");
     outlet_list(obj->obj.ob_outlet, s, obj->n_out_chans, obj->out_list);
 }
 
-void rtneural_list(t_rtneural* x, t_symbol *s, int argc, t_atom *argv) {
+void rtneural_list(RTNeural_pd* x, t_symbol *s, int argc, t_atom *argv) {
     if ((x->processor.m_model_loaded==0)||((t_int)x->bypass==1)) {
         return;
     }
@@ -65,12 +73,8 @@ void rtneural_list(t_rtneural* x, t_symbol *s, int argc, t_atom *argv) {
         for (int j = 0; j < x->n_in_chans; j++) {
             x->input_to_nn[j] = atom_getfloat(argv + i * x->n_in_chans + j);
         }
-        x->processor.process1(x->input_to_nn, x->output_from_nn);
+        x->processor.process1(x->input_to_nn.data(), x->output_from_nn.data());
     }
-      // for(int i=0; i<x->n_in_chans; i++){
-      //     x->input_to_nn[i] = atom_getfloat(argv+i);
-      // }
-      // x->processor.process1(x->input_to_nn, x->output_from_nn);
 
     for(int i=0; i<x->n_out_chans; i++){
         SETFLOAT(x->out_list+i, x->output_from_nn[i]);
@@ -80,14 +84,14 @@ void rtneural_list(t_rtneural* x, t_symbol *s, int argc, t_atom *argv) {
 
 void* rtneural_new(t_floatarg n_in_chans, t_floatarg n_out_chans) {  
 
-t_rtneural *x = (t_rtneural *)pd_new(rtneural_class);
+RTNeural_pd *x = (RTNeural_pd *)pd_new(rtneural_class);
 
 x->canvas = canvas_getcurrent();
 
-  char absolute_path[MAXPDSTRING] = { 0 };
-  canvas_makefilename(x->canvas, "../../RTNeural_python", absolute_path, MAXPDSTRING);
-  x->python_path = absolute_path;
-  post("python path: %s", x->python_path.c_str());
+  // char absolute_path[MAXPDSTRING] = { 0 };
+  // canvas_makefilename(x->canvas, "../../RTNeural_python", absolute_path, MAXPDSTRING);
+  // x->python_path = absolute_path;
+  // post("python path: %s", x->python_path.c_str());
 
   x->epochs = 2000;
   x->learn_rate = 0.001;
@@ -117,19 +121,19 @@ x->canvas = canvas_getcurrent();
   x->bypass = 0;
   x->model_loaded = 0.f;
 
-  x->input_to_nn = (float*)calloc(x->n_in_chans, sizeof(float));
-  x->output_from_nn = (float*)calloc(x->n_out_chans, sizeof(float));
+  x->input_to_nn.resize(x->n_in_chans, 0.0f);
+  x->output_from_nn.resize(x->n_out_chans, 0.0f);
 
   x->processor.initialize(x->n_in_chans, x->n_out_chans, x->ratio);
 
   return (void *)x;
 }
 
-void rtneural_set_epochs(t_rtneural *x, t_floatarg n_epochs) {
+void rtneural_set_epochs(RTNeural_pd *x, t_floatarg n_epochs) {
   x->epochs = n_epochs;
 }
 
-void rtneural_set_layers_data(t_rtneural *x, t_symbol *s, int argc, t_atom *argv) {
+void rtneural_set_layers_data(RTNeural_pd *x, t_symbol *s, int argc, t_atom *argv) {
   x->layers_ints.clear();
   x->layers_strings.clear();
   for (int i = 0; i < argc / 2; i++) {
@@ -139,17 +143,17 @@ void rtneural_set_layers_data(t_rtneural *x, t_symbol *s, int argc, t_atom *argv
   }
 }
 
-void rtneural_set_learn_rate(t_rtneural *x, t_floatarg learn_rate) {
+void rtneural_set_learn_rate(RTNeural_pd *x, t_floatarg learn_rate) {
   x->learn_rate = learn_rate;
 }
 
-void rtneural_clear_points(t_rtneural *x, t_symbol *s, int argc, t_atom *argv) {
+void rtneural_clear_points(RTNeural_pd *x, t_symbol *s, int argc, t_atom *argv) {
   x->in_vals.clear();
   x->out_vals.clear();
   post("cleared in and out vals");
 }
 
-void rtneural_post_points(t_rtneural *x, t_symbol *s, int argc, t_atom *argv) {
+void rtneural_post_points(RTNeural_pd *x, t_symbol *s, int argc, t_atom *argv) {
   post("inputs:");
   std::string temp_str;
   for (size_t i = 0; i < x->in_vals.size(); i++) {
@@ -181,7 +185,7 @@ void rtneural_post_points(t_rtneural *x, t_symbol *s, int argc, t_atom *argv) {
   }
 }
 
-void rtneural_remove_point(t_rtneural *x, t_floatarg index_in) {
+void rtneural_remove_point(RTNeural_pd *x, t_floatarg index_in) {
   t_int index = t_int(index_in);
   if (index < 0 || index >= x->in_vals.size()) {
     post("index out of range");
@@ -191,7 +195,7 @@ void rtneural_remove_point(t_rtneural *x, t_floatarg index_in) {
   x->out_vals.erase(x->out_vals.begin() + index);
 }
 
-void rtneural_add_input(t_rtneural *x, t_symbol *s, int argc, t_atom *argv) {
+void rtneural_add_input(RTNeural_pd *x, t_symbol *s, int argc, t_atom *argv) {
   std::vector<t_float> in_temp;
   for (int i = 0; i < argc; i++) {
     in_temp.push_back(atom_getfloat(argv + i));
@@ -199,7 +203,7 @@ void rtneural_add_input(t_rtneural *x, t_symbol *s, int argc, t_atom *argv) {
   x->in_vals.push_back(in_temp);
 }
 
-void rtneural_add_output(t_rtneural *x, t_symbol *s, int argc, t_atom *argv) {
+void rtneural_add_output(RTNeural_pd *x, t_symbol *s, int argc, t_atom *argv) {
   std::vector<t_float> out_temp;
   for (int i = 0; i < argc; i++) {
     out_temp.push_back(atom_getfloat(argv + i));
@@ -207,7 +211,7 @@ void rtneural_add_output(t_rtneural *x, t_symbol *s, int argc, t_atom *argv) {
   x->out_vals.push_back(out_temp);
 }
 
-void rtneural_write_json(t_rtneural *x, t_symbol *s){
+void rtneural_write_json(RTNeural_pd *x, t_symbol *s){
   nlohmann::json data;
 
   data["epochs"] = x->epochs;
@@ -259,7 +263,7 @@ void rtneural_write_json(t_rtneural *x, t_symbol *s){
   }
 }
 
-void rtneural_train_model(t_rtneural *x, t_symbol *s) {
+void rtneural_train_model(RTNeural_pd *x, t_symbol *s) {
   post("not yet implemented");
   // char absolute_path[MAXPDSTRING] = { 0 };
   // canvas_makefilename(x->canvas, s->s_name, absolute_path, MAXPDSTRING);
@@ -296,7 +300,7 @@ void rtneural_train_model(t_rtneural *x, t_symbol *s) {
   // }
 }
 
-void rtneural_load_model(t_rtneural *x, t_symbol *s){
+void rtneural_load_model(RTNeural_pd *x, t_symbol *s){
   (void)x;
 
   post("loading model: ");
@@ -332,11 +336,12 @@ void rtneural_load_model(t_rtneural *x, t_symbol *s){
   }
 } 
 
-void rtneural_free (t_rtneural* obj) {
 
+void rtneural_free (RTNeural_pd* x) {
+  x->~RTNeural_pd();
 }
 
-void rtneural_reset(t_rtneural *x, t_symbol *s, int argc, t_atom *argv){
+void rtneural_reset(RTNeural_pd *x, t_symbol *s, int argc, t_atom *argv){
   t_int temp = atom_getint(argv);
   x->processor.reset();
   if((int)temp==1){
@@ -344,22 +349,17 @@ void rtneural_reset(t_rtneural *x, t_symbol *s, int argc, t_atom *argv){
   }
 }
 
-void rtneural_bypass(t_rtneural *x, t_float f){
+void rtneural_bypass(RTNeural_pd *x, t_float f){
   x->bypass = t_int(f);
 
   post(f ? "Bypass ON" : "Bypass OFF");
 }  
 
-#if defined(_LANGUAGE_C_PLUS_PLUS) || defined(__cplusplus)
-extern "C" {
-  void rtneural_setup(void);
-}
-#endif
 
-void rtneural_setup(void) {
+extern "C" void rtneural_setup(void) {
   rtneural_class = class_new(gensym("rtneural"),
         (t_newmethod)rtneural_new,
-        0, sizeof(t_rtneural),
+        (t_method) rtneural_free, sizeof(RTNeural_pd),
         CLASS_DEFAULT,
         A_DEFFLOAT, A_DEFFLOAT, 0);
 

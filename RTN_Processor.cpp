@@ -117,8 +117,8 @@ void RTN_Processor::reset () {
 //the process function returns the number of output samples, which should match the number of input samples
 //the output data is interleaved into the 'outbuf' and must be deinterleaved in the parent process
 //uses a template so in_vec can ba a vector of pointers to floats or a multi-dimensional array
-template <typename T>
-int RTN_Processor::process(T in_vec, float* in_vec_small, float* in_rs, float* interleaved_array, float* out_temp, float* outbuf, int nSamples) {
+template <typename T, typename U>
+int RTN_Processor::process(T in_vec, U in_vec_small, U in_rs, U interleaved_array, U out_temp, U outbuf, int nSamples) {
   
   // if there is no resampling, we can just run the model on the input data
   if (do_resample == false) {
@@ -156,7 +156,8 @@ int RTN_Processor::process(T in_vec, float* in_vec_small, float* in_rs, float* i
   }
 }
 
-void RTN_Processor::process1(const float* input, float* output) {
+template <typename T, typename U>
+void RTN_Processor::process1(T input, U output) {
   output[0] = m_model->forward(input);
   if(m_num_out_chans>1) {
     auto vec = m_model->getOutputs();

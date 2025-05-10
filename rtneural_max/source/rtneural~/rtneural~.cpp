@@ -20,6 +20,9 @@ using namespace std;
 // max xect instance data
 class t_rtneural {
 public:
+
+  t_rtneural(t_symbol *s, long argc, t_atom *argv);
+
   t_pxobject m_obj;
   
   float sample_rate;
@@ -50,7 +53,6 @@ public:
 
 }; 
 
-
 // prototypes
 void *rtneural_new(t_symbol *s, long argc, t_atom *argv);
 void rtneural_free(t_rtneural *x);
@@ -65,9 +67,75 @@ long rtneural_multichanneloutputs(t_rtneural *x, long outletindex);
 void rtneural_assist(t_rtneural *x, void *b, long io, long index, char *s);
 
 // globals
-static t_class *rtneural_class = NULL;
+static t_class *rtneural_class;
 
 /************************************************************************************/
+
+
+t_rtneural::t_rtneural(t_symbol *s, long argc, t_atom *argv) {
+  post("new rtneural~ object");
+
+  float n_in_chans_a = atom_getfloatarg(0, argc, argv);
+  float n_out_chans_a = atom_getfloatarg(1, argc, argv);
+  float nn_sample_rate_a = atom_getfloatarg(2, argc, argv);
+  float trig_mode_a = atom_getfloatarg(3, argc, argv);
+
+  input_model_ratio = 1;
+
+  if(n_in_chans_a<1.f){
+    n_in_chans_a = 1.f;
+  }
+  if(n_out_chans_a<1.f){
+    n_out_chans_a = 1.f;
+  }
+  n_in_chans = (t_int)n_in_chans_a;
+  n_out_chans = (t_int)n_out_chans_a;
+
+  input_to_nn.resize(n_in_chans, 0.f);
+  output_from_nn.resize(n_out_chans, 0.f);
+
+  for(int i=0; i<n_in_chans; i++){
+    input_to_nn[i] = 0.f;
+  }
+  for(int i=0; i<n_out_chans; i++){
+    output_from_nn[i] = 0.f;
+  }
+  
+  nn_sample_rate = nn_sample_rate_a;
+
+  if (trig_mode_a!=1.f) {
+    trig_mode_a = 0.f;
+  }
+  trig_mode = (long)trig_mode_a;
+
+  bypass = 0;
+  model_loaded = 0.f;
+
+  //reset_vars_and_mem(x, sys_getsr(), sys_getblksize());
+  sample_rate = 0.f;
+  blocksize = 0.f;
+  control_rate = 0.f;
+  processor.do_resample = false;
+
+  processor.initialize(n_in_chans, n_out_chans, 1.0f); // initialize with a dummy ratio
+}
+
+void *rtneural_new(t_symbol *s, long argc, t_atom *argv)
+{
+	t_rtneural *x = (t_rtneural *)object_alloc(rtneural_class);
+  new (x) t_rtneural(s, argc, argv);
+
+  dsp_setup((t_pxobject *)x, 3);
+	x->m_obj.z_misc |= Z_NO_INPLACE | Z_MC_INLETS;
+	outlet_new((t_object *)x, "multichannelsignal");
+	
+	return x;
+}
+
+void rtneural_free (t_rtneural* x) {
+  z_dsp_free((t_pxobject *)x);
+  //x->~t_rtneural();
+}
 
 void ext_main(void *r)
 {
@@ -93,64 +161,7 @@ void ext_main(void *r)
 	rtneural_class = c;
 }
 
-
 /************************************************************************************/
-// object Creation Method
-void *rtneural_new(t_symbol *s, long argc, t_atom *argv)
-{
-	t_rtneural *x = (t_rtneural *)object_alloc(rtneural_class);
-	
-  post("new rtneural~ object");
-
-  float n_in_chans = atom_getfloatarg(0, argc, argv);
-  float n_out_chans = atom_getfloatarg(1, argc, argv);
-  float nn_sample_rate = atom_getfloatarg(2, argc, argv);
-  float trig_mode = atom_getfloatarg(3, argc, argv);
-
-  x->input_model_ratio = 1;
-
-  if(n_in_chans<1.f){
-    n_in_chans = 1.f;
-  }
-  if(n_out_chans<1.f){
-    n_out_chans = 1.f;
-  }
-  x->n_in_chans = (t_int)n_in_chans;
-  x->n_out_chans = (t_int)n_out_chans;
-
-  x->input_to_nn.resize(x->n_in_chans, 0.f);
-  x->output_from_nn.resize(x->n_out_chans, 0.f);
-
-  for(int i=0; i<x->n_in_chans; i++){
-    x->input_to_nn[i] = 0.f;
-  }
-  for(int i=0; i<x->n_out_chans; i++){
-    x->output_from_nn[i] = 0.f;
-  }
-  
-  x->nn_sample_rate = nn_sample_rate;
-
-  if (trig_mode!=1.f) {
-    trig_mode = 0.f;
-  }
-  x->trig_mode = (long)trig_mode;
-
-  x->bypass = 0;
-  x->model_loaded = 0.f;
-
-  //reset_vars_and_mem(x, sys_getsr(), sys_getblksize());
-  x->sample_rate = 0.f;
-  x->blocksize = 0.f;
-  x->control_rate = 0.f;
-  x->processor.do_resample = false;
-
-  x->processor.initialize(x->n_in_chans, x->n_out_chans, 1.0f); // initialize with a dummy ratio
-	
-	dsp_setup((t_pxobject *)x, 3);
-	x->m_obj.z_misc |= Z_NO_INPLACE | Z_MC_INLETS;
-	outlet_new((t_object *)x, "multichannelsignal");
-	return x;
-}
 
 long rtneural_multichanneloutputs(t_rtneural *x, long outletindex)
 {
@@ -193,12 +204,6 @@ void reset_vars_and_mem(t_rtneural *x, float sample_rate, t_int blocksize){
   x->out_temp.resize(out_temp_size, 0.f);
   x->outbuf.resize(out_buf_size, 0.f);
 
-}
-
-void rtneural_free (t_rtneural* x) {
-  z_dsp_free((t_pxobject *)x);
-  x->~t_rtneural();
-  
 }
 
 t_int get_abs_path(t_symbol *path_in, char* filename, int read_write){

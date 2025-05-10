@@ -22,9 +22,9 @@ using namespace std;
 // max object instance data
 class t_rtneural {
 public:
+  t_rtneural(t_symbol *s, long argc, t_atom *argv);
   t_object m_obj;
   void	*outlet;
-  t_systhread_mutex	mutex;
 
   float f;
 
@@ -56,7 +56,6 @@ public:
 
 }; 
 
-
 // prototypes
 void	*rtneural_new(t_symbol *s, long argc, t_atom *argv);
 void	rtneural_free(t_rtneural *x);
@@ -78,9 +77,63 @@ void 	rtneural_add_input(t_rtneural *x, t_symbol *s, int argc, t_atom *argv);
 void 	rtneural_add_output(t_rtneural *x, t_symbol *s, int argc, t_atom *argv);
 
 
-static t_class *rtneural_class = NULL;
+static t_class *rtneural_class;
 
-/************************************************************************************/
+t_rtneural::t_rtneural(t_symbol *s, long argc, t_atom *argv) {
+
+  float n_in_chans_a = atom_getfloat(argv);
+  float n_out_chans_a = atom_getfloat(argv+1);
+
+  epochs = 2000;
+  learn_rate = 0.001;
+
+  in_vals.clear();
+  out_vals.clear();
+  layers_ints.clear();
+  layers_strings.clear();
+
+  layers_ints.push_back(5);
+  layers_strings.push_back("relu");
+  layers_ints.push_back(10);
+  layers_strings.push_back("sigmoid");
+
+  if(n_in_chans_a<1.f){
+    n_in_chans_a = 1.f;
+  }
+  if(n_out_chans_a<1.f){
+    n_out_chans_a = 1.f;
+  }
+  n_in_chans = t_int(n_in_chans_a);
+  n_out_chans = t_int(n_out_chans_a);
+
+  out_list.resize(n_out_chans);
+  for (int i = 0; i < n_out_chans; ++i) {
+    atom_setfloat(&out_list[i], 0.f);
+  }
+
+  bypass = 0;
+  model_loaded = 0.f;
+
+  input_to_nn.resize(n_in_chans, 0.0f);
+  output_from_nn.resize(n_out_chans, 0.0f);
+
+  processor.initialize(n_in_chans, n_out_chans, ratio);
+}
+
+void* rtneural_new(t_symbol *s, long argc, t_atom *argv) {  
+
+	t_rtneural *x = (t_rtneural *)object_alloc(rtneural_class);
+  new (x) t_rtneural(s, argc, argv);
+
+  // Create the outlet
+  x->outlet = outlet_new(x, NULL);	
+
+  return x;
+}
+
+void rtneural_free (t_rtneural* x) {
+  //x->~t_rtneural();
+}
 
 void ext_main(void *r)
 {
@@ -111,57 +164,9 @@ void ext_main(void *r)
 
 
 /************************************************************************************/
-// object Creation Method
 
-void* rtneural_new(t_symbol *s, long argc, t_atom *argv) {  
 
-	t_rtneural *x;
-	x = (t_rtneural *)object_alloc(rtneural_class);
 
-	if (x) {
-		//systhread_mutex_new(&x->c_mutex, 0);
-		x->outlet = outlet_new(x, NULL);
-
-		float n_in_chans = atom_getfloat(argv);
-		float n_out_chans = atom_getfloat(argv+1);
-
-    x->epochs = 2000;
-    x->learn_rate = 0.001;
-
-    x->in_vals.clear();
-    x->out_vals.clear();
-    x->layers_ints.clear();
-    x->layers_strings.clear();
-
-    x->layers_ints.push_back(5);
-    x->layers_strings.push_back("relu");
-    x->layers_ints.push_back(10);
-    x->layers_strings.push_back("sigmoid");
-
-		if(n_in_chans<1.f){
-			n_in_chans = 1.f;
-		}
-		if(n_out_chans<1.f){
-			n_out_chans = 1.f;
-		}
-		x->n_in_chans = t_int(n_in_chans);
-    x->n_out_chans = t_int(n_out_chans);
-
-    x->out_list.resize(n_out_chans);
-    for (int i = 0; i < n_out_chans; ++i) {
-      atom_setfloat(&x->out_list[i], 0.f);
-    }
-
-		x->bypass = 0;
-		x->model_loaded = 0.f;
-
-    x->input_to_nn.resize(x->n_in_chans, 0.0f);
-    x->output_from_nn.resize(x->n_out_chans, 0.0f);
-
-		x->processor.initialize(x->n_in_chans, x->n_out_chans, x->ratio);
-	}
-  return x;
-}
 
 void rtneural_set_epochs(t_rtneural *x, t_symbol *s, int argc, t_atom *argv) {
   x->epochs = t_int(atom_getfloat(argv));
@@ -384,12 +389,7 @@ void rtneural_write_json(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
   defer(x, (method)rtneural_dowrite_json, path_in, 0, NULL);
 }
 
-void rtneural_free (t_rtneural* x) {
-  //systhread_mutex_free(&x->c_mutex);
-  //outlet_free(x->outlet);
-  x->~t_rtneural();
-  free(x);
-}
+
 
 void rtneural_bang(t_rtneural *x)
 {

@@ -9,6 +9,7 @@ static t_class *rtneural_class;
 
 class RTNeural_pd {
 public:
+  RTNeural_pd(t_int n_in_chans, t_int n_out_chans);
   t_object obj;
   t_float f;
 
@@ -20,8 +21,6 @@ public:
   std::vector<std::vector<t_float>> out_vals;
   std::vector<t_int> layers_ints;
   std::vector<std::string> layers_strings;
-
-  //std::string python_path;
   
   t_float learn_rate;
 
@@ -29,7 +28,6 @@ public:
 
   t_int n_in_chans;
   t_int n_out_chans;
-
 
   std::vector<t_atom> out_list;
 
@@ -40,8 +38,59 @@ public:
   std::vector<t_float> output_from_nn;
 
   RTN_Processor processor;
-
 };  
+
+RTNeural_pd::RTNeural_pd(t_int n_in_chans_a, t_int n_out_chans_a) {
+  // Constructor
+  canvas = canvas_getcurrent();
+
+  // char absolute_path[MAXPDSTRING] = { 0 };
+  // canvas_makefilename(x->canvas, "../../RTNeural_python", absolute_path, MAXPDSTRING);
+  // x->python_path = absolute_path;
+  // post("python path: %s", x->python_path.c_str());
+
+  post("new rtneural~ object");
+  epochs = 2000;
+  learn_rate = 0.001;
+
+  in_vals.clear();
+  out_vals.clear();
+  layers_ints.clear();
+  layers_strings.clear();
+
+  layers_ints.push_back(5);
+  layers_strings.push_back("relu");
+  layers_ints.push_back(10);
+  layers_strings.push_back("sigmoid");
+
+  outlet_new(&obj, &s_list);
+
+  if(n_in_chans<1.f){
+    n_in_chans = 1.f;
+  }
+  if(n_out_chans<1.f){
+    n_out_chans = 1.f;
+  }
+  n_in_chans = n_in_chans_a;
+  n_out_chans = n_out_chans_a;
+  out_list.resize(n_out_chans);
+
+  bypass = 0;
+  model_loaded = 0.f;
+
+  input_to_nn.resize(n_in_chans, 0.0f);
+  output_from_nn.resize(n_out_chans, 0.0f);
+
+  processor.initialize(n_in_chans, n_out_chans, ratio);
+}
+
+void* rtneural_new(t_floatarg n_in_chans, t_floatarg n_out_chans) {  
+  RTNeural_pd *x = (RTNeural_pd *)pd_new(rtneural_class);
+
+  //call the cpp constructor
+  new (x) RTNeural_pd((t_int)n_in_chans, (t_int)n_out_chans);
+  return (void*)x;
+}
 
 static void rtneural_bang(RTNeural_pd *obj)
 {
@@ -75,54 +124,6 @@ void rtneural_list(RTNeural_pd* x, t_symbol *s, int argc, t_atom *argv) {
     outlet_list(x->obj.ob_outlet, s, x->n_out_chans, x->out_list.data());
 }
 
-void* rtneural_new(t_floatarg n_in_chans, t_floatarg n_out_chans) {  
-
-  //void *y = pd_new(rtneural_class);
-  RTNeural_pd *x = (RTNeural_pd*)pd_new(rtneural_class);
-
-  x->canvas = canvas_getcurrent();
-
-  // char absolute_path[MAXPDSTRING] = { 0 };
-  // canvas_makefilename(x->canvas, "../../RTNeural_python", absolute_path, MAXPDSTRING);
-  // x->python_path = absolute_path;
-  // post("python path: %s", x->python_path.c_str());
-
-  x->epochs = 2000;
-  x->learn_rate = 0.001;
-
-  x->in_vals.clear();
-  x->out_vals.clear();
-  x->layers_ints.clear();
-  x->layers_strings.clear();
-
-  x->layers_ints.push_back(5);
-  x->layers_strings.push_back("relu");
-  x->layers_ints.push_back(10);
-  x->layers_strings.push_back("sigmoid");
-
-  outlet_new(&x->obj, &s_list);
-
-  if(n_in_chans<1.f){
-    n_in_chans = 1.f;
-  }
-  if(n_out_chans<1.f){
-    n_out_chans = 1.f;
-  }
-  x->n_in_chans = t_int(n_in_chans);
-  x->n_out_chans = t_int(n_out_chans);
-  x->out_list.resize(n_out_chans);
-
-  x->bypass = 0;
-  x->model_loaded = 0.f;
-
-  x->input_to_nn.resize(x->n_in_chans, 0.0f);
-  x->output_from_nn.resize(x->n_out_chans, 0.0f);
-
-  x->processor.initialize(x->n_in_chans, x->n_out_chans, x->ratio);
-
-  return (void *)x;
-}
-
 void rtneural_set_epochs(RTNeural_pd *x, t_floatarg n_epochs) {
   x->epochs = n_epochs;
 }
@@ -131,7 +132,6 @@ void rtneural_set_layers_data(RTNeural_pd *x, t_symbol *s, int argc, t_atom *arg
   x->layers_ints.clear();
   x->layers_strings.clear();
   for (int i = 0; i < argc / 2; i++) {
-    //x->layers_data[atom_getfloat(argv + i * 2)] = atom_getsymbol(argv + i * 2 + 1)->s_name;
     x->layers_ints.push_back(atom_getfloat(argv + i * 2));
     x->layers_strings.push_back(atom_getsymbol(argv + i * 2 + 1)->s_name);
   }
@@ -235,8 +235,6 @@ void rtneural_write_json(RTNeural_pd *x, t_symbol *s){
   char absolute_path[MAXPDSTRING] = { 0 };
   canvas_makefilename(x->canvas, s->s_name, absolute_path, MAXPDSTRING);
 
-  post(absolute_path);
-
   std::string parent_directory = absolute_path;
   size_t pos = parent_directory.find_last_of("/\\");
   if (pos != std::string::npos) {
@@ -244,16 +242,19 @@ void rtneural_write_json(RTNeural_pd *x, t_symbol *s){
   }
   if (!std::filesystem::is_directory(parent_directory.c_str())) {
     post("The directory does not exist or is not a directory");
+    post(absolute_path);
     return;
   }
 
   std::ofstream output_file(absolute_path);
   if (!output_file.is_open())  {
     post("Failed to open output file");
+    post(absolute_path);
   } else {
     output_file << data;
     output_file.close();
     post("writing output file");
+    post(absolute_path);
   }
 }
 
@@ -297,9 +298,6 @@ void rtneural_train_model(RTNeural_pd *x, t_symbol *s) {
 void rtneural_load_model(RTNeural_pd *x, t_symbol *s){
   (void)x;
 
-  post("loading model: ");
-  post(s->s_name);
-
   char absolute_path[MAXPDSTRING] = { 0 };
   canvas_makefilename(x->canvas, s->s_name, absolute_path, MAXPDSTRING);
 
@@ -324,6 +322,7 @@ void rtneural_load_model(RTNeural_pd *x, t_symbol *s){
         break;
       default:
         post("error: the path does not exist or is not a file");
+        post(absolute_path);
         break;
     }
     post("disabling model");

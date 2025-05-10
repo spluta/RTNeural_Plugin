@@ -7,6 +7,7 @@ static t_class *rtneural_tilde_class;
 
 class RTNeural_tilde {
 public:
+  RTNeural_tilde(t_int n_in_chans, t_int n_out_chans, t_float nn_sample_rate, t_int trig_mode);
   t_object x;
 
 	t_canvas *canvas; // necessary for relative paths
@@ -47,6 +48,55 @@ public:
 
 };  
 
+RTNeural_tilde::RTNeural_tilde(t_int n_in_chans_a, t_int n_out_chans_a, t_float nn_sample_rate_a, t_int trig_mode_a) {
+  if(n_in_chans_a<1){
+    n_in_chans_a = 1;
+  }
+  if(n_out_chans_a<1){
+    n_out_chans_a = 1;
+  }
+
+  canvas = canvas_getcurrent();
+
+  n_in_chans = n_in_chans_a;
+  n_out_chans = n_out_chans_a;
+  nn_sample_rate = nn_sample_rate_a;
+  
+  trig_mode = trig_mode_a;
+  if (trig_mode!=1) {
+    trig_mode = 0;
+  }
+  
+  x_in2 = inlet_new(&x, &x.ob_pd, &s_signal, &s_signal);
+  x_in3 = inlet_new(&x, &x.ob_pd, &s_signal, &s_signal);
+  signal_out = outlet_new(&x, &s_signal);
+
+  bypass = 0;
+  model_loaded = 0;
+
+  input_model_ratio = 1;
+
+  processor.initialize(n_in_chans, n_out_chans, 1.0f); // initialize with a dummy ratio
+
+  //force the processor to find the local sample rate when the dsp is started
+  sample_rate = 0.f;
+  blocksize = 0.f;
+  processor.do_resample = false;
+
+  input_to_nn = std::vector<t_float>(n_in_chans, 0.f);
+  output_from_nn = std::vector<t_float>(n_out_chans, 0.f);
+  in_vec = std::vector<t_sample*>(n_in_chans);
+}
+
+static void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floatarg nn_sample_rate, t_floatarg trig_mode) { 
+  //first make the pd object
+  RTNeural_tilde *x = (RTNeural_tilde *)pd_new(rtneural_tilde_class);
+  //then run the cpp constructor
+  new (x) RTNeural_tilde((t_int)n_in_chans, (t_int)n_out_chans, (t_float)nn_sample_rate, (t_int)trig_mode);
+ 
+  return (void*)x;
+}
+
 static void RTN_bang(RTNeural_tilde *x) {
   (void)x; // silence unused variable warning
   post("stop that!");
@@ -54,9 +104,6 @@ static void RTN_bang(RTNeural_tilde *x) {
 
 
 static void do_load (RTNeural_tilde *x, t_symbol* s){
-
-  post("loading model: ");
-  post(s->s_name);
 
   char absolute_path[MAXPDSTRING] = { 0 };
   canvas_makefilename(x->canvas, s->s_name, absolute_path, MAXPDSTRING);
@@ -81,6 +128,7 @@ static void do_load (RTNeural_tilde *x, t_symbol* s){
         break;
       default:
         post("error: the path does not exist or is not a file");
+        post(absolute_path);
         break;
       }
       post("disabling model");
@@ -129,55 +177,6 @@ void reset_vars_and_mem(RTNeural_tilde *x) {
   post("ratio: %f", x->ratio);
   post("resample: %i", x->processor.do_resample);
 }
-
-static void* rtneural_tilde_new(t_floatarg n_in_chans, t_floatarg n_out_chans, t_floatarg nn_sample_rate, t_floatarg trig_mode) { 
-  //void* y = pd_new(rtneural_tilde_class);
-  RTNeural_tilde *x = (RTNeural_tilde *)pd_new(rtneural_tilde_class);
-
-  if(n_in_chans<1.f){
-    n_in_chans = 1.f;
-  }
-  if(n_out_chans<1.f){
-    n_out_chans = 1.f;
-  }
-
-  x->canvas = canvas_getcurrent();
-
-  x->n_in_chans = t_int(n_in_chans);
-  x->n_out_chans = t_int(n_out_chans);
-  x->nn_sample_rate = nn_sample_rate;
-  
-  if (trig_mode!=1.f) {
-    trig_mode = 0.f;
-  }
-  x->trig_mode = t_int(trig_mode);
-
-  x->x_in2 = inlet_new(&x->x, &x->x.ob_pd, &s_signal, &s_signal);
-  x->x_in3 = inlet_new(&x->x, &x->x.ob_pd, &s_signal, &s_signal);
-  x->signal_out = outlet_new(&x->x, &s_signal);
-
-  x->bypass = 0;
-  x->model_loaded = 0;
-
-  x->input_model_ratio = 1;
-
-  //reset_vars_and_mem(x);
-
-  x->processor.initialize(x->n_in_chans, x->n_out_chans, 1.0f); // initialize with a dummy ratio
-
-  //force the processor to find the local sample rate when the dsp is started
-  x->sample_rate = 0.f;
-  x->blocksize = 0.f;
-  x->processor.do_resample = false;
-
-  x->input_to_nn = std::vector<t_float>(x->n_in_chans, 0.f);
-  x->output_from_nn = std::vector<t_float>(x->n_out_chans, 0.f);
-  x->in_vec = std::vector<t_sample*>(x->n_in_chans);
-
-  return x;
-}
-
-
 
 void rtneural_tilde_free (RTNeural_tilde* x) {
   x->~RTNeural_tilde();

@@ -18,10 +18,10 @@
 using namespace std;
 
 // max xect instance data
-class t_rtneural {
+class t_rtneural_tilde {
 public:
 
-  t_rtneural(t_symbol *s, long argc, t_atom *argv);
+  t_rtneural_tilde(t_symbol *s, long argc, t_atom *argv);
 
   t_pxobject m_obj;
   
@@ -54,25 +54,25 @@ public:
 }; 
 
 // prototypes
-void *rtneural_new(t_symbol *s, long argc, t_atom *argv);
-void rtneural_free(t_rtneural *x);
-void rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv);
-void rtneural_reset(t_rtneural *x, long f);
-void rtneural_bypass(t_rtneural *x, long f);
+void *rtneural_tilde_new(t_symbol *s, long argc, t_atom *argv);
+void rtneural_tilde_free(t_rtneural_tilde *x);
+void rtneural_tilde_load_model(t_rtneural_tilde *x, t_symbol s, long argc, t_atom *argv);
+void rtneural_tilde_reset(t_rtneural_tilde *x, long f);
+void rtneural_tilde_bypass(t_rtneural_tilde *x, long f);
 
-void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam);
-void rtneural_dsp64(t_rtneural *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
-void reset_vars_and_mem(t_rtneural *x, float sample_rate, t_int blocksize);
-long rtneural_multichanneloutputs(t_rtneural *x, long outletindex);
-void rtneural_assist(t_rtneural *x, void *b, long io, long index, char *s);
+void rtneural_tilde_perform64(t_rtneural_tilde *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam);
+void rtneural_tilde_dsp64(t_rtneural_tilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags);
+void reset_vars_and_mem(t_rtneural_tilde *x, float sample_rate, t_int blocksize);
+long rtneural_tilde_multichanneloutputs(t_rtneural_tilde *x, long outletindex);
+void rtneural_tilde_assist(t_rtneural_tilde *x, void *b, long io, long index, char *s);
 
 // globals
-static t_class *rtneural_class;
+static t_class *rtneural_tilde_class;
 
 /************************************************************************************/
 
 
-t_rtneural::t_rtneural(t_symbol *s, long argc, t_atom *argv) {
+t_rtneural_tilde::t_rtneural_tilde(t_symbol *s, long argc, t_atom *argv) {
   post("new rtneural~ object");
 
   float n_in_chans_a = atom_getfloatarg(0, argc, argv);
@@ -120,10 +120,10 @@ t_rtneural::t_rtneural(t_symbol *s, long argc, t_atom *argv) {
   processor.initialize(n_in_chans, n_out_chans, 1.0f); // initialize with a dummy ratio
 }
 
-void *rtneural_new(t_symbol *s, long argc, t_atom *argv)
+void *rtneural_tilde_new(t_symbol *s, long argc, t_atom *argv)
 {
-	t_rtneural *x = (t_rtneural *)object_alloc(rtneural_class);
-  new (x) t_rtneural(s, argc, argv);
+	t_rtneural_tilde *x = (t_rtneural_tilde *)object_alloc(rtneural_tilde_class);
+  new (x) t_rtneural_tilde(s, argc, argv);
 
   dsp_setup((t_pxobject *)x, 3);
 	x->m_obj.z_misc |= Z_NO_INPLACE | Z_MC_INLETS;
@@ -132,43 +132,43 @@ void *rtneural_new(t_symbol *s, long argc, t_atom *argv)
 	return x;
 }
 
-void rtneural_free (t_rtneural* x) {
+void rtneural_tilde_free (t_rtneural_tilde* x) {
   z_dsp_free((t_pxobject *)x);
-  //x->~t_rtneural();
+  x->~t_rtneural_tilde();
 }
 
 void ext_main(void *r)
 {
   t_class	*c = class_new("rtneural~",
-      (method)rtneural_new,
-      (method)rtneural_free, sizeof(t_rtneural),
+      (method)rtneural_tilde_new,
+      (method)rtneural_tilde_free, sizeof(t_rtneural_tilde),
       (method)NULL,
       A_GIMME, 0);
 
-  class_addmethod(c, (method)rtneural_load_model, "load_model", A_GIMME, 0);
-  class_addmethod(c, (method)rtneural_reset, "reset", A_GIMME, 0);
-  class_addmethod(c, (method)rtneural_bypass, "bypass", A_LONG, 0);
-  class_addmethod(c, (method)rtneural_dsp64, "dsp64",	A_CANT, 0); 
-  class_addmethod(c, (method)rtneural_assist, "assist", A_CANT, 0); 
+  class_addmethod(c, (method)rtneural_tilde_load_model, "load_model", A_GIMME, 0);
+  class_addmethod(c, (method)rtneural_tilde_reset, "reset", A_GIMME, 0);
+  class_addmethod(c, (method)rtneural_tilde_bypass, "bypass", A_LONG, 0);
+  class_addmethod(c, (method)rtneural_tilde_dsp64, "dsp64",	A_CANT, 0); 
+  class_addmethod(c, (method)rtneural_tilde_assist, "assist", A_CANT, 0); 
 
-  class_addmethod(c, (method)rtneural_multichanneloutputs, "multichanneloutputs", A_CANT, 0);
+  class_addmethod(c, (method)rtneural_tilde_multichanneloutputs, "multichanneloutputs", A_CANT, 0);
 
-  CLASS_ATTR_LONG(c, "trig_mode", 0, t_rtneural, trig_mode);
+  CLASS_ATTR_LONG(c, "trig_mode", 0, t_rtneural_tilde, trig_mode);
   CLASS_ATTR_FILTER_CLIP(c, "trig_mode", 0, 1);
 
   class_dspinit(c);
 	class_register(CLASS_BOX, c);
-	rtneural_class = c;
+	rtneural_tilde_class = c;
 }
 
 /************************************************************************************/
 
-long rtneural_multichanneloutputs(t_rtneural *x, long outletindex)
+long rtneural_tilde_multichanneloutputs(t_rtneural_tilde *x, long outletindex)
 {
   return x->n_out_chans; 
 }
 
-void reset_vars_and_mem(t_rtneural *x, float sample_rate, t_int blocksize){
+void reset_vars_and_mem(t_rtneural_tilde *x, float sample_rate, t_int blocksize){
   post("resetting nn sample rate and block size B");
 
   x->sample_rate = sample_rate;
@@ -238,7 +238,7 @@ t_int get_abs_path(t_symbol *path_in, char* filename, int read_write){
   return 0;
 }
 
-void rtneural_doload_model(t_rtneural *x, t_symbol *path_in){
+void rtneural_tilde_doload_model(t_rtneural_tilde *x, t_symbol *path_in){
   char filename[MAX_PATH_CHARS];
   if(get_abs_path(path_in, filename, 0)){
     return;
@@ -274,28 +274,28 @@ void rtneural_doload_model(t_rtneural *x, t_symbol *path_in){
   }
 }
 
-void rtneural_load_model(t_rtneural *x, t_symbol s, long argc, t_atom *argv){
+void rtneural_tilde_load_model(t_rtneural_tilde *x, t_symbol s, long argc, t_atom *argv){
   (void)x;
 
   t_symbol* path_in = atom_getsym(argv);
 
-  defer(x, (method)rtneural_doload_model, path_in, 0, NULL);
+  defer(x, (method)rtneural_tilde_doload_model, path_in, 0, NULL);
 }  
 
-void rtneural_reset(t_rtneural *x, long f){
+void rtneural_tilde_reset(t_rtneural_tilde *x, long f){
   x->processor.m_model->reset();
   if(int(f)==1){
     post("model reset");
   }
 }
 
-void rtneural_bypass(t_rtneural *x, long f){
+void rtneural_tilde_bypass(t_rtneural_tilde *x, long f){
   x->bypass = f;
 
   post(f ? "Bypass ON" : "Bypass OFF");
 }  
 
-void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam)
+void rtneural_tilde_perform64(t_rtneural_tilde *x, t_object *dsp64, double **ins, long numins, double **outs, long numouts, long sampleframes, long flags, void *userparam)
 {
 	long ch;
 	double *in, *out;
@@ -363,7 +363,7 @@ void rtneural_perform64(t_rtneural *x, t_object *dsp64, double **ins, long numin
   }
 }
 
-void rtneural_assist(t_rtneural *x, void *b, long io, long index, char *s)
+void rtneural_tilde_assist(t_rtneural_tilde *x, void *b, long io, long index, char *s)
 {
   switch (io) {
     case 1:
@@ -385,12 +385,12 @@ void rtneural_assist(t_rtneural *x, void *b, long io, long index, char *s)
   }
 }
 
-void rtneural_dsp64(t_rtneural *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
+void rtneural_tilde_dsp64(t_rtneural_tilde *x, t_object *dsp64, short *count, double samplerate, long maxvectorsize, long flags)
 {
   if(samplerate!=x->sample_rate||maxvectorsize!=x->blocksize){
     reset_vars_and_mem(x, samplerate, maxvectorsize);
     x->processor.reset_ratio(x->ratio);
   }
-	dsp_add64(dsp64, (t_object *)x, (t_perfroutine64)rtneural_perform64, 0, NULL);
+	dsp_add64(dsp64, (t_object *)x, (t_perfroutine64)rtneural_tilde_perform64, 0, NULL);
 }
 /************************************************************************************/

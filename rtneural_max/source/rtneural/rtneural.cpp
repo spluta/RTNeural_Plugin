@@ -132,7 +132,7 @@ void* rtneural_new(t_symbol *s, long argc, t_atom *argv) {
 }
 
 void rtneural_free (t_rtneural* x) {
-  //x->~t_rtneural();
+  x->~t_rtneural();
 }
 
 void ext_main(void *r)

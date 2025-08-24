@@ -18,6 +18,7 @@ set(CMAKE_BUILD_TYPE Release)
 
 pd_add_external(rtneural rtneural.cpp TARGET rtneuralpd)
 pd_add_external(rtneural~ rtneural~.cpp TARGET rtneuralpd_tilde)
+pd_add_external(softmax softmax.cpp TARGET softmaxpd)
 
 add_subdirectory(../libsamplerate libsamplerate)
 add_subdirectory(../RTNeuralCPP RTNeuralCPP)

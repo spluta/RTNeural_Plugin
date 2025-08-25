@@ -1,4 +1,4 @@
-#N canvas 814 272 954 667 12;
+#N canvas 483 202 954 667 12;
 #X obj 505 197 list length;
 #X obj 516 247 random;
 #X obj 449 296 list split;

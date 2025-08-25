@@ -1,9 +1,5 @@
 #include "m_pd.h"
-//#include <memory>
 #include "../RTN_Processor.cpp"
-// #include <experimental/filesystem>
-
-#include "m_pd.h"
 
 static t_class *rtneural_class;
 
@@ -44,12 +40,6 @@ RTNeural_pd::RTNeural_pd(t_int n_in_chans_a, t_int n_out_chans_a) {
   // Constructor
   canvas = canvas_getcurrent();
 
-  // char absolute_path[MAXPDSTRING] = { 0 };
-  // canvas_makefilename(x->canvas, "../../RTNeural_python", absolute_path, MAXPDSTRING);
-  // x->python_path = absolute_path;
-  // post("python path: %s", x->python_path.c_str());
-
-  post("new rtneural~ object");
   epochs = 2000;
   learn_rate = 0.001;
 
